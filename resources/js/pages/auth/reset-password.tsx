@@ -2,11 +2,11 @@ import { Head, useForm } from '@inertiajs/react';
 import { LoaderIcon } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/ui/core/layout/input-error';
-import { Button } from '@/components/ui/fragments/button';
-import { Input } from '@/components/ui/fragments/input';
-import { Label } from '@/components/ui/fragments/label';
-import AuthLayout from '@/layouts/auth-layout';
+import InputError from '@/components/ui/core/layout/app/components/input-error';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { Label } from '@/components/ui/fragments/shadcn-ui/label';
+import AuthLayoutTemplate from '@/components/ui/core/layout/auth/auth-simple-layout';
 
 interface ResetPasswordProps {
     token: string;
@@ -36,7 +36,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
     };
 
     return (
-        <AuthLayout loading={processing} title="Reset password" description="Please enter your new password below">
+        <AuthLayoutTemplate loading={processing} title="Reset password" description="Please enter your new password below">
             <Head title="Reset password" />
 
             <form onSubmit={submit}>
@@ -93,6 +93,6 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                     </Button>
                 </div>
             </form>
-        </AuthLayout>
+        </AuthLayoutTemplate>
     );
 }

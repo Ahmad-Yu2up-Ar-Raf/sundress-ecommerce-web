@@ -3,11 +3,11 @@ import { Head, useForm } from '@inertiajs/react';
 import { LoaderIcon } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/ui/core/layout/input-error';
-import { Button } from '@/components/ui/fragments/button';
-import { Input } from '@/components/ui/fragments/input';
-import { Label } from '@/components/ui/fragments/label';
-import AuthLayout from '@/layouts/auth-layout';
+import InputError from '@/components/ui/core/layout/app/components/input-error';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { Label } from '@/components/ui/fragments/shadcn-ui/label';
+import AuthLayoutTemplate from '@/components/ui/core/layout/auth/auth-simple-layout';
 
 export default function ConfirmPassword() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<{ password: string }>>({
@@ -23,7 +23,7 @@ export default function ConfirmPassword() {
     };
 
     return (
-        <AuthLayout
+        <AuthLayoutTemplate
         loading={processing}
             title="Confirm your password"
             description="This is a secure area of the application. Please confirm your password before continuing."
@@ -56,6 +56,6 @@ export default function ConfirmPassword() {
                     </div>
                 </div>
             </form>
-        </AuthLayout>
+        </AuthLayoutTemplate>
     );
 }

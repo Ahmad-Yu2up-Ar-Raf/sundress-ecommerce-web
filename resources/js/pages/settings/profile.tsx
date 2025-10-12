@@ -3,12 +3,14 @@ import { Transition } from '@headlessui/react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-import DeleteUser from '@/components/ui/core/layout/delete-user';
-import HeadingSmall from '@/components/ui/core/layout/heading-small';
-import InputError from '@/components/ui/core/layout/input-error';
-import { Button } from '@/components/ui/fragments/button';
-import { Input } from '@/components/ui/fragments/input';
-import { Label } from '@/components/ui/fragments/label';
+import DeleteUser from '@/components/ui/core/layout/app/components/delete-user';
+import HeadingSmall from '@/components/ui/core/layout/app/components/heading-small';
+import InputError from '@/components/ui/core/layout/app/components/input-error';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { Label } from '@/components/ui/fragments/shadcn-ui/label';
+import AppLayout from '@/components/ui/core/layout/app/app-layout';
+import SettingsLayout from '@/components/ui/core/layout/app/settings/layout';
 
 
 
@@ -34,7 +36,9 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
     };
 
     return (
-        <>
+        <AppLayout>
+            <SettingsLayout>
+
             <Head title="Profile settings" />
 
 
@@ -115,6 +119,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
 
                 <DeleteUser />
         
-        </>
+            </SettingsLayout>
+        </AppLayout>
     );
 }

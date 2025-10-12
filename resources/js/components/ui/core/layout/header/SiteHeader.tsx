@@ -1,0 +1,315 @@
+"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/fragments/shadcn-ui/avatar"
+import React, { useState } from "react";
+import { Bell, Book, Compass, Heart, House, LucideIcon, Menu, Search, ShoppingCart, Sunset, Trees, User, WandSparkles, Zap } from "lucide-react";
+
+import { Button, buttonVariants } from "@/components/ui/fragments/shadcn-ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/fragments/shadcn-ui/navigation-menu";
+
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/fragments/shadcn-ui/drawer";
+
+import { cn } from "@/lib/utils";
+import { Link, router, usePage } from "@inertiajs/react";
+
+import { Logo } from "@/components/ui/fragments/svg/logo";
+import { User as profile, type SharedData } from '@/types';
+import { useMotionValueEvent, useScroll , motion} from "framer-motion";
+
+import DropdownMenuUserMenuDemo from "./useProfile";
+
+import { useModal } from "../provider/ContextProvider";
+
+const TopMenu = [
+
+
+  { name: "Trends", href: "/trend" },
+  { name: "Explore", href: "/products" },
+  { name: "Blog", href: "/blog" },
+];
+
+
+type Tp = {
+  Name : string,
+  Link : string,
+  icon: LucideIcon
+}
+
+const navItems: Tp[] = [
+  {
+    Name: "Home",
+    Link: "/",
+    icon: House
+  },
+
+
+  {
+    Name: "Explore",
+    Link: "/products",
+   icon: Compass
+  },
+  {
+    Name: "Bag",
+    Link: "/bag",
+   icon: ShoppingCart
+  },
+    {
+    Name: "Profile",
+    Link: "/profile/settings",
+    icon: User
+  },
+    
+];
+
+
+
+
+export   function SiteHeader() {
+
+  const user = usePage<SharedData>().props.auth.user;
+    const { open } = useModal();
+  const onClick = () => router.visit('/login');
+
+     const { scrollYProgress } = useScroll();
+  const [visible, setVisible] = useState(true);
+  const [delay, setDelay] = useState(true);
+  useMotionValueEvent(scrollYProgress, "change", (current) => {
+    // Check if current is not undefined and is a number
+    if (typeof current === "number") {
+      const direction = current! - scrollYProgress.getPrevious()!;
+    setDelay(false);
+ if (direction < 0) {
+        setVisible(true);
+      } else {
+        setVisible(false);
+      }
+   
+      
+    }
+  });
+
+   return (
+  <>
+
+
+    <motion.nav 
+    
+    
+       
+        animate={{
+          y: visible ? 0 : -100,
+          opacity: visible ? 1 : 0,
+        }}
+        transition={{
+          duration: delay ?  0. : 0.2,
+          delay: delay ? 3 : 0,
+        }}
+    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background/95 backdrop-blur-md sticky top-0 z-50  ", 
+
+   
+
+    )}>
+        <main className=" max-w-[1260px] m-auto px-10  justify-between md:flex ">
+          <div className="flex items-center gap-6">
+            <h1 className="text-xl font-bold flex items-center gap-3 ">
+              <Logo className=" [&_svg]:size-9" />
+              <span className="">Sundress</span>
+            </h1>
+          </div>
+              <div className="flex items-center text-xs ">
+              <NavigationMenu className="relative text-xs z-[100]">
+                <NavigationMenuList>
+                  {TopMenu.map((menu, idx) => 
+                     <NavigationMenuItem key={idx} className=" ">
+                        <Link
+                          className={navigationMenuTriggerStyle()}
+                          href={menu.href}
+                        >
+                          {menu.name}
+                        </Link>
+                      </NavigationMenuItem>
+                    
+                 
+                  )}
+                </NavigationMenuList>
+              </NavigationMenu>
+            </div>
+          <div className="items-center flex gap-5">
+            <div className=" flex items-center gap-2 border-r-2 border-accent-foreground/30 pr-6">
+  <Button variant={"ghost"} size={"icon"}>
+
+
+   <Search className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out " />
+  </Button>
+    <Button variant={"ghost"} size={"icon"} className=" relative">
+
+         <ShoppingCart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
+          { user?.order_count! > 0 && (
+
+         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] p-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.order_count}</span>
+         )}
+    </Button>
+      <Button variant={"ghost"} className=" relative" size={"icon"}>
+
+         <Heart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
+            { user?.whishlist_count! > 0 && (
+
+         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] p-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.whishlist_count}</span>
+         )}
+      </Button>
+      
+            </div>
+           
+            {user != null  ? ( 
+
+            <DropdownMenuUserMenuDemo profile={user} />
+            ) : (
+
+             
+   
+             <Avatar onClick={onClick} className="  cursor-pointer">
+  <AvatarImage src="/assets/images/defaultProfile.webp" />
+  <AvatarFallback>US</AvatarFallback>
+</Avatar>
+
+               
+            
+            )}
+          </div>
+        </main>
+ 
+
+        {/* Mobile Menu */}
+      
+      
+    </motion.nav>
+    <nav className="w-full  md:hidden   px-4  lg:px-0 py-2 md:py-0 md:bg-background/0  md:backdrop-blur-none border-b-2 border-border/40 bg-background/80 backdrop-blur-md sticky top-0 z-50 md:border-0 ">
+
+     <div className="block md:hidden">
+          <div className="flex items-center justify-between">
+             <h1 className="text-lg font-bold flex items-center gap-3 ">
+              <Logo className=" [&_svg]:size-9" />
+              <span className="">Sundress</span>
+            </h1>
+            <Drawer>
+              <div className="flex gap-3 items-center">
+                {/* <Suspense>
+                  <ModeToggle />
+                </Suspense> */}
+                <DrawerTrigger asChild>
+                  <Button variant={"outline"} size={"icon"}>
+                    <Menu className="size-4" />
+                  </Button>
+                </DrawerTrigger>
+              </div>
+              <DrawerContent
+               
+                className="pb-5  px-4"
+              >
+                   <DrawerHeader className="   sm:px-7 space-y-1 bg-background     p-4 border-b   pb-3 justify-center items-center mb-6 ">
+           <DrawerTitle>
+                    <Logo />
+                  </DrawerTitle>
+
+        
+              <DrawerDescription className=" sr-only hidden text-sm">
+                             Fill in the details below to create a new task
+                       </DrawerDescription>
+          
+        </DrawerHeader>
+                <div className="flex flex-col overflow-y-auto">
+                  {TopMenu.map((menu, idx) =>
+                      <Link
+                        key={idx}
+                        href={menu.href}
+                        className="py-3 px-1 font-medium text-base border-b border-border/40 flex items-center"
+                      >
+                        {menu.name}
+                      </Link>
+                   
+                  )}
+                </div>
+                <DrawerFooter className="border-t  px-0 pt-3 mt-6">
+                    {user != null ? ( 
+
+              <Link href={user.roles ? '/dashboard' : '/my-shop'} className={buttonVariants({ variant: "default" })}>
+                Dasboard
+                </Link>
+            ) : (
+
+             <div className="mt-2 flex flex-col gap-2">
+                    
+            
+                  <Button 
+                  onClick={onClick}
+                  >
+                    Login
+                  </Button>
+             
+                    <Link
+                      href="/register"
+                      className={buttonVariants({ variant: "outline"})}
+                    >
+                      Get Started
+                    </Link>
+                  </div>
+            )}
+                  
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        </div> 
+    </nav>
+  </>
+
+
+
+
+  );
+
+
+ 
+}
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
+

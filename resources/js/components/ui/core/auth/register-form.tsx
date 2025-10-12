@@ -8,10 +8,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/fragments/form"
-import { Input } from '@/components/ui/fragments/input';
-import { PasswordInput } from '@/components/ui/fragments/password-input';
-import { Button } from '@/components/ui/fragments/button';
+} from "@/components/ui/fragments/shadcn-ui/form"
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { PasswordInput } from '@/components/ui/fragments/custom-ui/password-input';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
 import { LoaderIcon } from 'lucide-react';
 
 interface TaskFormProps<T extends FieldValues>

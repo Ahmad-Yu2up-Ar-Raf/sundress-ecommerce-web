@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserOccupasion;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable , HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +22,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'country',
         'password',
+        'province',
     ];
 
     /**
@@ -43,6 +47,31 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'country' => 'string',
+            'province' => 'string',
+            'occupasion' => UserOccupasion::class
         ];
     }
+
+
+
+     public function products()
+    {
+        return $this->hasMany(Products::class ,  'user_id');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Orders::class , 'user_id');
+    }
+    public function whishlist()
+    {
+        return $this->hasMany(Whishlist::class , 'user_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Reviews::class ,  'user_id');
+    }
+
 }

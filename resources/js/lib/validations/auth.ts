@@ -1,9 +1,13 @@
+
+
+
+import { UserOccupationValue } from "@/config/Enums/Ocupassion";
 import * as z from "zod";
 
 export const loginSchema = z.object({
   email: z.string().min(1),
   password: z.string().min(8),
-  remember: z.unknown().optional()
+  remember_token: z.boolean().optional()
 });
 
 export const registerCreateSchema = z.object({
@@ -11,7 +15,10 @@ export const registerCreateSchema = z.object({
   email: z.string().min(3, "email is required"),
   password: z.string().min(8, "password min 8"),
   password_confirmation: z.string().min(8, "password min 8"),
-
+  phone: z.string().min(2, "phone required"),
+      country: z.string().min(2, "location required"),
+      province: z.string().min(2, "location required"),
+   occupasion: z.enum(UserOccupationValue).optional(),
 });
 
 

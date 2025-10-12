@@ -8,12 +8,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/fragments/form"
-import { Input } from '@/components/ui/fragments/input';
-import { PasswordInput } from '@/components/ui/fragments/password-input';
-import { Button } from '@/components/ui/fragments/button';
+} from "@/components/ui/fragments/shadcn-ui/form"
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { PasswordInput } from '@/components/ui/fragments/custom-ui/password-input';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
 import { LoaderIcon } from 'lucide-react';
-import { Checkbox } from '@/components/ui/fragments/checkbox';
+import { Checkbox } from '@/components/ui/fragments/shadcn-ui/checkbox';
 import { Link } from '@inertiajs/react';
 interface TaskFormProps<T extends FieldValues>
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
@@ -77,7 +77,7 @@ onSubmit
         />
            <FormField
           control={form.control}
-      name={"remember" as FieldPath<T>}
+      name={"remember_token" as FieldPath<T>}
           render={({ field }) => (
             <FormItem className="flex cursor-pointer flex-row items-start space-x-2 space-y-0 rounded-md ">
               <FormControl>
@@ -95,7 +95,7 @@ onSubmit
             </FormItem>
           )}
         />
-            <Button type="submit" className="mt-4 w-full cursor-pointer"  disabled={isPending}>
+            <Button type="submit" className="mt-2 w-full cursor-pointer"  disabled={isPending}>
                                 {isPending && <LoaderIcon className="h-4 w-4 animate-spin" />}
                                 Log in
                             </Button>

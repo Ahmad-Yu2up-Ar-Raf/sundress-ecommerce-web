@@ -3,12 +3,12 @@ import { Head, useForm } from '@inertiajs/react';
 import { LoaderIcon } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
-import InputError from '@/components/ui/core/layout/input-error';
-import TextLink from '@/components/ui/core/layout/text-link';
-import { Button } from '@/components/ui/fragments/button';
-import { Input } from '@/components/ui/fragments/input';
-import { Label } from '@/components/ui/fragments/label';
-import AuthLayout from '@/layouts/auth-layout';
+import InputError from '@/components/ui/core/layout/app/components/input-error';
+import TextLink from '@/components/ui/core/layout/app/components/text-link';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { Label } from '@/components/ui/fragments/shadcn-ui/label';
+import AuthLayoutTemplate from '@/components/ui/core/layout/auth/auth-simple-layout';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { data, setData, post, processing, errors } = useForm<Required<{ email: string }>>({
@@ -22,7 +22,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
     };
 
     return (
-        <AuthLayout loading={processing} title="Forgot password" description="Enter your email to receive a password reset link">
+        <AuthLayoutTemplate loading={processing} title="Forgot password" description="Enter your email to receive a password reset link">
             <Head title="Forgot password" />
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
@@ -58,6 +58,6 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     <TextLink href={route('login')}>log in</TextLink>
                 </div>
             </div>
-        </AuthLayout>
+        </AuthLayoutTemplate>
     );
 }

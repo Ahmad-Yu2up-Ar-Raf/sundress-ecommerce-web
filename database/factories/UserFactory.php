@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserOccupasion;
+use App\Helpers\ImageHelper;
+
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,12 +26,17 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        return [
+         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('Pa$$w0rd!'),
             'remember_token' => Str::random(10),
+            'country' => $this->faker->country(),
+            'province' => $this->faker->state(),
+            'avatar' => ImageHelper::random(64, 64),  
+            'occupasion' => $this->faker->randomElement(UserOccupasion::cases()),
+          
         ];
     }
 

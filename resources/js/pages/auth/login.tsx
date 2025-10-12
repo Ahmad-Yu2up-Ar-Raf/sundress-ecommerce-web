@@ -3,7 +3,7 @@ import { Head, router,} from '@inertiajs/react';
 import React from 'react';
 
 
-import AuthLayout from '@/layouts/auth-layout';
+
 
 
 import { loginSchema, LoginSchema } from '@/lib/validations/auth';
@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import LoginForms from '@/components/ui/core/auth/login-form';
+import AuthLayoutTemplate from '@/components/ui/core/layout/auth/auth-simple-layout';
 
 
 
@@ -33,7 +34,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     defaultValues: {
        email: "",
        password: "",
-       remember: false
+       remember_token: false
       },
     resolver: zodResolver(loginSchema),
   })
@@ -41,21 +42,22 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
   function onSubmit(input: LoginSchema ) {
     try {
+          toast.loading("Login....", {id: "login"});
                 setLoading(true)
         startTransition(async () => { 
-     router.post(route('login'),  input, { 
+     router.post(route('login.store'),  input, { 
          preserveScroll: true,
          preserveState: true,
-         forceFormData: true, // Penting untuk file upload
+         forceFormData: true, 
          onSuccess: () => {
            form.reset();
          
-           toast.success("Login Succes");
+           toast.success("Login Succes", {id: "login"});
            setLoading(false);
          },
          onError: (error) => {
            console.error("Submit error:", error);
-           toast.error(`Error: ${Object.values(error).join(', ')}`);
+           toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "login"});
            setLoading(false);
               form.reset();
          }
@@ -71,12 +73,12 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
 return (
      <>
-      <AuthLayout module="signin" loading={loading} title="Log in to your account" description="Enter your email and password below to log in">
+      <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in">
          
   <LoginForms  form={form} onSubmit={onSubmit} isPending={loading}/>
 
             {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
-        </AuthLayout>
+        </AuthLayoutTemplate>
      </>
 )
 

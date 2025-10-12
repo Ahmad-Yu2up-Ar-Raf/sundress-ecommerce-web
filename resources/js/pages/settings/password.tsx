@@ -1,13 +1,15 @@
-import InputError from '@/components/ui/core/layout/input-error';
+import InputError from '@/components/ui/core/layout/app/components/input-error';
 
 import { Transition } from '@headlessui/react';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler, useRef } from 'react';
 
-import HeadingSmall from '@/components/ui/core/layout/heading-small';
-import { Button } from '@/components/ui/fragments/button';
-import { Input } from '@/components/ui/fragments/input';
-import { Label } from '@/components/ui/fragments/label';
+import HeadingSmall from '@/components/ui/core/layout/app/components/heading-small';
+import { Button } from '@/components/ui/fragments/shadcn-ui/button';
+import { Input } from '@/components/ui/fragments/shadcn-ui/input';
+import { Label } from '@/components/ui/fragments/shadcn-ui/label';
+import AppLayout from '@/components/ui/core/layout/app/app-layout';
+import SettingsLayout from '@/components/ui/core/layout/app/settings/layout';
 
 
 
@@ -42,7 +44,9 @@ export default function Password() {
     };
 
     return (
-        <>
+       <AppLayout>
+                 <SettingsLayout>
+
             <Head title="Password settings" />
 
                 <div className="space-y-6">
@@ -114,7 +118,8 @@ export default function Password() {
                         </div>
                     </form>
                 </div>
+                 </SettingsLayout>
           
-        </>
+        </AppLayout>
     );
 }
