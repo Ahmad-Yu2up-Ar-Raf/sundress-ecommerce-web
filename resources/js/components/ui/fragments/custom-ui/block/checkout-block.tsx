@@ -33,6 +33,7 @@ Wallet,
 Smartphone,
 Building2,
 Clock,
+ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +44,8 @@ SelectTrigger,
 SelectValue,
 } from "@/components/ui/fragments/shadcn-ui/select";
 import { PaymentMethodOptions } from "@/config/enums/payment-method";
+import { OptionItem } from "@/types";
+import { CountrySelector, ProvinceSelector } from "../input/location-input";
 
 interface OrderItem {
 id: string;
@@ -105,7 +108,7 @@ const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
   nameOnCard: "",
 });
 const [selectedPaymentType, setSelectedPaymentType] =
-  useState<string>("card");
+  useState<OptionItem>(PaymentMethodOptions[0]);
 const [sameAsShipping, setSameAsShipping] = useState<boolean>(true);
 const [savePaymentMethod, setSavePaymentMethod] = useState<boolean>(false);
 const [appliedPromo, setAppliedPromo] = useState<string>("SAVE10");
@@ -227,7 +230,7 @@ const validateStep = (step: number): boolean => {
         shippingAddress.zipCode
       );
     case 2:
-      if (selectedPaymentType === "card") {
+      if (selectedPaymentType.value === "bank_transfer") {
         return !!(
           paymentMethod.cardNumber &&
           paymentMethod.expiryMonth &&
@@ -295,7 +298,7 @@ const CheckoutSkeleton = () => (
 );
 
 const OrderSummaryCard = () => (
-  <Card className="flex flex-col gap-5">
+  <Card className="flex   flex-col rounded-xl gap-5">
     <CardHeader>
       <h3 className="font-semibold flex items-center gap-3">
         <ShoppingBag className="h-4 w-4" />
@@ -311,11 +314,11 @@ const OrderSummaryCard = () => (
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-full h-full object-cover rounded-md"
+                className="w-full h-full object-cover rounded-xl"
               />
               <Badge
                 size="sm"
-                className="absolute -top-1 -right-1 text-xs min-w-5 h-5 flex items-center justify-center"
+                className="absolute rounded-xl -top-1 -right-1 text-xs min-w-5 h-5 flex items-center justify-center"
               >
                 {item.quantity}
               </Badge>
@@ -339,10 +342,10 @@ const OrderSummaryCard = () => (
       </div>
       {/* Applied Promo */}
       {appliedPromo && (
-        <div className="flex items-center justify-between p-3 bg-green-50 rounded-ele border border-green-200">
+        <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl border border-yellow-200">
           <div className="flex items-center gap-3">
-            <Percent className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium text-green-800">
+            <Percent className="h-4 w-4 text-yellow-600" />
+            <span className="text-sm font-medium text-yellow-800">
               {appliedPromo}
             </span>
           </div>
@@ -350,7 +353,7 @@ const OrderSummaryCard = () => (
             variant="ghost"
             size="sm"
             onClick={removePromo}
-            className="h-6 w-6 p-0 text-green-600 hover:text-green-800"
+            className="h-6 w-6 p-0 text-yellow-600 hover:text-yellow-800"
           >
             <X className="h-3 w-3" />
           </Button>
@@ -363,7 +366,7 @@ const OrderSummaryCard = () => (
           <span>${summary.subtotal.toFixed(2)}</span>
         </div>
         {summary.discount > 0 && (
-          <div className="flex justify-between text-sm text-green-600">
+          <div className="flex justify-between text-sm text-yellow-600">
             <span>Discount</span>
             <span>-${summary.discount.toFixed(2)}</span>
           </div>
@@ -404,7 +407,7 @@ return (
       <div className="flex items-start gap-5 flex-col">
         {" "}
         <Button
-          variant="ghost"
+          variant="link"
           size="sm"
           onClick={() => window.history.back()}
           className="flex  px-0  has-[>svg]:px-0 items-center gap-1"
@@ -431,7 +434,7 @@ return (
       {[
         { step: 1, label: "Shipping", icon: Truck },
         { step: 2, label: "Payment", icon: CreditCard },
-        { step: 3, label: "Review", icon: Check },
+        { step: 3, label: "Review", icon: ClipboardList },
       ].map(({ step, label, icon: Icon }, index) => (
         <div key={step} className="flex items-center gap-3">
           <div className="flex items-center gap-3">
@@ -557,25 +560,28 @@ return (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="city">City *</Label>{" "}
-                  <Input
-                    id="city"
-                    size="lg"
-                    placeholder="New York"
-                    value={shippingAddress.city}
-                    onChange={(e) =>
-                      handleAddressChange("city", e.target.value)
-                    }
-                  />
+                 <CountrySelector
+                 
+                                   value={shippingAddress.city}
+                                   onChange={(e) =>
+                      handleAddressChange("city", e)}
+                       
+                                 />
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="state">State *</Label>
-                  <Select
-                    value={shippingAddress.state}
-                    onValueChange={(value) =>
+                     <ProvinceSelector
+                               value={shippingAddress.state}
+                    onChange={(value) =>
                       handleAddressChange("state", value)
                     }
+                                    countryName={shippingAddress.city as string}
+                              
+                                  />
+                  {/* <Select
+                  
                   >
-                    <SelectTrigger className="text-sm bg-background" size={"lg"}>
+                    <SelectTrigger className="text-sm " size={"lg"}>
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
                     <SelectContent>
@@ -584,7 +590,7 @@ return (
                       <SelectItem value="TX">Texas</SelectItem>
                       <SelectItem value="FL">Florida</SelectItem>
                     </SelectContent>
-                  </Select>
+                  </Select> */}
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="zipCode">ZIP Code *</Label>{" "}
@@ -599,31 +605,33 @@ return (
                   />
                 </div>
               </div>{" "}
-              {/* Shipping Methods */}
-              <div className="flex flex-col gap-3 border-t pt-4">
-                <Label>Shipping Method</Label>
+              <div className="flex flex-col gap-6 border-t pt-7">
+                <Label className=" font-medium text-lg">Shipping Method</Label>
                 <div className="flex flex-col gap-5">
                   {shippingMethods.map((method) => (
                     <div
                       key={method.id}
                       className={cn(
-                        "p-3 border rounded-ele cursor-pointer transition-colors",
+                        "p-3 border rounded-xl cursor-pointer transition-colors",
                         selectedShipping === method.id
                           ? "border-primary bg-primary/5"
-                          : "border-border hover:bg-accent"
+                          : "border-border hover:bg-accent/10"
                       )}
                       onClick={() => setSelectedShipping(method.id)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
+                          <div className=" p-1 rounded-full border-2">
+
                           <div
                             className={cn(
-                              "w-4 h-4 rounded-full border-2 transition-colors",
+                              "size-1.5 rounded-full  transition-colors",
                               selectedShipping === method.id
-                                ? "border-primary bg-primary"
+                                ? "border-primary  border-2  bg-primary"
                                 : "border-border"
                             )}
                           />
+                          </div>
                           <div>
                             <div className="font-medium">{method.name}</div>
                             <div className="text-sm text-muted-foreground">
@@ -662,31 +670,48 @@ return (
             <CardContent className="flex flex-col gap-6">
               {/* Payment Method Selection */}
               <div className="flex flex-col gap-5">
-                <Label className="text-base font-medium">
+                <Label className="text-base sr-only font-medium">
                   Choose Payment Method
                 </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
                  {PaymentMethodOptions.map((Item , i ) => (
 
-                  <button
+                  <Button
                   key={i}
+                  variant={"ghost"}
+                  size={"lg"}
                     type="button"
-                    onClick={() => setSelectedPaymentType("card")}
+                    onClick={() => setSelectedPaymentType(Item)}
                     className={cn(
-                      "flex items-center gap-3 p-4 border-2 rounded-ele transition-colors text-left",
-                      selectedPaymentType === "card"
+                      "flex justify-between items-center gap-3 px-4 py-10 border-2 rounded-xl transition-colors text-left",
+                      selectedPaymentType.value ===  Item.value
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
                     )}
                   >
-                    <Item.icon className="sizer-10 text-primary" />
-                    <div>
+                    <div className=" flex items-center   gap-3  ">
+                    <Item.icon className="size-5 text-primary" />
+                    <div className="">
+
                       <div className="font-medium">{Item.label}</div>
                       <div className="text-xs text-muted-foreground">
                         {Item.description}
                       </div>
                     </div>
-                  </button>
+                    </div>
+                    
+                            <div className=" w-fit mr-0 p-1 rounded-full border-2">
+
+                          <div
+                            className={cn(
+                              "size-1.5 rounded-full  transition-colors",
+                            selectedPaymentType.value ===  Item.value
+                                ? "border-primary  border-2  bg-primary"
+                                : "border-border"
+                            )}
+                          />
+                          </div>
+                  </Button>
                  ))}
 
          
@@ -694,7 +719,7 @@ return (
               </div>
 
               {/* Credit Card Form - Only show when card is selected */}
-              {selectedPaymentType === "card" && (
+              {selectedPaymentType.value === "bank_transfer" ? (
                 <div className="flex flex-col gap-5 border-t pt-6">
                   <div className="flex flex-col gap-3">
                     <Label htmlFor="nameOnCard">Name on Card *</Label>{" "}
@@ -785,21 +810,17 @@ return (
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* PayPal Info */}
-              {selectedPaymentType === "paypal" && (
-                <div className="border-t pt-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-ele p-4">
+              ) : (
+   <div className="border-t pt-6">
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                     <div className="flex items-start gap-3">
-                      <Wallet className="h-5 w-5 text-blue-600 mt-0.5" />
+                      <selectedPaymentType.icon className="h-5 w-5 text-yellow-600 mt-0.5" />
                       <div>
-                        <h4 className="font-medium text-blue-900">
-                          PayPal Payment
+                        <h4 className="font-medium text-yellow-900">
+                          {selectedPaymentType.label}
                         </h4>
-                        <p className="text-sm text-blue-700 mt-1">
-                          You'll be redirected to PayPal to complete your
-                          payment securely.
+                        <p className="text-sm text-yellow-700 mt-1">
+                        {selectedPaymentType.description}
                         </p>
                       </div>
                     </div>
@@ -807,108 +828,7 @@ return (
                 </div>
               )}
 
-              {/* Apple Pay Info */}
-              {selectedPaymentType === "apple-pay" && (
-                <div className="border-t pt-6">
-                  <div className="bg-gray-50 border border-gray-200 rounded-ele p-4">
-                    <div className="flex items-start gap-3">
-                      <Smartphone className="h-5 w-5 text-gray-800 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-gray-900">
-                          Apple Pay
-                        </h4>
-                        <p className="text-sm text-gray-700 mt-1">
-                          Use Touch ID or Face ID to pay with your default
-                          card.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Google Pay Info */}
-              {selectedPaymentType === "google-pay" && (
-                <div className="border-t pt-6">
-                  <div className="bg-green-50 border border-green-200 rounded-ele p-4">
-                    <div className="flex items-start gap-3">
-                      <Smartphone className="h-5 w-5 text-green-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-green-900">
-                          Google Pay
-                        </h4>
-                        <p className="text-sm text-green-700 mt-1">
-                          Complete your purchase with one tap using Google
-                          Pay.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Bank Transfer Info */}
-              {selectedPaymentType === "bank-transfer" && (
-                <div className="border-t pt-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-ele p-4">
-                    <div className="flex items-start gap-3">
-                      <Building2 className="h-5 w-5 text-blue-800 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-blue-900">
-                          Bank Transfer
-                        </h4>
-                        <p className="text-sm text-blue-700 mt-1">
-                          We'll provide bank details after you place your
-                          order. Payment processing may take 1-3 business
-                          days.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Buy Now Pay Later Info */}
-              {selectedPaymentType === "bnpl" && (
-                <div className="border-t pt-6">
-                  <div className="bg-purple-50 border border-purple-200 rounded-ele p-4">
-                    <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-purple-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-purple-900">
-                          Buy Now Pay Later
-                        </h4>{" "}
-                        <p className="text-sm text-purple-700 mt-1">
-                          Split your ${summary.total.toFixed(2)} purchase into
-                          4 interest-free payments of $
-                          {(summary.total / 4).toFixed(2)}.
-                        </p>
-                        <div className="mt-2 text-xs text-purple-600">
-                          • Pay ${(summary.total / 4).toFixed(2)} today • Then
-                          ${(summary.total / 4).toFixed(2)} every 2 weeks • No
-                          interest, no fees when you pay on time
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Save Payment Method - Only for card payments */}
-              {selectedPaymentType === "card" && (
-                <div className="flex items-center gap-3 border-t pt-4">
-                  <Checkbox
-                    id="savePayment"
-                    checked={savePaymentMethod}
-                    onCheckedChange={(checked) =>
-                      setSavePaymentMethod(checked === true)
-                    }
-                  />
-                  <Label htmlFor="savePayment" className="text-sm">
-                    Save payment method for future purchases
-                  </Label>
-                </div>
-              )}
+             
             </CardContent>{" "}
             <CardFooter className="flex justify-between">
               <Button
@@ -935,15 +855,15 @@ return (
           <Card className="flex flex-col gap-6">
             <CardHeader>
               <h2 className="text-xl font-semibold flex items-center gap-3">
-                <Check className="h-5 w-5" />
+                <ClipboardList className="h-5 w-5" />
                 Review Your Order
               </h2>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               {/* Shipping Address Review */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 ">
                 <h3 className="font-medium">Shipping Address</h3>
-                <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele">
+                <div className="text-sm text-muted-foreground p-3 bg-input/10 border rounded-xl ">
                   <p>
                     {shippingAddress.firstName} {shippingAddress.lastName}
                   </p>
@@ -958,8 +878,8 @@ return (
               {/* Payment Method Review */}
               <div className="flex flex-col gap-3">
                 <h3 className="font-medium">Payment Method</h3>
-                <div className="text-sm text-muted-foreground p-3 bg-accent rounded-ele">
-                  {selectedPaymentType === "card" && (
+                <div className="text-sm text-muted-foreground p-3 bg-input/10 border rounded-xl ">
+                  {selectedPaymentType.value === "bank_transfer" && (
                     <>
                       <p>
                         **** **** **** {paymentMethod.cardNumber.slice(-4)}
@@ -967,9 +887,9 @@ return (
                       <p>{paymentMethod.nameOnCard}</p>
                     </>
                   )}
-                  {selectedPaymentType === "paypal" && (
+                  {/* {selectedPaymentType === "paypal" && (
                     <div className="flex items-center gap-3">
-                      <Wallet className="h-4 w-4 text-blue-600" />
+                      <Wallet className="h-4 w-4 text-yellow-600" />
                       <span>PayPal</span>
                     </div>
                   )}
@@ -981,13 +901,13 @@ return (
                   )}
                   {selectedPaymentType === "google-pay" && (
                     <div className="flex items-center gap-3">
-                      <Smartphone className="h-4 w-4 text-green-600" />
+                      <Smartphone className="h-4 w-4 text-yellow-600" />
                       <span>Google Pay</span>
                     </div>
                   )}
                   {selectedPaymentType === "bank-transfer" && (
                     <div className="flex items-center gap-3">
-                      <Building2 className="h-4 w-4 text-blue-800" />
+                      <Building2 className="h-4 w-4 text-yellow-800" />
                       <span>Bank Transfer</span>
                     </div>
                   )}
@@ -999,7 +919,7 @@ return (
                         {(summary.total / 4).toFixed(2)})
                       </span>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>{" "}
               {/* Terms and Conditions */}
@@ -1040,7 +960,7 @@ return (
               <Button
                 disabled={!validateStep(3)}
                 size="lg"
-                className="bg-green-600 hover:bg-green-700 flex items-center gap-3"
+                className="bg-yellow-600 hover:bg-yellow-700 flex items-center gap-3"
               >
                 <Lock className="h-4 w-4" />
                 Complete Order ${summary.total.toFixed(2)}
@@ -1056,9 +976,9 @@ return (
 
         {/* Security Badge */}
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="px-4 py-0">
             <div className="flex items-center gap-3 text-sm">
-              <Shield className="h-5 w-5 text-green-600" />
+              <Shield className="h-5 w-5 text-yellow-600" />
               <div>
                 <div className="font-medium">Secure & Encrypted</div>
                 <div className="text-muted-foreground">

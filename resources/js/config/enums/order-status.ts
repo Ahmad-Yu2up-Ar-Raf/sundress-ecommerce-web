@@ -36,8 +36,8 @@ export const OrderStatusOptions: OptionItem[] = [
     label: "Paid",
     description: "Payment successfully received.",
     icon: CreditCard,
-    color: "text-green-600",
-    bgColor: "bg-green-100",
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-100",
   },
   {
     value: OrderStatus.Unpaid,

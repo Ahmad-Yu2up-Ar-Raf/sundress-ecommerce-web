@@ -109,7 +109,7 @@ export function NavSecondary({
                 size="sm" 
                 tooltip={"Theme"}
               >
-                <Button onClick={handleThemeToggle}>
+                <Button variant={"ghost"} className=" w-full  flex justify-start" onClick={handleThemeToggle}>
                   <ModeToggle />
                   <span>Tema</span>
                 </Button>

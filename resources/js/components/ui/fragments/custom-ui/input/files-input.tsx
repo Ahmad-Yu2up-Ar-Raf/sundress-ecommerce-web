@@ -350,7 +350,7 @@ console.log(initialFiles)
                         <div
                           key={file.id}
                           data-uploading={isUploading || undefined}
-                          className="bg-background max-w-full overflow-x-hidden flex flex-col gap-1 rounded-lg border p-2 pe-3 transition-opacity duration-300"
+                          className="bg-background max-w-full overflow-x-hidden flex flex-col gap-1 rounded-xl border p-2 pe-3 transition-opacity duration-300"
                         >
                           <div className={cn("flex items-center justify-between gap-2 " ,  isLoading || isPending && " opacity-55 ")}>
                             <div className="flex flex-wrap items-center gap-3 overflow-hidden in-data-[uploading=true]:opacity-50">

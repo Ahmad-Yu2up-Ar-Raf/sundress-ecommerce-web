@@ -114,10 +114,10 @@ onClick()
   return (
   
     <Card className={cn("w-full  h-full   gap-4 max-w-sm shadow-none border-0 p-0 bg-background dark:bg-background" )} {...props}>
-        <CardContent className={cn(" group rounded-lg overflow-hidden bg-background relative px-0  min-h-[18em] md:min-h-[21em]  " , className )}>
+        <CardContent className={cn(" group rounded-xl overflow-hidden bg-background relative px-0  min-h-[18em] md:min-h-[21em]  " , className )}>
       {label && (
 
-          <Badge  className="absolute z-30 bg-primary/80 rounded-lg top-2.5 left-2.5">
+          <Badge  className="absolute z-30 bg-primary/80 rounded-xl top-2.5 left-2.5">
            {label}
           </Badge>
       )}
@@ -177,7 +177,7 @@ onClick()
                <MediaItem 
         webViewLink={`${Product.cover_image}`}
        
-          className={cn("  rounded-lg opacity-100 transition-all duration-300 ease-out     object-center  object-cover w-full h-full ",
+          className={cn("  rounded-xl opacity-100 transition-all duration-300 ease-out     object-center  object-cover w-full h-full ",
 
           showcase_images &&   showcase_images.length > 0 &&  "group-hover:opacity-0"
           )}
@@ -194,7 +194,7 @@ onClick()
 
         <MediaItem 
            webViewLink={`${appDomain}${showcase_images[0].preview}`}
-          className="  rounded-lg   transition-all duration-300 ease-out opacity-0    group-hover:opacity-100  object-center  object-cover w-full h-full"
+          className="  rounded-xl   transition-all duration-300 ease-out opacity-0    group-hover:opacity-100  object-center  object-cover w-full h-full"
      
           />
               )}

@@ -42,7 +42,7 @@ export const CourierOptions: OptionItem[] = [
   { value: Courier.DHL, label: "DHL", icon: Globe, color: "text-yellow-500" },
   { value: Courier.FEDEX, label: "FedEx", icon: Ship, color: "text-purple-500" },
   { value: Courier.UPS, label: "UPS", icon: Building2, color: "text-brown-600" },
-  { value: Courier.LOCAL_COURIER, label: "Local Courier", icon: Truck, color: "text-green-600" },
+  { value: Courier.LOCAL_COURIER, label: "Local Courier", icon: Truck, color: "text-yellow-600" },
   { value: Courier.PICKUP, label: "Pickup", icon: Package, color: "text-teal-600" },
   { value: Courier.OTHER, label: "Other", icon: Globe, color: "text-gray-500" },
 ];

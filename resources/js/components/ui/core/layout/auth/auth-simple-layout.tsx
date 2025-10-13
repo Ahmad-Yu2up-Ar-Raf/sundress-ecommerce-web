@@ -29,8 +29,8 @@ const AuthLayoutTemplate = ({
   const formTypeReverse = formType == 'register' ? 'login' : 'register'
   
   return (
-    <div className="  rounded-lg h-full flex items-center justify-center overflow-hidden ">
-    <div className={cn(" rounded-lg  w-full relative max-w-lg lg:max-w-[76em] overflow-hidden flex flex-col h-full lg:flex-row shadow-xl" , className)}>
+    <div className="  rounded-xl h-full flex items-center justify-center overflow-hidden ">
+    <div className={cn(" rounded-xl  w-full relative max-w-lg  overflow-hidden flex flex-col  lg:flex-row shadow-xl lg:max-w-none h-dvh" , className)}>
       <div className="w-full h-full z-2 absolute bg-linear-to-t from-transparent to-black"></div>
       <div className="flex absolute z-2  h-full overflow-hidden backdrop-blur-2xl ">
         <div className="h-full z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30] opacity-30 overflow-hidden"></div>

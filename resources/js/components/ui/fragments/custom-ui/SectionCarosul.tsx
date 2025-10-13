@@ -54,7 +54,7 @@ function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"
         {title}
         {props.label && (
 
-        <Badge size={"lg"} className=' ml-3  font-bold text-primary-foreground  rounded-lg   scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
+        <Badge size={"lg"} className=' ml-3  font-bold text-primary-foreground  rounded-xl   scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
          {props.label}
         </Badge>
         )}

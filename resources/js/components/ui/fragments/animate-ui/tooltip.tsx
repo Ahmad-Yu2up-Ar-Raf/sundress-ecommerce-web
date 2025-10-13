@@ -59,7 +59,7 @@ function TooltipPanel({
       >
         <TooltipPopupPrimitive
           className={cn(
-            'bg-neutral-900 text-neutral-50 w-fit origin-(--transform-origin) rounded-md px-3 py-1.5 text-xs text-balance dark:bg-neutral-50 dark:text-neutral-900',
+            'bg-neutral-900 text-neutral-50 w-fit origin-(--transform-origin) rounded-xl px-3 py-1.5 text-xs text-balance dark:bg-neutral-50 dark:text-neutral-900',
             className,
           )}
           style={style}

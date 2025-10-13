@@ -337,7 +337,7 @@ const countryValue = form.watch("country" as FieldPath<T>)
               control={form.control}
               name={"free_shipping" as FieldPath<T>}
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <FormItem className="flex flex-row items-center justify-between rounded-xl border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>Free Shipping</FormLabel>
                     <FormDescription >Receive emails about new products, features, and more.</FormDescription>

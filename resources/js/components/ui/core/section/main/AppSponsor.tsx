@@ -29,7 +29,7 @@ function AppSponsor() {
 
   return (
     <section  className=' max-w-[1190px]  md:px-0  sm:px-10 px-5 container  space-y-7'> 
-   <div className=" rounded-lg pt-6 pb-12  space-y-4 px-8 bg-primary/20 sm:py-12 h-full w-full">
+   <div className=" rounded-xl pt-6 pb-12  space-y-4 px-8 bg-primary/20 sm:py-12 h-full w-full">
 
 
     <MediaItem webViewLink='https://koro.imgix.net/media/10/21/17/1741705996/2025_03_KoRo_App_HP_EN.png?w=400&auto=format,compress&fit=max&cs=srgb'  className='  min-h-[20.1em] transition-all duration-300 ease-out  sm:sr-only justify-center items-center  m-auto   w-full   '/>
@@ -43,11 +43,11 @@ function AppSponsor() {
     </header>
     <p className=' font-semibold  md:text-base  text-sm'>Explore our range, get exclusive discounts & order faster than ever!</p>
 <div className="flex mt-5 gap-2 items-center justify-center">
-  <Link href="/" className="group rounded-lg overflow-hidden bg-background relative px-0">
+  <Link href="/" className="group rounded-xl overflow-hidden bg-background relative px-0">
     <SvgAppStoreComponent className="h-[40px] w-auto" />
   </Link>
 
-  <Link href="/" className="group rounded-lg overflow-hidden bg-background relative px-0">
+  <Link href="/" className="group rounded-xl overflow-hidden bg-background relative px-0">
     <SvgPlayStoreComponent className="h-[40px] w-auto" />
   </Link>
 </div>

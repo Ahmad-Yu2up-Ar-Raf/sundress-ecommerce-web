@@ -98,11 +98,11 @@ function SignInModal({ className }: { className?: string}) {
               done.
             </DialogDescription>
           </DialogHeader>
-            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in" className=' '>
+            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in" className=' h-full lg:max-w-[76em]'>
          
   <LoginForms  form={form} onSubmit={onSubmit} isPending={loading}/>
 
-            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+            {status && <div className="mb-4 text-center text-sm font-medium text-yellow-600">{status}</div>}
         </AuthLayoutTemplate>
               
       </DialogContent>

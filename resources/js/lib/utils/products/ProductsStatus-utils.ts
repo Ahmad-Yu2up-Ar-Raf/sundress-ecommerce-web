@@ -14,7 +14,7 @@ import {
 
 export function getProductStatusColor(status: ProductStatus): string {
   const statusColors: Record<ProductStatus, string> = {
-    [ProductStatus.Available]: "text-green-500",
+    [ProductStatus.Available]: "text-yellow-500",
     [ProductStatus.Not_Available]: "text-red-500",
     [ProductStatus.Coming_Soon]: "text-yellow-500",
   };

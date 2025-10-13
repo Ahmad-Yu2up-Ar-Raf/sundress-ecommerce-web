@@ -364,7 +364,7 @@ import { formatIDR } from "@/hooks/use-money-format";
       </div>
   
   
-        <div className="overflow-hidden rounded-md border">
+        <div className="overflow-hidden rounded-xl border">
   
       <Table>
         <TableCaption className=" sr-only">A list of your recent products.</TableCaption>
@@ -421,9 +421,9 @@ import { formatIDR } from "@/hooks/use-money-format";
    
               > 
               
-                 <Avatar className=" rounded-lg  relative flex size-10 shrink-0 overflow-hidden">
+                 <Avatar className=" rounded-xl  relative flex size-10 shrink-0 overflow-hidden">
                                           <AvatarImage src={`${products?.cover_image!}`} alt={products.name} />
-                                          <AvatarFallback className="rounded-lg  bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                          <AvatarFallback className="rounded-xl  bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                               {getInitial(products.name)}
                                           </AvatarFallback>
                                       </Avatar>

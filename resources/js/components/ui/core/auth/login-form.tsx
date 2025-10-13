@@ -79,7 +79,7 @@ onSubmit
           control={form.control}
       name={"remember_token" as FieldPath<T>}
           render={({ field }) => (
-            <FormItem className="flex cursor-pointer flex-row items-start space-x-2 space-y-0 rounded-md ">
+            <FormItem className="flex cursor-pointer flex-row items-start space-x-2 space-y-0 rounded-xl ">
               <FormControl>
                 <Checkbox
                   checked={field.value}

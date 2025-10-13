@@ -40,7 +40,7 @@ export function TeamSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="bg-sidebar-primary text-accent flex aspect-square size-8 items-center justify-center rounded-lg">
+              <div className="bg-sidebar-primary text-accent flex aspect-square size-8 items-center justify-center rounded-xl">
               <div className={cn(" relative" )} >
                              <LogoWhiter className=" size-5 opacity-0 stransition-transform ease-in-out duration-500 dark:opacity-100" />
                              <LogoDark className="  absolute top-0 size-5 opacity-100  transition-transform ease-in-out duration-500 dark:opacity-0  " />

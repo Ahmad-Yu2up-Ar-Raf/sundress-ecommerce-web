@@ -56,7 +56,7 @@ import {
       [CategoryProductsStatus.Books]: "text-amber-600",
       [CategoryProductsStatus.Home]: "text-emerald-500",
       [CategoryProductsStatus.Beauty]: "text-rose-400",
-      [CategoryProductsStatus.Sports]: "text-green-500",
+      [CategoryProductsStatus.Sports]: "text-yellow-500",
       [CategoryProductsStatus.Toys]: "text-yellow-500",
       [CategoryProductsStatus.Health]: "text-teal-500",
       [CategoryProductsStatus.Accessories]: "text-violet-500",

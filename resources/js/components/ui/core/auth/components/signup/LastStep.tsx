@@ -61,7 +61,7 @@ function SignUpFormLastStep<T extends FieldValues, >({
       <FormItem 
       
       key={i}
-      className="relative cursor-pointer flex w-full items-start gap-2 rounded-lg border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-primary  has-[[data-state=checked]]:border-2">
+      className="relative cursor-pointer flex w-full items-start gap-2 rounded-xl border border-input p-4 shadow-sm shadow-black/5 has-[[data-state=checked]]:border-primary  has-[[data-state=checked]]:border-2">
         <FormControl>
 
         <RadioGroupItem

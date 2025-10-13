@@ -13,7 +13,7 @@ type CatagotyProps = {
 function CategoryCard({ CategoryData , className , overlay}: CatagotyProps) {
   const props = CategoryData
   return (
-    <Card className={cn('group   cursor-pointer   rounded-lg overflow-hidden bg-background  p-0 min-h-[4em] shadow-none border-0  w-full  relative ' ,
+    <Card className={cn('group   cursor-pointer   rounded-xl overflow-hidden bg-background  p-0 min-h-[4em] shadow-none border-0  w-full  relative ' ,
 
        className
     )}>

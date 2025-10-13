@@ -8,12 +8,12 @@ import { type LucideIcon, ChevronDown, Check } from "lucide-react";
 import { motion } from "motion/react";
 
 const selectTriggerVariants = cva(
-  "flex h-9 w-full items-center justify-between gap-3 rounded-ele border border-border bg-background px-3 py-2 text-sm transition-all placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 border border-border bg-input",
+  "flex  bg-input/10 h-9 w-full items-center justify-between gap-3 rounded-xl border border-border  px-3 py-2 text-sm transition-all placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 border border-border ",
   {
     variants: {
       variant: {
         default:
-          "hover:bg-accent hover:text-accent-foreground shadow-sm/2",
+          "hover:bg-accent/60 hover:text-accent-foreground shadow-sm/2",
         outline: "border-2 hover:border-ring shadow-sm/2",
         ghost:
           "border-transparent hover:bg-accent hover:text-accent-foreground",
@@ -32,7 +32,7 @@ const selectTriggerVariants = cva(
 );
 
 const selectContentVariants = cva(
-  "relative z-50 max-h-[300px] min-w-[8rem] overflow-hidden rounded-ele border border-border bg-background text-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+  "relative z-50 max-h-[300px] min-w-[8rem] overflow-hidden rounded-xl border border-border bg-background text-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
   {
     variants: {
       position: {
@@ -90,7 +90,7 @@ const SelectTrigger = React.forwardRef<
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "bg-background rounded-lg",
+        " rounded-xl",
         "group",
         selectTriggerVariants({ variant, size }),
         className
@@ -181,7 +181,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-lg py-2 pl-3 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:text-muted-foreground",
+      "relative flex w-full cursor-default select-none items-center rounded-xl py-2 pl-3 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[disabled]:text-muted-foreground",
       className
     )}
     {...props}
