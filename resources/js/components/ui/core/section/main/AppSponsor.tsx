@@ -28,16 +28,16 @@ function AppSponsor() {
   
 
   return (
-    <section  className=' max-w-[1190px] bg  px-4 container  space-y-7'> 
+    <section  className=' max-w-[1190px]  md:px-0  sm:px-10 px-5 container  space-y-7'> 
    <div className=" rounded-lg pt-6 pb-12  space-y-4 px-8 bg-primary/20 sm:py-12 h-full w-full">
 
 
-    <MediaItem webViewLink='https://koro.imgix.net/media/10/21/17/1741705996/2025_03_KoRo_App_HP_EN.png?w=400&auto=format,compress&fit=max&cs=srgb'  className='  min-h-[20.1em] transition-all duration-300 ease-out  sm:sr-only   w-full  '/>
+    <MediaItem webViewLink='https://koro.imgix.net/media/10/21/17/1741705996/2025_03_KoRo_App_HP_EN.png?w=400&auto=format,compress&fit=max&cs=srgb'  className='  min-h-[20.1em] transition-all duration-300 ease-out  sm:sr-only justify-center items-center  m-auto   w-full   '/>
 
     <div className="  space-y-3 text-center">
 
     <header>
-        <h1 className=' md:text-2xl text-xl font-extrabold '>
+        <h1 className='  text-2xl font-extrabold '>
             Download the tastiest app out there
         </h1>
     </header>

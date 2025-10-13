@@ -40,6 +40,7 @@ function SignInModal({ className }: { className?: string}) {
   }, [isOpen, close]);
  const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
+
  const form = useForm<LoginSchema> ({
         mode: "onSubmit", 
     defaultValues: {
@@ -84,11 +85,11 @@ function SignInModal({ className }: { className?: string}) {
 
 
   return (
-        <Dialog   onOpenChange={close}  open={isOpen}  >
+        <Dialog    onOpenChange={close}  open={isOpen}  >
        
       <DialogContent 
 
-        className={cn("max-h-[100ddvh  w-full p-0  lg:max-h-[44rem] justify-between border-0 max-w-[90dvw]  lg:max-w-6xl ", className)}
+        className={cn("max-h-[100dvh] overflow-hidden  w-full p-0  h-full  lg:max-h-[40rem] justify-between border-0 lg:max-w-[76em] ", className)}
       >
          <DialogHeader className=' sr-only'>
             <DialogTitle>Edit profile</DialogTitle>
@@ -97,7 +98,7 @@ function SignInModal({ className }: { className?: string}) {
               done.
             </DialogDescription>
           </DialogHeader>
-            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in">
+            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in" className=' '>
          
   <LoginForms  form={form} onSubmit={onSubmit} isPending={loading}/>
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\WhishlistController;
 use Illuminate\Support\Facades\Route;
-
+use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index']);
 
@@ -24,6 +24,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('/', BuyyerController::class);
     });
+    Route::middleware(['role:buyer'])->prefix('checkout')->name('checkout.')->group(function () {
+
+  
+        Route::get('/', fn() => Inertia::render('checkout/index'))->name('shipping');
+  
+    });
 
 
 
@@ -33,6 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:seller'])->prefix('seller')->name('seller.')->group(function () {
      
         Route::resource('/', SellerController::class);
+        Route::resource('/products', ProductsController::class);
+        Route::post('/products/{products}/status', [ProductsController::class, 'statusUpdate'])->name('products.status');
     });
 });
 

@@ -27,11 +27,10 @@ import { formatIDR } from "@/hooks/use-money-format"
 import React from "react"
 
 import { toast } from "sonner"
-import { useWhistlist } from "@/hooks/actions/useWhistlist"
-import { Spinner } from "../shadcn-ui/spinner"
-import { cn } from "@/lib/utils"
-import { type SharedData } from '@/types';
 
+import { cn } from "@/lib/utils"
+import { useModal } from "../../core/layout/provider/ContextProvider"
+import { User as profile, type SharedData } from '@/types';
 type ProductProps  = {
   Product: ProductsSchema;
   className?: string;
@@ -45,61 +44,68 @@ export function ProductCard({  Product ,className  , label , isWhistlist,...prop
 const Price = formatIDR(Product.price)
 
      const [isPending, startTransition] = React.useTransition();
-   
-   
+     const user = usePage<SharedData>().props.auth.user;
+   const showcase_images = Product.showcase_images 
+   const appDomain = import.meta.env.APP_URL || 'http://localhost:8000';
 const data = { product_id: Product.id }   
-     function onSubmit() {
+const { open } = useModal();
+const onClick = () => open({ redirectTo: "/" });
 
 
+     function handleWhishlist() {
 
-      setLoading(true)
-      startTransition(async () => {
-        try {
-          if(Product.is_whislisted == true) {
-           toast.loading("Removing...", { id: "whishlist"});
+if(user != null){
 
-           router.post(route('unwhistlist'),  data, { 
-               preserveScroll: true,
-               preserveState: true,
-               forceFormData: true, 
-               onSuccess: (success) => {              
-         
-                 toast.success("Products removed from whishlist", { id: "whishlist"});
-                 setLoading(false);
-               },
-               onError: (error) => {
-                 console.error("Submit error:" , error);
-               toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "whishlist"});
-                 setLoading(false);
-                 
-               }
-             });
-         }else {
-                     toast.loading("Adding...", { id: "whishlist"});
-             router.post(route('whistlist.store'),  data, { 
-               preserveScroll: true,
-               preserveState: true,
-               forceFormData: true, 
-               onSuccess: () => {
-       
-              
-                 toast.success("Added from wishlist", { id: "whishlist"});
-                 setLoading(false);
-               },
-               onError: (error) => {
-                 console.error("Submit error:" , error);
-               toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "whishlist"});
-                 setLoading(false);
-                 
-               }
-             });
-         }
-        } catch (error) {
-          console.log(error)
-          toast.error("Network error");
-        } 
-      });
+  setLoading(true)
+  startTransition(async () => {
+    try {
+      if(Product.is_whislisted == true) {
+       toast.loading("Removing...", { id: "whishlist"});
+  
+       router.post(route('unwhistlist'),  data, { 
+           preserveScroll: true,
+           preserveState: true,
+           forceFormData: true, 
+           onSuccess: (success) => {              
+     
+             toast.success("Products removed from whishlist", { id: "whishlist"});
+             setLoading(false);
+           },
+           onError: (error) => {
+             console.error("Submit error:" , error);
+           toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "whishlist"});
+             setLoading(false);
+             
+           }
+         });
+     }else {
+                 toast.loading("Adding...", { id: "whishlist"});
+         router.post(route('whistlist.store'),  data, { 
+           preserveScroll: true,
+           preserveState: true,
+           forceFormData: true, 
+           onSuccess: () => {
+   
+          
+             toast.success("Added from wishlist", { id: "whishlist"});
+             setLoading(false);
+           },
+           onError: (error) => {
+             console.error("Submit error:" , error);
+           toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "whishlist"});
+             setLoading(false);
+             
+           }
+         });
+     }
+    } catch (error) {
+      console.log(error)
+      toast.error("Network error");
+    } 
+  });
+}
 
+onClick()
  
 
 
@@ -107,27 +113,27 @@ const data = { product_id: Product.id }
 
   return (
   
-    <Card className={cn("w-full  h-full  gap-4 max-w-sm shadow-none border-0 p-0 bg-background" )} {...props}>
+    <Card className={cn("w-full  h-full   gap-4 max-w-sm shadow-none border-0 p-0 bg-background dark:bg-background" )} {...props}>
         <CardContent className={cn(" group rounded-lg overflow-hidden bg-background relative px-0  min-h-[18em] md:min-h-[21em]  " , className )}>
       {label && (
 
-          <Badge  className="absolute z-30 bg-primary/80 rounded-lg top-2.5 left-2">
+          <Badge  className="absolute z-30 bg-primary/80 rounded-lg top-2.5 left-2.5">
            {label}
           </Badge>
       )}
       <CardAction className=" absolute pt-1.5 md:pt-0  h-full justify-between bottom-0 right-0 flex flex-col">
     <Tooltip>
 
-      <TooltipTrigger   onClick={onSubmit}   render={  
+      <TooltipTrigger   onClick={handleWhishlist}   render={  
         <Button  size={"sm"} variant={"ghost"} className={cn("  hover:bg-primary    z-40    text-accent   md:py-5   rounded-full" ,
 
 
-           Product.is_whislisted ? 'hover:text-primary  transition-all duration-300   ease-out   [&_svg]:fill-primary hover:[&_svg]:fill-none  hover:[&_svg]:text-accent' : ''
+          ( Product.is_whislisted ) ? 'hover:text-primary  transition-all duration-300   ease-out   [&_svg]:fill-primary hover:[&_svg]:fill-none  hover:[&_svg]:text-accent' : ''
         )}>
 
   <Heart  className={cn("     transition-all duration-300 ease-out " ,
 
-    Product.is_whislisted ? ' size-6 text-primary ' : 'size-5 text-white dark:text-black'
+( Product.is_whislisted ) ? ' size-6 text-primary ' : 'size-5 text-white dark:text-black'
   )}/>
 
 
@@ -169,9 +175,12 @@ const data = { product_id: Product.id }
            className=" absolute h-full w-full"
              >
                <MediaItem 
-        webViewLink={`${Product.main_image}`}
+        webViewLink={`${Product.cover_image}`}
        
-          className="  opacity-100 transition-all duration-300 ease-out group-hover:opacity-0    object-center  object-cover w-full h-full "
+          className={cn("  rounded-lg opacity-100 transition-all duration-300 ease-out     object-center  object-cover w-full h-full ",
+
+          showcase_images &&   showcase_images.length > 0 &&  "group-hover:opacity-0"
+          )}
         
           />
 
@@ -181,11 +190,14 @@ const data = { product_id: Product.id }
       href={`/products/${Product.id}`}
            className="  absolute h-full w-full"
              >
+              {  showcase_images &&  showcase_images.length > 0 && (
+
         <MediaItem 
-           webViewLink={`${Product.thumbnail_image}`}
-          className="    transition-all duration-300 ease-out opacity-0    group-hover:opacity-100  object-center  object-cover w-full h-full"
+           webViewLink={`${appDomain}${showcase_images[0].preview}`}
+          className="  rounded-lg   transition-all duration-300 ease-out opacity-0    group-hover:opacity-100  object-center  object-cover w-full h-full"
      
           />
+              )}
          
          
              </Link>
@@ -196,9 +208,9 @@ const data = { product_id: Product.id }
     href={`/products/${Product.id}`}
       >
 
-      <CardHeader className=" pl-0 py-0 pr-2.5 bg-background ">
-        <Badge variant={"outline"} className=" lg:text-sm border-0 p-0">
-        <Star className=" fill-primary text-primary"/>  <span className=" font-medium">{ Product.reviews_avg_star_rating != null ?  Math.round(Product.reviews_avg_star_rating! * 10) / 10 : 0.0 }</span>
+      <CardHeader   className=" pl-0 py-0 pr-2.5 bg-background ">
+        <Badge  variant={"outline"} className="  w-fit lg:text-sm border-0 p-0">
+        <Star className=" size-4 fill-primary text-primary"/>  <span className=" font-medium">{ Product.reviews_avg_star_rating != null ?  Math.round(Product.reviews_avg_star_rating! * 10) / 10 : 0.0 }</span>
 <span className=" text-muted-foreground">({Product.reviews_count})</span>
         </Badge>
         <CardTitle className=" lg:text-lg leading-6 line-clamp-2">{Product.name} </CardTitle>

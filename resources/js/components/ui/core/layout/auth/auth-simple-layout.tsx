@@ -29,34 +29,28 @@ const AuthLayoutTemplate = ({
   const formTypeReverse = formType == 'register' ? 'login' : 'register'
   
   return (
-    <div className="h-full flex items-center justify-center">
-      {/* FIXED: Removed overflow-hidden from main container */}
-      <div className={cn(
-        "w-full relative max-w-lg lg:max-w-none flex flex-col h-full lg:flex-row shadow-xl min-h-dvh",
-        className
-      )}>
-        <div className="w-full sr-only lg:not-sr-only h-full z-2 absolute bg-linear-to-t from-transparent to-accent-foreground"></div>
-        
-        <div className="lg:flex hidden absolute z-2 h-full backdrop-blur-2xl pointer-events-none">
-          <div className="h-full z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30] opacity-30"></div>
-          {Array.from({ length: numberOfIterations || 50 }, (_, index) => ( 
-            <div key={index} className="h-full z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30] opacity-30"></div>
+    <div className="  rounded-lg h-full flex items-center justify-center overflow-hidden ">
+    <div className={cn(" rounded-lg  w-full relative max-w-lg lg:max-w-[76em] overflow-hidden flex flex-col h-full lg:flex-row shadow-xl" , className)}>
+      <div className="w-full h-full z-2 absolute bg-linear-to-t from-transparent to-black"></div>
+      <div className="flex absolute z-2  h-full overflow-hidden backdrop-blur-2xl ">
+        <div className="h-full z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30] opacity-30 overflow-hidden"></div>
+          {Array.from({ length: numberOfIterations || 10}, (_, index) => ( 
+
+        <div key={index} className="h-full z-2 w-[4rem] bg-linear-90 from-[#ffffff00] via-[#000000] via-[69%] to-[#ffffff30]  opacity-30 overflow-hidden"></div>
           ))}
-        </div>
-        
-        <div className="w-[15rem] h-[15rem] bg-primary absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
+    
+      </div>
+      <div className="w-[15rem] h-[15rem] bg-primary absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
+        <div className="w-[8rem] h-[5rem] bg-background absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
         <div className="w-[8rem] h-[5rem] bg-background absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
  
-        <div className="bg-accent-foreground lg:flex hidden text-accent p-8 lg:p-12 lg:w-1/2 relative rounded-bl-3xl">
-          <h1 className="text-2xl lg:text-3xl max-w-md font-medium leading-tight z-10 tracking-tight relative">
-            {quote}
-          </h1>
-        </div>
- 
-        {/* FIXED: Removed overflow-hidden, added overflow-visible for form area */}
-        <main className={cn(
-          "p-8 lg:w-1/2 justify-center items-center min-h-dvh h-full content-center relative bg-background z-[100] text-secondary-foreground overflow-visible"
-        )}>
+      <div className="bg-black text-white p-8 lg:p-12 lg:w-1/2 relative rounded-bl-3xl  overflow-hidden">
+        <h1 className="text-2xl lg:text-3xl font-medium leading-tight z-10 tracking-tight relative">
+          {quote}
+        </h1>
+      </div>
+
+      <main className={cn("p-8 lg:w-1/2 justify-center items-center  h-full content-center relative bg-background z-[100] text-secondary-foreground overflow-visible " )}>
           <div className="justify-center max-w-sm flex m-auto flex-col h-full">
             <div className="flex flex-col items-left mb-8">
               <div className={cn("relative mb-4")}>

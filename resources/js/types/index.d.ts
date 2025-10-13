@@ -110,7 +110,7 @@ export interface sidebarType {  items: {
 export interface OptionItem {
   value: string;
   label: string;
-  icon?: LucideIcon;
+  icon: LucideIcon;
   subLabel?: string;
   description?: string;
   image?: string;

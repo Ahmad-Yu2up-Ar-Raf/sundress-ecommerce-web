@@ -54,7 +54,7 @@ function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"
         {title}
         {props.label && (
 
-        <Badge className=' ml-3  font-bold    scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
+        <Badge size={"lg"} className=' ml-3  font-bold text-primary-foreground  rounded-lg   scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
          {props.label}
         </Badge>
         )}
@@ -102,17 +102,23 @@ function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"
           }}
         >
           <CarouselContent className="mx-4 relative cursor-grab  2xl:mr-[max(0rem,calc(50vw-700px))]">
-            {props.data!.map((item : ProductsSchema , i : number) => (
-              <CarouselItem
-                key={i}
-                className={cn("max-w-[210px]  relative z-40  md:max-w-[300px]" , 
+            {props.data!.map((item : ProductsSchema , i : number) => 
+            {
 
-  i > 0 ? 'pl-1.5' : 'pl-0',
-                )}
-              >
-                 <ProductCard label={props.tag}className=' min-h-[17em] ' Product={item}/>
-              </CarouselItem>
-            ))}
+              return(
+                <CarouselItem
+                  key={i}
+                  className={cn("max-w-[210px]  relative z-40  md:max-w-[300px]" , 
+  
+    i > 0 ? 'pl-1.5' : 'pl-0',
+                  )}
+                >
+                   <ProductCard key={i} label={props.tag}className=' min-h-[17em] ' Product={item}/>
+                </CarouselItem>
+              )
+            }
+            
+            )}
           
           </CarouselContent>
             <CarouselPrevious  />

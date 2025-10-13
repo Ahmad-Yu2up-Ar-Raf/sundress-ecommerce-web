@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Enums\CategoryProductsStatus;
 use App\Enums\ProductStatus;
+use App\Observers\ProductsObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
+#[ObservedBy(ProductsObserver::class)]
 class Products extends Model
 {
      use HasFactory;
@@ -21,8 +23,8 @@ class Products extends Model
         'description',
         'status',
         'stock',
-        'thumbnail_image',
-        'main_image',
+        'cover_image',
+      
         'price',
         'city',
         'country',
@@ -33,8 +35,8 @@ class Products extends Model
 
     protected $casts = [
         'name' => 'string',
-        'thumbnail_image' => 'string',
-        'main_image' => 'string',
+        'cover_image' => 'string',
+        
         'free_shipping' => 'boolean',
         'city' => 'string',
         'country' => 'string',

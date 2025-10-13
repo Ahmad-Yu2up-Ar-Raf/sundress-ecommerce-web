@@ -76,7 +76,7 @@ const data: DataShape = {
 
   seller: [
     { title: "Dashboard", url: "/seller", icon: LayoutDashboardIcon, isActive: false },
-    { title: "Products", url: "/seller/Products", icon: BoxIcon, isActive: false },
+    { title: "Products", url: "/seller/products", icon: BoxIcon, isActive: false },
     { title: "Orders", url: "/seller/Orders", icon: ShoppingBag, isActive: false },
 
   ],

@@ -15,8 +15,8 @@ import {
   UseFormReturn
 } from "react-hook-form"
 
-import { CountrySelector, ProvinceSelector } from '@/components/ui/fragments/custom-ui/location-input';
-import { PhoneInput } from '@/components/ui/fragments/custom-ui/phone-input';
+import { CountrySelector, ProvinceSelector } from '@/components/ui/fragments/custom-ui/input/location-input';
+import { PhoneInput } from '@/components/ui/fragments/custom-ui/input/phone-input';
 
 interface TaskFormProps<T extends FieldValues>
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {

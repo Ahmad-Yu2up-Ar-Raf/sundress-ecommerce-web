@@ -41,44 +41,9 @@ const socialIcons = [
 export default function SiteFooter() {
   return (
     <footer className="bg-background mt-7 border-t text-foreground relative w-full pt-20 pb-10">
-      {/* <div className="pointer-events-none absolute top-0 left-0 z-0 h-full w-full overflow-hidden">
-        <div className="bg-primary absolute top-1/3 left-1/4 h-64 w-64 rounded-full opacity-10 blur-3xl" />
-        <div className="bg-primary absolute right-1/4 bottom-1/4 h-80 w-80 rounded-full opacity-10 blur-3xl" />
-      </div> */}
+
       <div className="relative z-10  container px-5 sm:px-6 lg:px-14">
-        {/* <div className="glass-effect mb-16 rounded-2xl p-8 md:p-12">
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <div>
-              <h3 className="mb-4 text-2xl font-bold md:text-3xl">
-                Stay ahead with Acme Inc.
-              </h3>
-              <p className="text-foreground/70 mb-6">
-                Join thousands of professionals who trust Acme Inc. for
-                innovative business solutions.
-              </p>
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="border-foreground/20 bg-background focus:ring-primary rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none"
-                />
-                <button className="bg-primary text-primary-foreground shadow-primary/20 hover:shadow-primary/30 rounded-lg px-6 py-3 font-medium shadow-lg transition">
-                  Subscribe Now
-                </button>
-              </div>
-            </div>
-            <div className="hidden justify-end md:flex">
-              <div className="relative">
-                <div className="bg-primary/20 absolute inset-0 rotate-6 rounded-xl" />
-                <img
-                  src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=320&h=240&q=80"
-                  alt="Acme Inc. team"
-                  className="relative w-80 rounded-xl object-cover"
-                />
-              </div>
-            </div>
-          </div>
-        </div> */}
+      
         <div className="mb-16 grid  grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-4">
           <div className="col-span-2 lg:col-span-1">
             <div className="mb-6 flex items-center space-x-2">

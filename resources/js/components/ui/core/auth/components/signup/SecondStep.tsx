@@ -15,7 +15,7 @@ import {
   UseFormReturn
 } from "react-hook-form"
 ;
-import { PasswordInput } from '@/components/ui/fragments/custom-ui/password-input';
+import { PasswordInput } from '@/components/ui/fragments/custom-ui/input/password-input';
 
 interface TaskFormProps<T extends FieldValues, >
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {

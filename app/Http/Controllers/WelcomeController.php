@@ -67,12 +67,12 @@ class WelcomeController extends Controller
     }
 
 
-    $products = $query->orderBy($order_by, 'desc')
+    $products = $query->orderBy($order_by, 'asc')
         ->paginate($perPage, ['*'], 'page', $page);
     $productsBestRating = $query->orderBy('reviews_avg_star_rating', 'desc')
         ->paginate($perPage, ['*'], 'page', $page);
         
-    $productsFreeShipping = $query->orderBy($order_by, 'desc')->where('free_shipping', true)
+    $productsFreeShipping = $query->orderBy($order_by, 'asc')->where('free_shipping', true)
         ->paginate($perPage, ['*'], 'page', $page);
 
 
@@ -87,8 +87,8 @@ class WelcomeController extends Controller
 
         return [
             ...$item->toArray(),
-            'thumbnail_image' => $item->thumbnail_image ? url($item->thumbnail_image) : null,
-            'main_image' => $item->main_image ? url($item->main_image) : null,
+            'cover_image' => $item->cover_image ? url($item->cover_image) : null,
+         
             'is_whislisted' => $isWishlisted ? $isWishlisted : null,
         ];
     });
@@ -104,8 +104,8 @@ class WelcomeController extends Controller
 
         return [
             ...$item->toArray(),
-            'thumbnail_image' => $item->thumbnail_image ? url($item->thumbnail_image) : null,
-            'main_image' => $item->main_image ? url($item->main_image) : null,
+            'cover_image' => $item->cover_image ? url($item->cover_image) : null,
+          
             'is_whislisted' => $isWishlisted ? $isWishlisted : null,
         ];
     });
@@ -121,8 +121,8 @@ class WelcomeController extends Controller
 
         return [
             ...$item->toArray(),
-            'thumbnail_image' => $item->thumbnail_image ? url($item->thumbnail_image) : null,
-            'main_image' => $item->main_image ? url($item->main_image) : null,
+            'cover_image' => $item->cover_image ? url($item->cover_image) : null,
+           
             'is_whislisted' => $isWishlisted ? $isWishlisted : null,
         ];
     });

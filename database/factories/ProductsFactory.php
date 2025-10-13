@@ -27,8 +27,8 @@ class ProductsFactory extends Factory
             'city' => $this->faker->city(),
             'country' => $this->faker->country(),
             'stock' => $this->faker->numberBetween(0, 100),
-            'main_image' => ImageHelper::random(700, 800),
-            'thumbnail_image' => ImageHelper::random(700, 800),
+        
+            'cover_image' => ImageHelper::random(700, 800),
             'showcase_images' => [
                 ImageHelper::random(700, 800),
                 ImageHelper::random(700, 800),

@@ -1,0 +1,90 @@
+import { OptionItem } from "@/types";
+import {
+  Clock,
+  CreditCard,
+  CircleX,
+  Package,
+  Truck,
+  CheckCircle2,
+  Undo2,
+  Hourglass,
+  CircleDot,
+} from "lucide-react";
+
+export enum OrderStatus {
+  Pending = "pending",
+  Paid = "paid",
+  Unpaid = "unpaid",
+  Processing = "processing",
+  Shipped = "shipped",
+  Delivered = "delivered",
+  Cancelled = "cancelled",
+  Refunded = "refunded",
+}
+
+export const OrderStatusOptions: OptionItem[] = [
+  {
+    value: OrderStatus.Pending,
+    label: "Pending",
+    description: "Waiting for payment confirmation.",
+    icon: Clock,
+    color: "text-yellow-500",
+    bgColor: "bg-yellow-100",
+  },
+  {
+    value: OrderStatus.Paid,
+    label: "Paid",
+    description: "Payment successfully received.",
+    icon: CreditCard,
+    color: "text-green-600",
+    bgColor: "bg-green-100",
+  },
+  {
+    value: OrderStatus.Unpaid,
+    label: "Unpaid",
+    description: "Payment not yet received.",
+    icon: CircleDot,
+    color: "text-red-500",
+    bgColor: "bg-red-100",
+  },
+  {
+    value: OrderStatus.Processing,
+    label: "Processing",
+    description: "Order is being prepared.",
+    icon: Hourglass,
+    color: "text-blue-500",
+    bgColor: "bg-blue-100",
+  },
+  {
+    value: OrderStatus.Shipped,
+    label: "Shipped",
+    description: "Order has been shipped to the customer.",
+    icon: Truck,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-100",
+  },
+  {
+    value: OrderStatus.Delivered,
+    label: "Delivered",
+    description: "Order successfully delivered.",
+    icon: CheckCircle2,
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-100",
+  },
+  {
+    value: OrderStatus.Cancelled,
+    label: "Cancelled",
+    description: "Order was cancelled by user/admin.",
+    icon: CircleX,
+    color: "text-gray-500",
+    bgColor: "bg-gray-100",
+  },
+  {
+    value: OrderStatus.Refunded,
+    label: "Refunded",
+    description: "Order payment refunded to the customer.",
+    icon: Undo2,
+    color: "text-purple-600",
+    bgColor: "bg-purple-100",
+  },
+];

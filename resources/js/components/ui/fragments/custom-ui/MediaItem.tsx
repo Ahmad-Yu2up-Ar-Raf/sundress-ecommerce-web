@@ -132,13 +132,13 @@ const MediaItem = ({ webViewLink, className, mediaType = "image", onClick, style
     }
 
     return (
-        <div className={`${className}  h-full relative `} style={style}>
+        <div className={`${className}  flex justify-center h-full relative `} style={style}>
             <img
                 src={webViewLink}
                 alt={webViewLink}
- width={1000}
- height={10000}
-                className="h-full  object-cover  object-top absolute  w-auto"
+                width={1000}
+                height={10000}
+                className="h-full m-auto   object-cover  object-top absolute   w-fit"
                 onClick={onClick}
                 loading="lazy"
                 onLoad={handleImageLoad}

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductsStore;
 use App\Models\Products;
 use App\Models\Whishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 class ProductsController extends Controller
 {
     /**
@@ -19,11 +23,10 @@ public function index(Request $request)
     $page = $request->input('page', 1);
     $status = $request->input('status');
     $category = $request->input('category');
-    $order_by = $request->input('order_by') ?? "created_at";
+
     $free_shipping = $request->input('free_shipping');
 
-    $query = Products::where('status', 'available')
-        ->where('stock', '>', 0)->withCount("reviews")->withCount("orders")->withAvg("reviews", "star_rating");
+    $query = Products::where('user_id', Auth::id())->withCount("reviews")->withCount("orders")->withAvg("reviews", "star_rating");
 
 
     $user = Auth::user();
@@ -66,7 +69,7 @@ public function index(Request $request)
     }
 
 
-    $products = $query->orderBy($order_by, 'desc')
+    $products = $query->orderBy('created_at', 'asc')
         ->paginate($perPage, ['*'], 'page', $page);
 
 
@@ -81,13 +84,12 @@ public function index(Request $request)
 
         return [
             ...$item->toArray(),
-            'thumbnail_image' => $item->thumbnail_image ? url($item->thumbnail_image) : null,
-            'main_image' => $item->main_image ? url($item->main_image) : null,
+            'cover_image' => $item->cover_image ? url($item->cover_image) : null,
+          
             'is_whislisted' => $isWishlisted ? $isWishlisted : null,
         ];
     });
-
-    return response()->json([
+    return Inertia::render('seller/products',[
         'status' => true,
         'message' => 'Products retrieved successfully',
         'data' => $products->items() ?? [],
@@ -101,10 +103,11 @@ public function index(Request $request)
                 'currentPage' => $products->currentPage(),
                 'perPage' => $products->perPage(),
                 'lastPage' => $products->lastPage(),
-                     'hasMore' => $products->currentPage() < $products->lastPage(),
+                'hasMore' => $products->currentPage() < $products->lastPage(),
             ],
         ],
-    ], 200);
+    ]);
+
 }
 
     /**
@@ -118,9 +121,40 @@ public function index(Request $request)
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductsStore $request)
     {
-        //
+        try {
+
+            
+                    $productPath = null;
+    if (request()->hasFile('cover_image')) {
+            $file = request()->file('cover_image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('product/', $filename, 'public');
+            $productPath = 'storage/' . $path;
+        }
+      
+            $product = Products::create([
+                ...$request->validated(),
+                'user_id' => Auth::id(),
+                    'cover_image' => $productPath,
+            ]);
+
+            $fileCount = count($product->files ?? []);
+            $message = $fileCount > 0 
+                ? "Product berhasil ditambahkan dengan {$fileCount} file."
+                : "Product berhasil ditambahkan.";
+
+            return redirect()->route('seller.products.index')
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+            Log::error('Product creation error: ' . $e->getMessage());
+            
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -150,8 +184,93 @@ public function index(Request $request)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Products $products)
+    public function destroy(Request $request)
     {
-        //
+        
+        $ids = $request->input('ids');
+        if (empty($ids)) {
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Tidak ada event yang dipilih untuk dihapus.');
+        }
+
+        // Validasi apakah semua ID milik user yang sedang login
+        $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
+        if ($products->count() !== count($ids)) {
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Unauthorized access atau event tidak ditemukan.');
+        }
+
+        try {
+            DB::beginTransaction();
+              
+            // SOLUSI: Delete satu per satu agar Observer terpicu
+            foreach ($products as $event) {
+                if ($event->product && Storage::disk('public')->exists(str_replace('storage/', '', $event->product))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $event->product));
+                }
+        
+                $event->delete(); // Ini akan trigger observer products
+            }
+            
+            DB::commit();
+
+            $deletedCount = $products->count();
+            return redirect()->route('seller.products.index')
+                ->with('success', "{$deletedCount} Products berhasil dihapus beserta semua file terkait.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Products deletion error: ' . $e->getMessage());
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
+        }
+    }
+
+
+
+    
+    public function statusUpdate(Request $request)
+    {
+        
+        $ids = $request->input('ids');
+        $value = $request->input('value');
+        $colum = $request->input('colum');
+
+        if (empty($ids)) {
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Tidak ada event yang dipilih untuk dihapus.');
+        }
+
+        // Validasi apakah semua ID milik user yang sedang login
+        $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
+        if ($products->count() !== count($ids)) {
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Unauthorized access atau event tidak ditemukan.');
+        }
+
+        try {
+            DB::beginTransaction();
+              
+             foreach ($products as $event) {
+                $event->update([$colum => $value]);
+            }
+
+   
+
+            
+            
+            DB::commit();
+            
+
+            $deletedCount = $products->count();
+            return redirect()->route('seller.products.index')
+                ->with('success', "{$deletedCount} Products berhasil dihapus beserta semua file terkait.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Products deletion error: ' . $e->getMessage());
+            return redirect()->route('seller.products.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
+        }
     }
 }

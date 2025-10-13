@@ -87,13 +87,7 @@ $totalRevenue = Orders::whereIn('product_id', $queryProductsIds)
     // $topProducts->through(function ($item) {
        
 
-    //     return [
-    //         ...$item->toArray(),
-    //         'thumbnail_image' => $item->thumbnail_image ? url($item->thumbnail_image) : null,
-    //         'main_image' => $item->main_image ? url($item->main_image) : null,
-          
-    //     ];
-    // });
+
 
 
           return Inertia::render('seller/index',[

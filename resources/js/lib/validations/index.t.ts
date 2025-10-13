@@ -1,6 +1,7 @@
 
-import { CategoryProductsValues } from "@/config/enum/CategoryProductsStatus";
-import { ProductStatusValues } from "@/config/enum/ProducStatus";
+import { CategoryProductsValues } from "@/config/enums/CategoryProductsStatus";
+import { ProductStatusValues } from "@/config/enums/ProductsStatus";
+
 import * as z from "zod";
 
 
@@ -52,22 +53,22 @@ export const productsSchema = z.object({
     id: z.number().optional(),
   name: z.string().min(4, "Name is required"),
   city: z.string().optional(),
-  country: z.string().optional(),
+  country: z.string(),
+  province: z.string().optional(),
   currency: z.string().optional(),
-  main_image: imageSchema,
-  thumbnail_image: imageSchema,
+  free_shipping : z.boolean().optional(),
+  cover_image: imageSchema,
   description: z.string().optional(),
   stock: z.coerce.number().min(2, "Harga is required"),
    is_whislisted: z.boolean().optional(),
-  category: z.enum(CategoryProductsValues).optional(),
-
+  category: z.enum(CategoryProductsValues),
   created_at: z.coerce.date().optional(),
   updated_at: z.coerce.date().optional(),
     reviews_count:  z.number().optional(),
     orders_count:  z.number().optional(),
     reviews_avg_star_rating:  z.number().optional(),
      price: z.coerce.number().min(0.001, "Harga is required"),
-   status: z.enum(ProductStatusValues).optional(),
+   status: z.enum(ProductStatusValues),
 
  showcase_images: z
   .array(FileWithPreview)

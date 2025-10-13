@@ -17,6 +17,7 @@ import { Link } from "@inertiajs/react";
 // import { ThemeSelector } from "@/components/ui/core/Theme/theme-selector";
 // import { CommandDialogDemo } from "../../siteheader/component/command-search";
 import { Appearance, useAppearance } from '@/hooks/use-appearance';
+import { Button } from "@/components/ui/fragments/shadcn-ui/button";
 export function NavSecondary({
   isMobile,
   items,
@@ -108,10 +109,10 @@ export function NavSecondary({
                 size="sm" 
                 tooltip={"Theme"}
               >
-                <button onClick={handleThemeToggle}>
+                <Button onClick={handleThemeToggle}>
                   <ModeToggle />
                   <span>Tema</span>
-                </button>
+                </Button>
               </SidebarMenuButton>
             </SidebarMenuItem>
             

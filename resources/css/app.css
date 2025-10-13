@@ -7,8 +7,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
-
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -124,6 +122,28 @@
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.30);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --hu-font-geist: var(--font-geist);
+  --hu-font-jetbrains: var(--font-jetbrains-mono);
+  --card-radius: 10px;
+  --hu-background: hsl(0, 0%, 100%);
+  --hu-foreground: hsl(0, 0%, 14%);
+  --hu-card: hsl(0, 0%, 99%);
+  --hu-card-foreground: hsl(0, 0%, 14%);
+  --hu-primary: hsl(235, 100%, 60%);
+  --hu-primary-foreground: hsl(0, 0%, 98%);
+  --hu-secondary: hsl(0, 0%, 97%);
+  --hu-secondary-foreground: hsl(0, 0%, 20%);
+  --hu-muted: hsl(0, 0%, 97%);
+  --hu-muted-foreground: hsl(0, 0%, 56%);
+  --hu-accent: hsl(0, 0%, 96%);
+  --hu-accent-foreground: hsl(0, 0%, 20%);
+  --hu-destructive: hsl(9, 96%, 47%);
+  --hu-destructive-foreground: hsl(0, 0%, 98%);
+  --hu-border: hsl(0, 0%, 92%);
+  --hu-input: hsl(0, 0%, 100%);
+  --hu-ring: hsl(0, 0%, 71%);
+  --color-fd-background: hsl(var(--hu-background));
+  --color-fd-card: hsl(var(--hu-background));
 }
 
 .dark {
@@ -177,6 +197,25 @@
   --shadow-lg: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 4px 6px -1px hsl(28 13% 20% / 0.12);
   --shadow-xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.12), 2px 8px 10px -1px hsl(28 13% 20% / 0.12);
   --shadow-2xl: 2px 3px 5px 0px hsl(28 13% 20% / 0.30);
+  --hu-background: hsl(0, 0%, 7%);
+  --hu-foreground: hsl(0, 0%, 100%);
+  --hu-card: hsl(0, 0%, 9%);
+  --hu-card-foreground: hsl(0, 0%, 100%);
+  --hu-primary: hsl(235, 100%, 60%);
+  --hu-primary-foreground: hsl(0, 0%, 98%);
+  --hu-secondary: hsl(0, 0%, 15%);
+  --hu-secondary-foreground: hsl(0, 0%, 100%);
+  --hu-muted: hsl(0, 0%, 15%);
+  --hu-muted-foreground: hsl(0, 0%, 71%);
+  --hu-accent: hsl(0, 0%, 15%);
+  --hu-accent-foreground: hsl(0, 0%, 100%);
+  --hu-destructive: hsl(0, 84%, 50%);
+  --hu-destructive-foreground: hsl(0, 0%, 98%);
+  --hu-border: 0, 0%, 100%, 10%;
+  --hu-input: 0, 0%, 100%, 5%;
+  --hu-ring: hsl(0, 0%, 56%);
+  --color-fd-background: hsl(var(--hu-background));
+  --color-fd-card: hsl(var(--hu-background));
 }
 
 @theme inline {
@@ -230,8 +269,38 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --color-color-fd-card: var(----color-fd-card);
+  --color-color-fd-background: var(----color-fd-background);
+  --color-hu-ring: var(----hu-ring);
+  --color-hu-input: var(----hu-input);
+  --color-hu-border: var(----hu-border);
+  --color-hu-destructive-foreground: var(----hu-destructive-foreground);
+  --color-hu-destructive: var(----hu-destructive);
+  --color-hu-accent-foreground: var(----hu-accent-foreground);
+  --color-hu-accent: var(----hu-accent);
+  --color-hu-muted-foreground: var(----hu-muted-foreground);
+  --color-hu-muted: var(----hu-muted);
+  --color-hu-secondary-foreground: var(----hu-secondary-foreground);
+  --color-hu-secondary: var(----hu-secondary);
+  --color-hu-primary-foreground: var(----hu-primary-foreground);
+  --color-hu-primary: var(----hu-primary);
+  --color-hu-card-foreground: var(----hu-card-foreground);
+  --color-hu-card: var(----hu-card);
+  --color-hu-foreground: var(----hu-foreground);
+  --color-hu-background: var(----hu-background);
+  --card-radius: var(----card-radius);
+  --radius: var(----radius);
+  --hu-font-jetbrains: var(----hu-font-jetbrains);
+  --hu-font-geist: var(----hu-font-geist);
+  @keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+        }
+  100% {
+    transform: translateX(100%);
+        }
+    }
 }
-
 
 @layer base {
   * {
@@ -241,28 +310,27 @@
     @apply bg-background overflow-x-hidden    pointer-events-auto!  font-sans text-foreground;
   }
 
-
  /* Updated scrollbar styles */
   ::-webkit-scrollbar {
     width: 1px;
     height: 1px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 1px;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background-color: oklch(0.2741 0.0055 286.03);
     border-radius: 5px;
     border: 1px solid transparent;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background-color: #666666;
   }
-  
+
   /* Firefox */
   * {
     scrollbar-width: thin;
@@ -273,7 +341,7 @@
   .dark *::-webkit-scrollbar-thumb {
     background-color:oklch(0.2741 0.0055 286.03);
   }
-  
+
   .dark * {
     scrollbar-color:oklch(0.2741 0.0055 286.03) transparent;
   }
@@ -289,9 +357,9 @@
   }
 
   @media (width >= 1400px) {
-    max-width: 1260px;
+    max-width: 1280px;
   }
-  
+
   @media (max-width: 640px) {
     @apply px-1;
   }
@@ -329,4 +397,13 @@
 ::view-transition-new(root) {
   /* Apply the reveal animation */
   animation: reveal 0.4s ease-in-out forwards;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import { Toaster } from '@/components/ui/fragments/shadcn-ui/sonner';
+
 
 import { AnimatePresence } from 'framer-motion';
 import SiteFooter from '../header/SiteFooter';
-import { SiteHeader } from '../header/SiteHeader';
+
 import ReactLenis from 'lenis/react'
 
 
@@ -17,6 +17,7 @@ import { TooltipProvider } from '@/components/ui/fragments/animate-ui/base/toolt
 ;
 import { ModalProvider } from './ContextProvider';
 import Neslatter from '@/components/ui/fragments/custom-ui/Neslatter';
+import SignInModal from '../../auth/components/SignInModal';
 
 
 
@@ -36,25 +37,25 @@ const currentPath = window.location.pathname;
 
                 <AnimatePresence mode='wait'>
                  <TooltipProvider>
-{/* 
-      <SignInModal/> */}
-                {  !isDisabled  &&  (
+
+      <SignInModal/>
+                {/* {  !isDisabled  &&  (
 
                        <SiteHeader 
            
                         key="nav-content-header" 
                        />
-                )}
+                )} */}
 
                
                     <div 
                         key="main-content" 
                         className={cn("relative  min-h-dvh w-full overflow-hidden  content-center" ,
 
-                            !isDisabled  && '  py-5 '
+                          
                         )}
                     >
-                        <div className={cn("mx-auto flex flex-col gap-13   lg:gap-20   h-full w-full", 
+                        <div className={cn("mx-auto flex flex-col gap-13   lg:gap-25   h-full w-full", 
 
 
 

@@ -8,7 +8,7 @@ function Neslatter() {
   return (
     <div className=" px-5  py-20">
 
-<div className="w-full max-w-[1155px] grid lg:grid-cols-2  rounded-xl bg-primary/20 relative  m-auto   ">
+<div className="w-full max-w-[1190px] grid lg:grid-cols-2  rounded-xl bg-primary/20 relative  m-auto   ">
     {/* <MediaItem webViewLink='https://koro.imgix.net/media/5b/07/fc/1687174556/Newsletter-Background-Image.jpg'
     className=' absolute w-full h-full '
     /> */}
@@ -18,7 +18,7 @@ function Neslatter() {
             <h1 className="text-4xl leading-9 font-bold">
           Make Your Inbox Tasty
             </h1>
-            <p className="text-balance text-xs   font-medium   text-black">
+            <p className="text-balance text-xs   font-medium   text-accent-foreground">
             Never Miss Out Again! Stay up to date with our newsletter from now on.
             </p>
           </div>
@@ -33,13 +33,13 @@ function Neslatter() {
               />
               <Button type="submit" className=' text-xs '>Subscribe</Button>
             </div>
-            <p className="text-[10.5px] text-accent-foreground/80">
+            <p className="text-[10.5px] text-accent-foreground">
   You hereby agree to receive our newsletter. Consent can be revoked at any time using, for example, the unsubscribe link in the newsletter. Find more information in our 
   
   
   <Link
   href={'/'}
-  className='  text-black underline'
+  className='  text-muted-foreground underline'
   >
    {" "}  data protection information.
   </Link>

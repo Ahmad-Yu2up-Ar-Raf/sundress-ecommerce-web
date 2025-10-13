@@ -73,7 +73,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
 return (
      <>
-      <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in">
+      <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" className='lg:max-w-none h-dvh' description="Enter your email and password below to log in" >
          
   <LoginForms  form={form} onSubmit={onSubmit} isPending={loading}/>
 

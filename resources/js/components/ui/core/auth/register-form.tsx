@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/fragments/shadcn-ui/form"
 import { Input } from '@/components/ui/fragments/shadcn-ui/input';
-import { PasswordInput } from '@/components/ui/fragments/custom-ui/password-input';
+import { PasswordInput } from '@/components/ui/fragments/custom-ui/input/password-input';
 import { Button } from '@/components/ui/fragments/shadcn-ui/button';
 import { LoaderIcon } from 'lucide-react';
 

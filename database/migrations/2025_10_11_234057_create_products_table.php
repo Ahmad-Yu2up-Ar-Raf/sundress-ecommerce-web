@@ -27,8 +27,7 @@ return new class extends Migration
     $table->unsignedBigInteger('price')->default(0);
     $table->char('currency', 3)->default('IDR');
     $table->integer('stock')->default(1);
-    $table->string('thumbnail_image');
-    $table->string('main_image');
+    $table->string('cover_image');
     $table->json('showcase_images')->nullable();
         });
     }
