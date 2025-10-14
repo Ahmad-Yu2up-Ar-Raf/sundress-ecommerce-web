@@ -27,7 +27,7 @@ function ProductsBestSeller() {
   useEffect(() => {
     (async () => {
       const res = await getProducts({ params: {  
-         order_by: "orders_count"
+         order_by: "orderItem"
       }});
       if (res) setData(res);
       setLoading(false);

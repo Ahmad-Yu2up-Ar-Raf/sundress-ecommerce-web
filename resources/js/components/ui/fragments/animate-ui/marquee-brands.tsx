@@ -158,7 +158,7 @@ export default function LogoCloudDemoPage() {
                     <div className="flex flex-col gap-5 items-center md:flex-row">
                         {/* На экранах 'md' и шире этот блок будет слева с линией */}
                         <div className="flex-shrink-0  md:pr   w-fit sr-only text-lg  md:not-sr-only text-center md:text-right md:max-w-44 md:border-r md:border-gray-600 dark:md:border-gray-800 md:pr-10">
-                            <p className="font-bold  leading-6   text-gray-600 w-fit dark:text-gray-400">
+                            <p className="font-bold  leading-6    w-fit  text-accent-foreground">
                                 The best are alredy here
                             </p>
                         </div>

@@ -13,7 +13,7 @@ export type PagePropsSellerOverview = {
 
 export interface TopProducts {
     name: string;
-    orders_count: number;
+    orderItem_count: number;
 }
 export interface ReportsSeller {
   totalProducts: number;
@@ -78,7 +78,7 @@ export interface SharedData {
 export interface User {
     id: number;
     whishlist_count?: number;
-    order_count?: number;
+    order?: ProductsSchema[];
     name: string;
     email: string;
     avatar?: string;

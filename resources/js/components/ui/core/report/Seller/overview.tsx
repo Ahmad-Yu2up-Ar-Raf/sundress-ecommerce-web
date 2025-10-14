@@ -72,7 +72,7 @@ const dataCards: DataCard[] = [
   title="Top 5 Best-Selling Products"
   description="Displaying your top 5 products with the highest sales"
   footerText="Data based on your products"
-  subFooter="Showing top 5 products with the most expensive orders_count"
+  subFooter="Showing top 5 products with the most expensive orderItem"
   
   className="your-custom-class"
 />

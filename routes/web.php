@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BuyyerController;
+use App\Http\Controllers\CartItemsController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OverviewController;
 use App\Http\Controllers\ProductsController;
@@ -21,8 +22,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
        
     ->name('unwhistlist');
     Route::middleware(['role:buyer'])->prefix('buyer')->name('buyer.')->group(function () {
-
+     
+        
         Route::resource('/', BuyyerController::class);
+    });
+    Route::middleware(['role:buyer'])->prefix('cart')->name('cart.')->group(function () {
+     
+        Route::post('/add', [CartItemsController::class, 'add'])->name('cart.add');
+        Route::patch('/{cartItem}', [CartItemsController::class, 'update'])->name('cart.update');
+        Route::delete('/{cartItem}', [CartItemsController::class, 'destroy'])->name('cart.destroy');
+      
     });
     Route::middleware(['role:buyer'])->prefix('checkout')->name('checkout.')->group(function () {
 

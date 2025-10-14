@@ -103,9 +103,54 @@ if(user != null){
       toast.error("Network error");
     } 
   });
+}else {
+
+  onClick()
+
 }
 
-onClick()
+ 
+
+
+  }
+     function handleCart() {
+
+if(user != null){
+
+  setLoading(true)
+  startTransition(async () => {
+    try {
+
+                 toast.loading("Adding...", { id: "cart"});
+         router.post(route('cart.cart.add'),  data, { 
+           preserveScroll: true,
+           preserveState: true,
+           forceFormData: true, 
+           onSuccess: () => {
+   
+          
+             toast.success("Product added to cart", { id: "cart"});
+             setLoading(false);
+           },
+           onError: (error) => {
+             console.error("Submit error:" , error);
+           toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "cart"});
+             setLoading(false);
+             
+           }
+         });
+   
+    } catch (error) {
+      console.log(error)
+      toast.error("Network error");
+    } 
+  });
+}else {
+
+  onClick()
+
+}
+
  
 
 
@@ -125,15 +170,15 @@ onClick()
     <Tooltip>
 
       <TooltipTrigger   onClick={handleWhishlist}   render={  
-        <Button  size={"sm"} variant={"ghost"} className={cn("  hover:bg-primary    z-40    text-accent   md:py-5   rounded-full" ,
+        <Button  size={"sm"} variant={"ghost"} className={cn("  hover:bg-primary    z-40       md:py-5     rounded-full" ,
 
 
           ( Product.is_whislisted ) ? 'hover:text-primary  transition-all duration-300   ease-out   [&_svg]:fill-primary hover:[&_svg]:fill-none  hover:[&_svg]:text-accent' : ''
         )}>
 
-  <Heart  className={cn("     transition-all duration-300 ease-out " ,
+  <Heart  className={cn("    border-white   transition-all duration-300 ease-out " ,
 
-( Product.is_whislisted ) ? ' size-6 text-primary ' : 'size-5 text-white dark:text-black'
+( Product.is_whislisted ) ? ' size-6 text-primary ' : 'size-5 text-white'
   )}/>
 
 
@@ -148,15 +193,15 @@ onClick()
     </Tooltip>
           <Tooltip>
 
-      <TooltipTrigger render={
-          <Button  className="    lg:size-12    relative z-40 size-11 rounded-full ">
+      <TooltipTrigger onClick={handleCart} render={
+          <Button  className="  text-white   lg:size-12    relative z-40 size-11 rounded-full ">
   <ShoppingCart className=" size-5.5 "/>
 </Button>} />
       <TooltipPanel
        
       >
         
-        <p>Buy Now</p>
+        <p>Add to cart</p>
       </TooltipPanel>
    
     
@@ -209,9 +254,9 @@ onClick()
       >
 
       <CardHeader   className=" pl-0 py-0 pr-2.5 bg-background ">
-        <Badge  variant={"outline"} className="  w-fit lg:text-sm border-0 p-0">
+        <Badge  variant={"outline"} className="   text-accent-foreground w-fit lg:text-sm border-0 p-0">
         <Star className=" size-4 fill-primary text-primary"/>  <span className=" font-medium">{ Product.reviews_avg_star_rating != null ?  Math.round(Product.reviews_avg_star_rating! * 10) / 10 : 0.0 }</span>
-<span className=" text-muted-foreground">({Product.reviews_count})</span>
+<span className="">({Product.reviews_count})</span>
         </Badge>
         <CardTitle className=" lg:text-lg leading-6 line-clamp-2">{Product.name} </CardTitle>
         {/* <CardDescription>
@@ -224,7 +269,7 @@ onClick()
         <div className=" flex flex-col">
 
        <h1 className=" text-left     font-semibold  lg:text-lg ">{Price}</h1>
-       <p className="   md:text-sm text-xs text-accent-foreground/90 line-clamp-1">{Product.orders_count} Product terjual </p>
+       <p className="   md:text-sm text-xs text-accent-foreground/90 line-clamp-1">{Product.order_item_count || 0} Sold </p>
         </div>
         {/* <Button variant="outline" className="w-full">
           Login with Google

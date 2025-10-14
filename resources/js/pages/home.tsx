@@ -23,7 +23,7 @@ export default function Pages({ ...props }: ApiResponse & {
   dataBestRating : ProductsSchema[]
 } ) {
 
-
+console.log(props)
 
 
   return (

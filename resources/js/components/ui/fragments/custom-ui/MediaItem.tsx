@@ -138,7 +138,7 @@ const MediaItem = ({ webViewLink, className, mediaType = "image", onClick, style
                 alt={webViewLink}
                 width={1000}
                 height={10000}
-                className="h-full m-auto   object-cover  object-top absolute   w-fit"
+                className="h-full m-auto   object-cover  object-center absolute   w-full"
                 onClick={onClick}
                 loading="lazy"
                 onLoad={handleImageLoad}

@@ -42,7 +42,7 @@ data: ProductsSchema[]
 
 
 function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"  , ...props }: componentsProps) {
-
+   
   const isMobile = useIsMobile()
 
 
@@ -54,7 +54,7 @@ function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"
         {title}
         {props.label && (
 
-        <Badge size={"lg"} className=' ml-3  font-bold text-primary-foreground  rounded-xl   scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
+        <Badge size={"lg"} className=' ml-3  font-bold  rounded-xl dark:text-white   scale-110 -rotate-2 lg:-rotate-6 text-lg md:text-xl' >
          {props.label}
         </Badge>
         )}
@@ -64,7 +64,7 @@ function ProductsCarousel({ linkLabel = "Explore more" , title="Newest Products"
       <Link
       className={cn( 
         buttonVariants({variant : "secondary"})
-        , '  text-xs px-3 py-0 text-black' )}
+        , '  text-xs px-3 py-0 text-black dark:text-white' )}
       href={props.href}
       >
       {linkLabel}

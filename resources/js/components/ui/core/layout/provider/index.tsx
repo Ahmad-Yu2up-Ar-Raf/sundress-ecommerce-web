@@ -18,6 +18,8 @@ import { TooltipProvider } from '@/components/ui/fragments/animate-ui/base/toolt
 import { ModalProvider } from './ContextProvider';
 import Neslatter from '@/components/ui/fragments/custom-ui/Neslatter';
 import SignInModal from '../../auth/components/SignInModal';
+import { SiteHeader } from '../header/SiteHeader';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 
@@ -27,7 +29,7 @@ const disable = [ '/seller' , '/settings',  '/dashboard' , '/login'  , '/registe
 const currentPath = window.location.pathname;
 
    const isDisabled = disable.some(prefix => currentPath.startsWith(prefix))
-
+ const isMobile = useIsMobile()
     return (
 
 
@@ -39,13 +41,13 @@ const currentPath = window.location.pathname;
                  <TooltipProvider>
 
       <SignInModal/>
-                {/* {  !isDisabled  &&  (
+                {  !isDisabled  &&  !isMobile &&  (
 
                        <SiteHeader 
            
                         key="nav-content-header" 
                        />
-                )} */}
+                )}
 
                
                     <div 

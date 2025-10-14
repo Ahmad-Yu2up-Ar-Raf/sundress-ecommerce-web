@@ -18,12 +18,22 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
                $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->foreignId('product_id')->constrained()->onDelete('cascade');
-    $table->unsignedInteger('quantity')->default(1);
+               $table->string('country');
+               $table->string('province');
+               $table->string('phone');
+               $table->string('zipCode');
+               $table->string('firstName');
+               $table->string('lastName');
+               $table->string('nameOfCard')->nullable();
+               $table->string('email')->unique();
+               $table->string('cardNumber', 4)->nullable(); 
+  
     $table->unsignedBigInteger('total_price')->default(0);
     $table->string('status')->default(OrderStatus::Pending->value);
-    $table->string('courier')->default(Courier::LOCAL_COURIER->value);
-    $table->text('address')->nullable();
+    $table->string('shipping_method')->default(Courier::LOCAL_COURIER->value);
+    $table->longText('address')->nullable();
+    $table->unsignedTinyInteger('expiryMonth')->nullable(); 
+    $table->year('expiryYear')->nullable();
     $table->text('notes')->nullable();
     $table->string('payment_proof')->nullable();
     $table->string('payment_method')->default(PaymentMethod::CashOnDelivery->value);

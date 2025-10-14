@@ -2,12 +2,15 @@
 
 namespace Database\Seeders;
 use App\Enums\RoleEnums;
+use App\Models\CartItems;
+use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\Products;
 use App\Models\Reviews;
 use App\Models\User;
 use App\Models\Whishlist;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 class DatabaseSeeder extends Seeder
@@ -68,20 +71,88 @@ class DatabaseSeeder extends Seeder
 
                         if ($product->stock > 0) {
                             $quantity = rand(1, min(5, $product->stock));
-                            Orders::factory()->create([
+                            CartItems::create([
                                 'user_id' => $buyer->id,
                                 'product_id' => $product->id,
                                 'quantity' => $quantity,
-                                'total_price' => $product->price * $quantity
+                                'sub_total' => $product->price * $quantity
                             ]);
-                            $product->decrement('stock', $quantity);
+                            
+                       
 
-                            if (rand(1, 100) <= 85) {
-                                Reviews::factory()->create([
-                                    'user_id' => $buyer->id,
-                                    'product_id' => $product->id
-                                ]);
+                            $buyersWithCarts = User::whereHas('cartItems')->get(); // asumsi relasi user->cartItems ada
+
+                            foreach ($buyersWithCarts as $buyer) {
+                                // ambil cart items beserta product
+                                $cartItems = CartItems::where('user_id', $buyer->id)
+                                    ->with('product')
+                                    ->get();
+                            
+                                if ($cartItems->isEmpty()) {
+                                    continue;
+                                }
+                            
+                                // Group cart items per seller (product->user_id)
+                                $groupedBySeller = $cartItems->groupBy(function ($ci) {
+                                    return $ci->product->user_id ?? 0;
+                                });
+                            
+                                foreach ($groupedBySeller as $sellerId => $items) {
+                                    DB::transaction(function () use ($buyer, $sellerId, $items) {
+                                        // hitung total order (sum subtotal)
+                                        $total = 0;
+                                        foreach ($items as $ci) {
+                                            // gunakan subtotal jika sudah diisi, kalau belum hitung dari product.price * qty
+                                            $price = (int) ($ci->product->price ?? 0);
+                                            $subtotal = (int) ($ci->sub_total ?: ($price * $ci->quantity));
+                                            $total += $subtotal;
+                                        }
+                            
+                                        // buat order per seller
+                                        $order = Orders::factory()->create([
+                                            'user_id' => $buyer->id,
+                                         
+                                            'total_price' => $total,
+                                          
+                                        
+                                        ]);
+                            
+                                        // buat order items untuk setiap cart item di grup ini
+                                        foreach ($items as $ci) {
+                                            $product = $ci->product;
+                                            if (! $product) {
+                                                continue; // safety
+                                            }
+                            
+                                            $price = (int) ($product->price ?? 0);
+                                            $subtotal = (int) ($ci->sub_total ?: ($price * $ci->quantity));
+                            
+                                            OrderItems::factory()->create([
+                                                'seller_id' => $sellerId,
+                                                'order_id' => $order->id,
+                                                'product_id' => $product->id,
+                                                'quantity' => $ci->quantity,
+                                                'sub_total' => $subtotal,
+                                            
+                                            ]);
+                                            $product->decrement('stock', $ci->quantity);
+                                        } 
+                            
+                                        // hapus cart items yang sudah diproses untuk buyer ini (hanya yang dipakai)
+                                        $cartIds = $items->pluck('id')->toArray();
+                                        CartItems::whereIn('id', $cartIds)->delete();
+                                    });
+
+
+                                    if (rand(1, 100) <= 85) {
+                                        Reviews::factory()->create([
+                                            'user_id' => $buyer->id,
+                                            'product_id' => $product->id
+                                        ]);
+                                    }
+                                }
                             }
+                            
                         }
                     }
                 });

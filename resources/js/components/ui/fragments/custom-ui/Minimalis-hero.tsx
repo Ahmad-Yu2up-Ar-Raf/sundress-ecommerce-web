@@ -123,7 +123,7 @@ export const MinimalistHero = ({
               >
                    <DrawerHeader className="   sm:px-7 space-y-1 bg-background     p-4 border-b   pb-3 justify-center items-center mb-6 ">
            <DrawerTitle>
-                    <Logo />
+                  Sundress.
                   </DrawerTitle>
 
         

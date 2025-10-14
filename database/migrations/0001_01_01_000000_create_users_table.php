@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('country');
             $table->string('province');
+            $table->string('phone');
             $table->string('occupasion')->default(UserOccupasion::STUDENT->value);
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

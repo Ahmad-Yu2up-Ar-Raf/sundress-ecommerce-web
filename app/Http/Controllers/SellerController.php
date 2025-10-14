@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\Products;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class SellerController extends Controller
   $recordProducts = Products::all()->where('user_id', Auth::id());
   
   $queryProductsIds = $recordProducts->pluck('id')->toArray();
-   $recordOrders = Orders::all()->whereIn('product_id', $queryProductsIds );
+   $recordOrders = OrderItems::all()->whereIn('product_id', $queryProductsIds );
 
 
 // Ambil semua produk milik user
@@ -30,7 +31,7 @@ $queryProductsIds = Products::where('user_id', Auth::id())->pluck('id');
 
 
 
-$ordersCounts = Orders::select(
+$ordersCounts = OrderItems::select(
         DB::raw('DATE(created_at) as date'),
         DB::raw('count(*) as orders'),
         DB::raw('sum(total_price) as revenue')
@@ -43,8 +44,8 @@ $ordersCounts = Orders::select(
 // Top 5 produk best seller
 $topProducts = Products::where('user_id', Auth::id())
     ->select('name')
-    ->withCount('orders')
-    ->orderByDesc('orders_count')
+    ->withCount('orderItem')
+    ->orderByDesc('orderItem_count')
     ->take(5)
     ->get();
 
@@ -78,10 +79,10 @@ $StatusProductsCategoryCount = $recordProducts->groupBy('category')->map(functio
 //   $totalProductsDipinjam = Products::where('user_id', Auth::id())->where('status', 'dipinjam')->count();
 
 
-  $totalOrders = Orders::whereIn('product_id', $queryProductsIds )->count();
-  $terjualOrders = Orders::whereIn('product_id', $queryProductsIds )->where('status', 'approve')->count();
-$totalRevenue = Orders::whereIn('product_id', $queryProductsIds)
-    ->sum('total_price');
+  $totalOrders = OrderItems::whereIn('product_id', $queryProductsIds )->count();
+  $terjualOrders = OrderItems::whereIn('product_id', $queryProductsIds )->where('status', 'approve')->count();
+$totalRevenue = OrderItems::whereIn('product_id', $queryProductsIds)
+    ->sum('sub_total');
 
 
     // $topProducts->through(function ($item) {

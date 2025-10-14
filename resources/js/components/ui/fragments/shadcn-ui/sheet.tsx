@@ -70,8 +70,8 @@ function SheetContent({
       <SheetContentPrimitive
         className={cn(
           'bg-background fixed z-50 flex flex-col gap-4 shadow-lg',
-          side === 'right' && 'h-full max-w-xl border-l',
-          side === 'left' && 'h-full max-w-xl border-r',
+          side === 'right' && 'h-full w-full max-w-md border-l',
+          side === 'left' && 'h-full w-full max-w-md border-r',
           side === 'top' && 'w-full h-full border-b',
           side === 'bottom' && 'w-full h-full border-t',
           className,

@@ -24,7 +24,6 @@ class Products extends Model
         'status',
         'stock',
         'cover_image',
-      
         'price',
         'city',
         'country',
@@ -36,7 +35,6 @@ class Products extends Model
     protected $casts = [
         'name' => 'string',
         'cover_image' => 'string',
-        
         'free_shipping' => 'boolean',
         'city' => 'string',
         'country' => 'string',
@@ -69,6 +67,22 @@ class Products extends Model
     {
        return $this->hasMany(Whishlist::class, 'product_id');
     }
+    
+    public function cartItem(): HasMany
+    {
+        return $this->hasMany(CartItems::class, 'product_id');
+    }
+
+
+
+    
+    public function orderItem(): HasMany
+    {
+        return $this->hasMany(OrderItems::class, 'product_id');
+    }
+
+
+
 
     public function getPriceFormattedAttribute()
     {

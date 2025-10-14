@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\CartItems;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -38,7 +39,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
-
+        $Cart = CartItems::where('user_id', $request->user()->id)->paginate(5, ['*'], 'page', 1);
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -47,7 +48,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user() ? [
                     ...$request->user()->toArray(),
                     'roles' => $request->user()->getRoleNames(),
-                     'order_count' => $request->user()->orders()->count(),
+                     'order' => $Cart,
                      'whishlist_count' => $request->user()->whishlist()->count(),
                 ] : null,
             ],

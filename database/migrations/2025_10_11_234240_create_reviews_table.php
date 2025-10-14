@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-                        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->longText('comments')->nullable();
             $table->json('media')->nullable()->comment('Array foto/video upload');
-
             $table->tinyInteger('star_rating');
         });
     }

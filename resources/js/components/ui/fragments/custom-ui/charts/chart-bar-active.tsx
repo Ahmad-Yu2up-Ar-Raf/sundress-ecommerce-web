@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
 // Interface untuk data dari server
 interface ServerData {
     name: string;
-    orders_count: number;
+    orderItem: number;
 }
 
 // Interface untuk props komponen
@@ -68,13 +68,13 @@ export function ChartBarActive({
     
     const transformedData = data.map((item, index) => ({
       name: item.name,
-      orders_count: item.orders_count,
+      orderItem: item.orderItem,
       fill: colors[index]
     }))
     
     // Generate dynamic config
     const config: ChartConfig = {
-      orders_count: {
+      orderItem: {
         label: "Products ",
       }
     }
@@ -142,7 +142,7 @@ export function ChartBarActive({
               content={<ChartTooltipContent  />}
             />
             <Bar
-              dataKey="orders_count"
+              dataKey="orderItem"
               strokeWidth={2}
               radius={8}
               barSize={chartData.length <= 3 ? 40 : undefined}

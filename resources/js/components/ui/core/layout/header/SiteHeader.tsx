@@ -26,6 +26,7 @@ import { useMotionValueEvent, useScroll , motion} from "framer-motion";
 import DropdownMenuUserMenuDemo from "./useProfile";
 
 import { useModal } from "../provider/ContextProvider";
+import { CartProductsSheet } from "../../main/cart-sheet";
 
 const TopMenu = [
 
@@ -78,23 +79,25 @@ export   function SiteHeader() {
   const onClick = () => router.visit('/login');
 
      const { scrollYProgress } = useScroll();
-  const [visible, setVisible] = useState(true);
-  const [delay, setDelay] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [delay, setDelay] = useState(false);
   useMotionValueEvent(scrollYProgress, "change", (current) => {
     // Check if current is not undefined and is a number
     if (typeof current === "number") {
       const direction = current! - scrollYProgress.getPrevious()!;
     setDelay(false);
- if (direction < 0) {
+    
+    if (scrollYProgress.get() < 0.18) {
+      setVisible(false);
+    } else {
+      if (direction > 0) {
         setVisible(true);
-      } else {
-        setVisible(false);
-      }
-   
+      } 
+    }
       
     }
   });
-
+console.log(user.order)
    return (
   <>
 
@@ -111,7 +114,7 @@ export   function SiteHeader() {
           duration: delay ?  0. : 0.2,
           delay: delay ? 3 : 0,
         }}
-    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background/95 backdrop-blur-md sticky top-0 z-50  ", 
+    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background/95 backdrop-blur-md fixed top-0 z-50  ", 
 
    
 
@@ -148,20 +151,13 @@ export   function SiteHeader() {
 
    <Search className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out " />
   </Button>
-    <Button variant={"ghost"} size={"icon"} className=" relative">
-
-         <ShoppingCart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
-          { user?.order_count! > 0 && (
-
-         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] p-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.order_count}</span>
-         )}
-    </Button>
+ <CartProductsSheet  order={user.order}/>
       <Button variant={"ghost"} className=" relative" size={"icon"}>
 
          <Heart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
             { user?.whishlist_count! > 0 && (
 
-         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] p-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.whishlist_count}</span>
+         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] px-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.whishlist_count}</span>
          )}
       </Button>
       

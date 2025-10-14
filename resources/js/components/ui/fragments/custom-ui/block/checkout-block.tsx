@@ -71,10 +71,10 @@ lastName: string;
 email: string;
 phone: string;
 address: string;
-city: string;
-state: string;
-zipCode: string;
 country: string;
+province: string;
+zipCode: string;
+
 }
 
 interface PaymentMethod {
@@ -82,7 +82,7 @@ cardNumber: string;
 expiryMonth: string;
 expiryYear: string;
 cvv: string;
-nameOnCard: string;
+nameOfCard: string;
 }
 
 export default function Checkout() {
@@ -95,17 +95,17 @@ const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
   email: "",
   phone: "",
   address: "",
-  city: "",
-  state: "",
+  country: "",
+  province: "",
   zipCode: "",
-  country: "US",
+
 });
 const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
   cardNumber: "",
   expiryMonth: "",
   expiryYear: "",
   cvv: "",
-  nameOnCard: "",
+  nameOfCard: "",
 });
 const [selectedPaymentType, setSelectedPaymentType] =
   useState<OptionItem>(PaymentMethodOptions[0]);
@@ -225,8 +225,8 @@ const validateStep = (step: number): boolean => {
         shippingAddress.lastName &&
         shippingAddress.email &&
         shippingAddress.address &&
-        shippingAddress.city &&
-        shippingAddress.state &&
+        shippingAddress.country &&
+        shippingAddress.province &&
         shippingAddress.zipCode
       );
     case 2:
@@ -236,7 +236,7 @@ const validateStep = (step: number): boolean => {
           paymentMethod.expiryMonth &&
           paymentMethod.expiryYear &&
           paymentMethod.cvv &&
-          paymentMethod.nameOnCard
+          paymentMethod.nameOfCard
         );
       }
       // For other payment methods, we just need them to be selected
@@ -559,30 +559,30 @@ return (
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="flex flex-col gap-3">
-                  <Label htmlFor="city">City *</Label>{" "}
+                  <Label htmlFor="country">Country *</Label>{" "}
                  <CountrySelector
                  
-                                   value={shippingAddress.city}
+                                   value={shippingAddress.country}
                                    onChange={(e) =>
-                      handleAddressChange("city", e)}
+                      handleAddressChange("country", e)}
                        
                                  />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Label htmlFor="state">State *</Label>
+                  <Label htmlFor="province">Province *</Label>
                      <ProvinceSelector
-                               value={shippingAddress.state}
+                               value={shippingAddress.province}
                     onChange={(value) =>
-                      handleAddressChange("state", value)
+                      handleAddressChange("province", value)
                     }
-                                    countryName={shippingAddress.city as string}
+                                    countryName={shippingAddress.country as string}
                               
                                   />
                   {/* <Select
                   
                   >
                     <SelectTrigger className="text-sm " size={"lg"}>
-                      <SelectValue placeholder="Select state" />
+                      <SelectValue placeholder="Select province" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="CA">California</SelectItem>
@@ -722,14 +722,14 @@ return (
               {selectedPaymentType.value === "bank_transfer" ? (
                 <div className="flex flex-col gap-5 border-t pt-6">
                   <div className="flex flex-col gap-3">
-                    <Label htmlFor="nameOnCard">Name on Card *</Label>{" "}
+                    <Label htmlFor="nameOfCard">Name on Card *</Label>{" "}
                     <Input
-                      id="nameOnCard"
+                      id="nameOfCard"
                       size="lg"
                       placeholder="John Doe"
-                      value={paymentMethod.nameOnCard}
+                      value={paymentMethod.nameOfCard}
                       onChange={(e) =>
-                        handlePaymentChange("nameOnCard", e.target.value)
+                        handlePaymentChange("nameOfCard", e.target.value)
                       }
                       leftIcon={<User className="h-4 w-4" />}
                     />
@@ -869,7 +869,7 @@ return (
                   </p>
                   <p>{shippingAddress.address}</p>
                   <p>
-                    {shippingAddress.city}, {shippingAddress.state}{" "}
+                    {shippingAddress.country}, {shippingAddress.province}{" "}
                     {shippingAddress.zipCode}
                   </p>
                   <p>{shippingAddress.email}</p>
@@ -884,7 +884,7 @@ return (
                       <p>
                         **** **** **** {paymentMethod.cardNumber.slice(-4)}
                       </p>
-                      <p>{paymentMethod.nameOnCard}</p>
+                      <p>{paymentMethod.nameOfCard}</p>
                     </>
                   )}
                   {/* {selectedPaymentType === "paypal" && (

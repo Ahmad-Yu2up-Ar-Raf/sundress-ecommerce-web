@@ -55,7 +55,7 @@ function Badge({
 
   return (
     <span
-      className={cn(badgeVariants({ variant, size }), className)}
+      className={cn(badgeVariants({ variant, size }), "   text-white", className)}
       {...props}
     >
       {Icon && iconPosition === "left" && (
