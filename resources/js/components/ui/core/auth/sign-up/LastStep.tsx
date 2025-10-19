@@ -20,7 +20,7 @@ import AuthLayoutTemplate from '../../layout/auth/auth-simple-layout';
 import NavStepper from '../../layout/auth/components/NavStepper';
 
 const FormLastStep = registerCreateSchema.pick({
-  occupasion: true,
+  role: true,
 })
 type FormLastStepSchema = z.infer<typeof FormLastStep>;
 
@@ -36,6 +36,7 @@ function LastStep() {
     const country = useOnboardingStore((state) => state.country); 
     const province = useOnboardingStore((state) => state.province); 
     const phone = useOnboardingStore((state) => state.phone);
+    const occupasion = useOnboardingStore((state) => state.occupasion);
   const setData = useOnboardingStore((state) => state.setData);
   const [isPending, startTransition] = React.useTransition();
   const [loading, setLoading] = React.useState(false);  
@@ -43,7 +44,7 @@ function LastStep() {
   const form = useForm<FormLastStepSchema>({
     mode: "onSubmit", 
     defaultValues: {
-      occupasion: "voter"
+      role: "buyyer"
     },
     resolver: zodResolver(FormLastStep),
   })
@@ -59,10 +60,10 @@ function LastStep() {
   useEffect(() => {
     if (!isClient || !hasHydrated) return;
 
-    if (!name || !email || !password || !password_confirmation || !country || !province || !phone) {
+    if (!name || !email || !password || !password_confirmation || !country || !province || !phone || !occupasion) {
       router.visit("/register");
     }
-  }, [isClient, hasHydrated, name, email, password, password_confirmation, router, province, country, phone ]);
+  }, [isClient, hasHydrated, name, email, password, password_confirmation, router, province, country, phone  , occupasion]);
 
 
 
@@ -77,6 +78,7 @@ function LastStep() {
     const postBody = {
       ...data,
       name,
+      occupasion,
       email,
       password,
       phone,
@@ -87,7 +89,7 @@ function LastStep() {
 
   
     setLoading(true)
-    
+    console.log(postBody)
     try {
              toast.loading("Loading...", { id: "register"});
  
@@ -127,7 +129,7 @@ function LastStep() {
   // Loading state while hydrating
   if (!isClient || !hasHydrated) {
     return (
-      <AuthLayoutTemplate loading={loading} title='What do you do?' description='Select whether you’re a student or already working.' className=' lg:max-w-none h-dvh '>
+      <AuthLayoutTemplate loading={loading} title='What are you here for?' description='Shop for items or set up a store — choose one to continue.' className=' lg:max-w-none h-dvh '>
         <div className="flex items-center justify-center py-8">
           <Loader className="animate-spin size-6" />
         </div>
@@ -136,7 +138,7 @@ function LastStep() {
   }
 
   return (
-    <AuthLayoutTemplate  loading={loading} title='What do you do?' description='Select whether you’re a student or already working.' className=' lg:max-w-none h-dvh '>
+    <AuthLayoutTemplate  loading={loading} title='What are you here for?' description='Shop for items or set up a store — choose one to continue.' className=' lg:max-w-none h-dvh '>
       <SignUpForm form={form} isPending={isPending || loading} onSubmit={onSubmit}>
        <div className=" w-full space-y-5">
 

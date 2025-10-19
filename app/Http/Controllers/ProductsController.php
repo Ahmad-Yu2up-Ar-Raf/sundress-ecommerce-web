@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductsStore;
+use App\Http\Requests\ProductsUpdate;
 use App\Models\Products;
 use App\Models\Whishlist;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+
 class ProductsController extends Controller
 {
     /**
@@ -26,7 +28,7 @@ public function index(Request $request)
 
     $free_shipping = $request->input('free_shipping');
 
-    $query = Products::where('user_id', Auth::id())->withCount("reviews")->withCount("orders")->withAvg("reviews", "star_rating");
+    $query = Products::where('user_id', Auth::id())->withCount("reviews")->withCount("orderItem")->withAvg("reviews", "star_rating");
 
 
     $user = Auth::user();
@@ -140,7 +142,7 @@ public function index(Request $request)
                     'cover_image' => $productPath,
             ]);
 
-            $fileCount = count($product->files ?? []);
+            $fileCount = count($product->showcase_images ?? []);
             $message = $fileCount > 0 
                 ? "Product berhasil ditambahkan dengan {$fileCount} file."
                 : "Product berhasil ditambahkan.";
@@ -176,9 +178,44 @@ public function index(Request $request)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Products $products)
+    public function update(ProductsUpdate $request, Products $product)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $validatedData = $request->validated();
+
+            // Handle cover image update
+            if (request()->hasFile('cover_image')) {
+                // Delete old cover image if exists
+                if ($product->cover_image && Storage::disk('public')->exists(str_replace('storage/', '', $product->cover_image))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $product->cover_image));
+                }
+
+                $file = request()->file('cover_image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('product/', $filename, 'public');
+                $validatedData['cover_image'] = 'storage/' . $path;
+            }
+
+            // Update product data (showcase_images will be handled by observer)
+            $product->update($validatedData);
+
+            DB::commit();
+     
+     return redirect()->route('seller.products.index')
+                ->with('success');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Product update error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update product: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -190,26 +227,26 @@ public function index(Request $request)
         $ids = $request->input('ids');
         if (empty($ids)) {
             return redirect()->route('seller.products.index')
-                ->with('error', 'Tidak ada event yang dipilih untuk dihapus.');
+                ->with('error', 'Tidak ada product yang dipilih untuk dihapus.');
         }
 
         // Validasi apakah semua ID milik user yang sedang login
         $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
         if ($products->count() !== count($ids)) {
             return redirect()->route('seller.products.index')
-                ->with('error', 'Unauthorized access atau event tidak ditemukan.');
+                ->with('error', 'Unauthorized access atau product tidak ditemukan.');
         }
 
         try {
             DB::beginTransaction();
               
             // SOLUSI: Delete satu per satu agar Observer terpicu
-            foreach ($products as $event) {
-                if ($event->product && Storage::disk('public')->exists(str_replace('storage/', '', $event->product))) {
-                    Storage::disk('public')->delete(str_replace('storage/', '', $event->product));
+            foreach ($products as $product) {
+                if ($product->cover_image && Storage::disk('public')->exists(str_replace('storage/', '', $product->cover_image))) {
+                    Storage::disk('public')->delete(str_replace('storage/', '', $product->cover_image));
                 }
         
-                $event->delete(); // Ini akan trigger observer products
+                $product->delete(); // Ini akan trigger observer products
             }
             
             DB::commit();
@@ -238,21 +275,21 @@ public function index(Request $request)
 
         if (empty($ids)) {
             return redirect()->route('seller.products.index')
-                ->with('error', 'Tidak ada event yang dipilih untuk dihapus.');
+                ->with('error', 'Tidak ada product yang dipilih untuk dihapus.');
         }
 
         // Validasi apakah semua ID milik user yang sedang login
         $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
         if ($products->count() !== count($ids)) {
             return redirect()->route('seller.products.index')
-                ->with('error', 'Unauthorized access atau event tidak ditemukan.');
+                ->with('error', 'Unauthorized access atau product tidak ditemukan.');
         }
 
         try {
             DB::beginTransaction();
               
-             foreach ($products as $event) {
-                $event->update([$colum => $value]);
+             foreach ($products as $product) {
+                $product->update([$colum => $value]);
             }
 
    

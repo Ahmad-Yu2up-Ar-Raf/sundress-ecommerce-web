@@ -88,11 +88,11 @@ export const CountrySelector = ({
 
   // Initialize from value prop
   useEffect(() => {
-    console.log('🌍 CountrySelector - value prop:', value)
+    
     
     if (value) {
       const country = countriesData.find(c => c.name === value)
-      console.log('🔍 Found country:', country?.name, 'ID:', country?.id)
+   
       
       if (country && (!selectedCountry || selectedCountry.name !== value)) {
         setSelectedCountry(country)
@@ -102,7 +102,7 @@ export const CountrySelector = ({
   }, [value])
 
   const handleSelect = (country: CountryProps) => {
-    console.log('✅ Country selected:', country.name, 'ID:', country.id)
+ 
     setSelectedCountry(country)
     onChange?.(country.name)
     onCountrySelect?.(country)
@@ -196,33 +196,25 @@ export const ProvinceSelector = ({
   const countriesData = countries as CountryProps[]
   const statesData = states as StateProps[]
 
-  console.log('🔵 ProvinceSelector Render:', {
-    countryName,
-    disabled,
-    value,
-    totalCountries: countriesData.length,
-    totalStates: statesData.length,
-  })
 
   // Find country by name
   const selectedCountry = countryName 
     ? countriesData.find(c => c.name === countryName)
     : null
 
-  console.log('🔍 Selected Country for Province:', selectedCountry?.name, 'ID:', selectedCountry?.id)
+
 
   // DEBUG: Check first few states to see the structure
   if (statesData.length > 0) {
-    console.log('🧪 Sample state data (first 3):', statesData.slice(0, 3))
-    console.log('🧪 Looking for states with country_id:', selectedCountry?.id)
+  
     
     // Try to find ANY state that matches
     const matchingStates = statesData.filter(state => {
-      console.log(`Checking state: ${state.name}, country_id: ${state.country_id}, looking for: ${selectedCountry?.id}`)
+    
       return state.country_id === selectedCountry?.id
     }).slice(0, 5) // Only log first 5 matches
     
-    console.log('🔍 Matching states found:', matchingStates.length)
+    
   }
 
   // Filter provinces for selected country - FIXED: Handle type mismatch
@@ -239,9 +231,9 @@ export const ProvinceSelector = ({
       })
     : []
 
-  console.log('📍 Available Provinces:', availableProvinces.length)
+
   if (availableProvinces.length > 0) {
-    console.log('📋 First 3 provinces:', availableProvinces.slice(0, 3).map(p => p.name))
+
   }
 
   const hasProvinces = availableProvinces.length > 0
@@ -249,13 +241,7 @@ export const ProvinceSelector = ({
   // SIMPLIFIED DISABLED LOGIC - JUST CHECK IF WE HAVE PROVINCES
   const isButtonDisabled = disabled || !hasProvinces
 
-  console.log('🚦 Province Button State:', {
-    disabled,
-    hasProvinces,
-    isButtonDisabled,
-    countryNameExists: !!countryName,
-    selectedCountryExists: !!selectedCountry,
-  })
+
 
   // Initialize from value prop
   useEffect(() => {
@@ -270,7 +256,7 @@ export const ProvinceSelector = ({
   // Reset province when country changes
   useEffect(() => {
     if (selectedCountry && selectedProvince?.country_id !== selectedCountry.id) {
-      console.log('🔄 Resetting province due to country change')
+   
       setSelectedProvince(null)
       onChange?.('')
       onProvinceSelect?.(null)
@@ -278,7 +264,7 @@ export const ProvinceSelector = ({
   }, [selectedCountry?.id])
 
   const handleSelect = (province: StateProps) => {
-    console.log('✅ Province selected:', province.name)
+    
     setSelectedProvince(province)
     onChange?.(province.name)
     onProvinceSelect?.(province)

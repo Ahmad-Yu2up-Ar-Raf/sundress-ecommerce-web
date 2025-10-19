@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 
 class JsonFileUploadService
 {
     private const ALLOWED_IMAGE_TYPES = [
-        'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'
+        'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
     ];
 
     private const ALLOWED_VIDEO_TYPES = [
-        'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'
+        'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm',
     ];
 
     private const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -47,10 +47,11 @@ class JsonFileUploadService
         try {
             $file = $fileData['file'];
             $base64Data = $fileData['base64Data'];
-            
+
             // Validate file metadata
-            if (!$this->isValidJsonFile($file)) {
+            if (! $this->isValidJsonFile($file)) {
                 Log::warning('Invalid file data', ['file' => $file]);
+
                 return null;
             }
 
@@ -62,17 +63,17 @@ class JsonFileUploadService
 
             // Determine subfolder based on file type
             $subfolder = $this->getSubfolderByType($file['type']);
-            $fullFolder = $folder . '/' . $subfolder;
+            $fullFolder = $folder.'/'.$subfolder;
 
             // Generate unique filename
             $fileName = $this->generateUniqueFileName($file['name']);
-            $filePath = $fullFolder . '/' . $fileName;
+            $filePath = $fullFolder.'/'.$fileName;
 
             // Store file to public storage
             $stored = Storage::disk('public')->put($filePath, $fileContent);
-            
-            if (!$stored) {
-                throw new \Exception('Failed to store file: ' . $filePath);
+
+            if (! $stored) {
+                throw new \Exception('Failed to store file: '.$filePath);
             }
 
             Log::info('File uploaded successfully', ['path' => $filePath]);
@@ -86,13 +87,14 @@ class JsonFileUploadService
                 'file_path' => $filePath,
                 'preview' => Storage::url($filePath),
                 'id' => $fileData['id'] ?? Str::random(10),
-                    'base64Data' => $base64Data 
+                'base64Data' => $base64Data,
             ];
 
         } catch (\Exception $e) {
-            Log::error('JSON file processing error: ' . $e->getMessage(), [
-                'file_data' => $fileData ?? 'null'
+            Log::error('JSON file processing error: '.$e->getMessage(), [
+                'file_data' => $fileData ?? 'null',
             ]);
+
             return null;
         }
     }
@@ -103,7 +105,7 @@ class JsonFileUploadService
     private function isValidJsonFile(array $fileData): bool
     {
         // Check required fields
-        if (!isset($fileData['name'], $fileData['size'], $fileData['type'])) {
+        if (! isset($fileData['name'], $fileData['size'], $fileData['type'])) {
             return false;
         }
 
@@ -113,14 +115,16 @@ class JsonFileUploadService
         // Check file size
         if ($fileSize > self::MAX_FILE_SIZE) {
             Log::warning('File too large', ['size' => $fileSize, 'max' => self::MAX_FILE_SIZE]);
+
             return false;
         }
 
         // Check file type
         $allowedTypes = array_merge(self::ALLOWED_IMAGE_TYPES, self::ALLOWED_VIDEO_TYPES);
-        
-        if (!in_array($mimeType, $allowedTypes)) {
+
+        if (! in_array($mimeType, $allowedTypes)) {
             Log::warning('File type not allowed', ['type' => $mimeType]);
+
             return false;
         }
 
@@ -151,8 +155,8 @@ class JsonFileUploadService
         $extension = pathinfo($originalName, PATHINFO_EXTENSION);
         $nameWithoutExtension = pathinfo($originalName, PATHINFO_FILENAME);
         $cleanName = Str::slug($nameWithoutExtension);
-        
-        return $cleanName . '_' . time() . '_' . Str::random(8) . '.' . $extension;
+
+        return $cleanName.'_'.time().'_'.Str::random(8).'.'.$extension;
     }
 
     /**
@@ -162,6 +166,7 @@ class JsonFileUploadService
     {
         if (empty($files)) {
             Log::info('No files to delete');
+
             return;
         }
 
@@ -177,48 +182,58 @@ class JsonFileUploadService
             }
         }
 
-        Log::info("File deletion summary", [
+        Log::info('File deletion summary', [
             'deleted' => $deletedCount,
             'failed' => $failedCount,
-            'total' => count($files)
+            'total' => count($files),
         ]);
     }
 
     /**
      * Delete single file with improved error handling
+     * Supports both array and string formats for backward compatibility
      */
-    public function deleteSingleFile(array $fileData): bool
+    public function deleteSingleFile(array|string|null $fileData): bool
     {
         try {
-            if (!isset($fileData['file_path']) || empty($fileData['file_path'])) {
-                Log::warning('No file_path found in file data', ['fileData' => $fileData]);
+            // Extract file path from different possible formats
+            $filePath = $this->extractFilePath($fileData);
+
+            if (! $filePath) {
+                Log::warning('Could not extract file path from data', ['fileData' => $fileData]);
+
                 return false;
             }
 
-            $filePath = $fileData['file_path'];
+            // Normalize the path for storage operations
+            $normalizedPath = $this->normalizeFilePath($filePath);
 
             // Check if file exists before attempting deletion
-            if (!Storage::disk('public')->exists($filePath)) {
-                Log::warning('File not found for deletion', ['path' => $filePath]);
+            if (! Storage::disk('public')->exists($normalizedPath)) {
+                Log::warning('File not found for deletion', ['path' => $filePath, 'normalized' => $normalizedPath]);
+
                 return false;
             }
 
             // Attempt to delete the file
-            $deleted = Storage::disk('public')->delete($filePath);
-            
+            $deleted = Storage::disk('public')->delete($normalizedPath);
+
             if ($deleted) {
                 Log::info('File deleted successfully', ['path' => $filePath]);
+
                 return true;
             } else {
                 Log::error('Failed to delete file', ['path' => $filePath]);
+
                 return false;
             }
 
         } catch (\Exception $e) {
-            Log::error('File deletion error: ' . $e->getMessage(), [
+            Log::error('File deletion error: '.$e->getMessage(), [
                 'fileData' => $fileData,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return false;
         }
     }
@@ -241,7 +256,7 @@ class JsonFileUploadService
         }
 
         $newFilePaths = [];
-        
+
         // Ambil file_path dari file baru
         foreach ($newFiles as $newFile) {
             if (isset($newFile['file_path'])) {
@@ -250,10 +265,10 @@ class JsonFileUploadService
         }
 
         $filesToDelete = [];
-        
+
         // Cari file lama yang tidak ada di file baru
         foreach ($oldFiles as $oldFile) {
-            if (isset($oldFile['file_path']) && !in_array($oldFile['file_path'], $newFilePaths)) {
+            if (isset($oldFile['file_path']) && ! in_array($oldFile['file_path'], $newFilePaths)) {
                 $filesToDelete[] = $oldFile;
             }
         }
@@ -261,7 +276,7 @@ class JsonFileUploadService
         Log::info('Files comparison', [
             'old_files_count' => count($oldFiles),
             'new_files_count' => count($newFiles),
-            'files_to_delete' => count($filesToDelete)
+            'files_to_delete' => count($filesToDelete),
         ]);
 
         return $filesToDelete;
@@ -273,7 +288,7 @@ class JsonFileUploadService
     public function checkFilesExistence(array $files): array
     {
         $result = [];
-        
+
         foreach ($files as $index => $file) {
             if (isset($file['file_path'])) {
                 $exists = Storage::disk('public')->exists($file['file_path']);
@@ -281,11 +296,95 @@ class JsonFileUploadService
                     'index' => $index,
                     'file_path' => $file['file_path'],
                     'exists' => $exists,
-                    'full_path' => storage_path('app/public/' . $file['file_path'])
+                    'full_path' => storage_path('app/public/'.$file['file_path']),
                 ];
             }
         }
-        
+
         return $result;
+    }
+
+    /**
+     * Extract file path from various possible input formats
+     */
+    private function extractFilePath(array|string|null $fileData): ?string
+    {
+        if (is_null($fileData)) {
+            return null;
+        }
+
+        if (is_string($fileData)) {
+            return trim($fileData);
+        }
+
+        if (is_array($fileData)) {
+            // Try to get file_path from array
+            if (isset($fileData['file_path'])) {
+                return trim($fileData['file_path']);
+            }
+
+            // Handle specific structure for showcase_images (from model casting/unserialization)
+            if (isset($fileData['file'])) {
+                // Check if file is fully qualified URL, extract storage path
+                $file = $fileData['file'];
+                if (is_string($file)) {
+                    return $this->extractStoragePath($file);
+                }
+                if (is_array($file) && isset($file['name'])) {
+                    // This might be raw file data without path
+                    return null;
+                }
+            }
+
+            // Check for other common keys
+            $possibleKeys = ['path', 'url', 'link', 'src'];
+            foreach ($possibleKeys as $key) {
+                if (isset($fileData[$key])) {
+                    return $this->extractStoragePath($fileData[$key]);
+                }
+            }
+
+            // Handle JSON-encoded string values within the array
+            if (isset($fileData[0]) && is_string($fileData[0])) {
+                return $this->extractStoragePath($fileData[0]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract storage path from various URL formats
+     */
+    private function extractStoragePath(string $path): string
+    {
+        $path = trim($path);
+
+        // If it's a full URL, extract path after /storage/
+        if (preg_match('/\/storage\/(.+)$/', $path, $matches)) {
+            return $matches[1];
+        }
+
+        // Remove storage/ prefix if present
+        if (str_starts_with($path, 'storage/')) {
+            return substr($path, 8);
+        }
+
+        return $path; // Return as-is for relative paths
+    }
+
+    /**
+     * Normalize file path for storage operations
+     */
+    private function normalizeFilePath(string $path): string
+    {
+        $path = trim($path);
+
+        // Remove storage/ prefix if present
+        if (str_starts_with($path, 'storage/')) {
+            return substr($path, 8);
+        }
+
+        return $path;
     }
 }

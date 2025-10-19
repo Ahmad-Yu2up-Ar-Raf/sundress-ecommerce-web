@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable , HasRoles;
+    use HasFactory, HasRoles , Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +24,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'country',
         'password',
+        'phone',
+        'occupasion',
         'province',
     ];
 
@@ -48,34 +50,34 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'country' => 'string',
+            'phone' => 'string',
             'province' => 'string',
-            'occupasion' => UserOccupasion::class
+            'occupasion' => UserOccupasion::class,
         ];
     }
 
-
-
-     public function products()
+    public function products()
     {
-        return $this->hasMany(Products::class ,  'user_id');
+        return $this->hasMany(Products::class, 'user_id');
     }
-     public function cartItems()
+
+    public function cartItems()
     {
-        return $this->hasMany(CartItems::class ,  'user_id');
+        return $this->hasMany(CartItems::class, 'user_id');
     }
 
     public function orders()
     {
-        return $this->hasMany(Orders::class , 'user_id');
+        return $this->hasMany(Orders::class, 'user_id');
     }
+
     public function whishlist()
     {
-        return $this->hasMany(Whishlist::class , 'user_id');
+        return $this->hasMany(Whishlist::class, 'user_id');
     }
 
     public function reviews()
     {
-        return $this->hasMany(Reviews::class ,  'user_id');
+        return $this->hasMany(Reviews::class, 'user_id');
     }
-
 }

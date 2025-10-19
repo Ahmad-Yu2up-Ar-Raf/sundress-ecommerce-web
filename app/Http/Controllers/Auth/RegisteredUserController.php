@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\RoleEnum;
+use App\Enums\RoleEnums;
 use App\Enums\UserOccupasion;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -33,18 +33,23 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-$request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        'country' => 'required|string|max:255',
-        'province' => 'required|string|max:255',
-        'phone' => 'required|string|max:255',
-       'occupasion' => [
-    'required',
-Rule::in(UserOccupasion::values())
+            'country' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
+            'phone' => 'required|string|max:255',
+            'occupasion' => [
+                'required',
+                Rule::in(UserOccupasion::values()),
 
-],
+            ],
+            'role' => [
+                'required',
+                Rule::in(RoleEnums::values()),
+
+            ],
         ]);
 
         $user = User::create([
@@ -58,11 +63,12 @@ Rule::in(UserOccupasion::values())
         ]);
 
         event(new Registered($user));
-$user->assignRole("buyer");
+        $user->assignRole($request['role']);
 
         Auth::login($user);
-   return ($request->user()->hasRole('seller') 
-            ? redirect()->intended(route('seller.index', absolute: false) )
-            :  redirect()->intended(route('buyer.index', absolute: false) ));
+
+        return $request->user()->hasRole('seller')
+                 ? redirect()->intended(route('seller.index', absolute: false))
+                 : redirect()->intended(route('buyer.index', absolute: false));
     }
 }

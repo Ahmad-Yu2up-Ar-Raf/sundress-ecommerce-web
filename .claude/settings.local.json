@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__laravel-boost__database-query",
+      "Bash(php artisan make:request ProductsUpdate)",
+      "Bash(npx tsc --noEmit --skipLibCheck)",
+      "Bash(vendor/bin/pint --dirty)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
+}

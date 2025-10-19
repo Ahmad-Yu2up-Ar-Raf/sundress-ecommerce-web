@@ -11,5 +11,11 @@ enum OrderStatus: string
     case Shipped = 'shipped';            // Order has been shipped
     case Delivered = 'delivered';        // Order successfully delivered
     case Cancelled = 'cancelled';        // Order cancelled by user/admin
-    case Refunded = 'refunded';         
+    case Refunded = 'refunded';      
+    
+    
+     public static function values(): array
+    {
+        return array_map(fn(self $s) => $s->value, self::cases());
+    }
 }

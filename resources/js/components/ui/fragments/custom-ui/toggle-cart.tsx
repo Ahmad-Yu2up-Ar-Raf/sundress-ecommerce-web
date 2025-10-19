@@ -21,8 +21,8 @@ export function InputToggle({
   const defaultValue = React.useRef(value)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [animated, setAnimated] = React.useState(true)
-  // Hide the caret during transitions so you can't see it shifting around:
   const [showCaret, setShowCaret] = React.useState(false)
+
   const handleInput: React.ChangeEventHandler<HTMLInputElement> = ({
     currentTarget: el,
   }) => {
@@ -40,12 +40,12 @@ export function InputToggle({
       // Revert input's value:
       el.value = String(value)
     } else {
-      // Manually update value in case they e.g. start with a "0" or end with a "."
-      // which won't trigger a DOM update (because the number is the same):
+      // Manually update value
       el.value = String(num)
       onChange?.(num)
     }
   }
+
   const handlePointerDown =
     (diff: number) => (event: React.PointerEvent<HTMLButtonElement>) => {
       setAnimated(true)
@@ -56,27 +56,28 @@ export function InputToggle({
       const newVal = Math.min(Math.max(value + diff, min), max)
       onChange?.(newVal)
     }
+
   return (
-    <div className="group items-center flex border  rounded-xl text-sm font-semibold h-fit  w-fit transition-[box-shadow] focus-within:ring-2  dark:ring-zinc-800">
+    <div className="group items-center flex px-0 rounded-xl text-[11px] font-semibold h-fit w-fit transition-[box-shadow] space-x-1.5">
       <Button
         size={"icon"}
-      variant={"ghost"}
+        variant={"outline"}
         aria-hidden
         tabIndex={-1}
-        className="flex size-7 text-muted-foreground items-center has-[>svg]:px-0  p-0"
+        className="flex w-fit h-fit items-center text-muted-foreground p-1"
         disabled={min != null && value <= min}
         onPointerDown={handlePointerDown(-1)}
       >
-        <Minus className="size-3" absoluteStrokeWidth strokeWidth={3.5} />
+        <Minus className="size-2" absoluteStrokeWidth strokeWidth={3.5} />
       </Button>
+
       <div className="relative grid items-center justify-items-center text-center [grid-template-areas:'overlap'] *:[grid-area:overlap]">
         <Input
           ref={inputRef}
           className={clsx(
             showCaret ? "caret-primary" : "caret-transparent",
-            "spin-hide ring-0 w-[1.5em] border-0 bg-transparent py-0 text-center font-[inherit] h-0 text-transparent outline-none",
+            "spin-hide focus-visible:ring-0 focus-visible:ring-ring focus-visible:ring-offset-0 w-[1.5em] border-0 bg-transparent py-0 text-center font-[inherit] h-0 text-transparent outline-none",
           )}
-          // Make sure to disable kerning, to match NumberFlow:
           style={{ fontKerning: "none" }}
           type="number"
           min={min}
@@ -98,16 +99,17 @@ export function InputToggle({
           willChange
         />
       </div>
+
       <Button
-          size={"icon"}
-       variant={"ghost"}
+        size={"icon"}
+        variant={"outline"}
         aria-hidden
         tabIndex={-1}
-        className="flex size-7  items-center text-muted-foreground p-0  "
+        className="flex w-fit h-fit items-center text-muted-foreground p-1"
         disabled={max != null && value >= max}
         onPointerDown={handlePointerDown(1)}
       >
-        <Plus className="size-3" absoluteStrokeWidth strokeWidth={3.5} />
+        <Plus className="size-2" absoluteStrokeWidth strokeWidth={3.5} />
       </Button>
     </div>
   )

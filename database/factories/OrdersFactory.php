@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Enums\Courier;
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\ShippingMethod;
 use App\Helpers\ImageHelper;
 use App\Models\Orders;
 use App\Models\User;
@@ -20,30 +20,30 @@ class OrdersFactory extends Factory
 
     public function definition(): array
     {
-     
-        $orderStatuses = array_map(fn($case) => $case->value, OrderStatus::cases());
-        $paymentMethods = array_map(fn($case) => $case->value, PaymentMethod::cases());
-        $couriers = array_map(fn($case) => $case->value, Courier::cases());
+
+        $orderStatuses = array_map(fn ($case) => $case->value, OrderStatus::cases());
+        $paymentMethods = array_map(fn ($case) => $case->value, PaymentMethod::cases());
+        $couriers = array_map(fn ($case) => $case->value, ShippingMethod::cases());
 
         return [
             'user_id' => User::factory(),
             'country' => $this->faker->country(),
             'province' => $this->faker->state(),
-            'phone' => $this->faker->phoneNumber(),     
-            'zipCode' => $this->faker->postcode(),         
+            'phone' => $this->faker->phoneNumber(),
+            'zipCode' => $this->faker->postcode(),
             'firstName' => $this->faker->firstName(),
             'lastName' => $this->faker->lastName(),
             'nameOfCard' => $this->faker->optional()->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'cardNumber' => substr($this->faker->creditCardNumber(), -4), 
+            'cardNumber' => substr($this->faker->creditCardNumber(), -4),
             'total_price' => $this->faker->numberBetween(10000, 5000000),
             'status' => $this->faker->randomElement($orderStatuses),
             'shipping_method' => $this->faker->randomElement($couriers),
             'address' => $this->faker->address(),
             'expiryMonth' => $this->faker->optional()->numberBetween(1, 12),
-            'expiryYear' => $this->faker->optional()->numberBetween((int)now()->format('Y'), (int)now()->format('Y') + 5),
+            'expiryYear' => $this->faker->optional()->numberBetween((int) now()->format('Y'), (int) now()->format('Y') + 5),
             'notes' => $this->faker->optional()->sentence(),
-            'payment_proof' => ImageHelper::random(),
+
             'payment_method' => $this->faker->randomElement($paymentMethods),
             'paid_at' => $this->faker->optional()->dateTimeBetween('-1 week', 'now'),
             'created_at' => now(),

@@ -29,6 +29,19 @@ export interface ReportsSeller {
 }
 
 
+
+export interface cartCart {
+  id: number
+   product : ProductsSchema
+   created_at: string
+   updated_at: string
+  product_id: number
+  quantity: number
+  sub_total: number
+  user_id: number
+}
+
+
 export interface ChartDataType {
     date: string;
    
@@ -70,6 +83,7 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+        
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
     [key: string]: unknown;
@@ -77,8 +91,10 @@ export interface SharedData {
 
 export interface User {
     id: number;
-    whishlist_count?: number;
-    order?: ProductsSchema[];
+whishlist_count?: number;
+        cart_total?: number;
+    cart_count_quantity?: number;
+    cart?: cartCart[];
     name: string;
     email: string;
     avatar?: string;
@@ -114,8 +130,9 @@ export interface OptionItem {
   subLabel?: string;
   description?: string;
   image?: string;
-  [key: string]: string | undefined | LucideIcon;
-  }
+  price?: number;
+  [key: string]: string | number | undefined | LucideIcon;
+}
 
 
   export interface DataFile {
@@ -159,6 +176,14 @@ export interface PaginatedData {
     meta: Meta;
   }
 
+  export interface CheckoutResponse {
+    status: boolean;
+    message: string;
+    data: cartCart[];
+    pagination:     PaginatedData
+;
+  }
+
 
 export interface Meta {
     filters : Filters
@@ -181,6 +206,7 @@ export type paramsProps = {
     perPage?: number; 
     search?: string; 
     order_by?: string; 
+    
     status?: string | string[] 
     category?: string | string[] 
     free_shipping? : boolean

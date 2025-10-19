@@ -11,7 +11,7 @@ type componentsProps = {
 }
 
 function NavStepper({ isLast  , curentActive}: componentsProps) {
-    const stepRegister: string[] = ["/register", "/register/password"  , "/register/location", "/register/role"]
+    const stepRegister: string[] = ["/register", "/register/password"  , "/register/location", "/register/occupasion" ,"/register/role"]
 
   return (
  <nav aria-label="Checkout Steps" className={cn("group pl-2 absolute bottom-10 right-1/2 left-1/2", isLast && "sr-only")}>

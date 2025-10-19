@@ -61,7 +61,8 @@ onSubmit
           control={form.control}
     name={"password" as FieldPath<T>}
           render={({ field }) => (
-            <FormItem>
+            <FormItem 
+            >
               <FormLabel className=' flex w-full justify-between'><span>Password</span> 
               <Link
               className=' underline text-muted-foreground hover:text-accent-foreground'

@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+
 #[ObservedBy(ProductsObserver::class)]
 class Products extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
     protected $table = 'products';
+
     protected $fillable = [
         'user_id',
         'name',
@@ -25,64 +27,57 @@ class Products extends Model
         'stock',
         'cover_image',
         'price',
-        'city',
+        'province',
         'country',
         'currency',
         'showcase_images',
-        'category'
+        'category',
     ];
 
     protected $casts = [
         'name' => 'string',
         'cover_image' => 'string',
         'free_shipping' => 'boolean',
-        'city' => 'string',
+        'province' => 'string',
         'country' => 'string',
         'currency' => 'string',
         'description' => 'string',
         'stock' => 'integer',
-        'category' => CategoryProductsStatus::class  ,
-        'status' => ProductStatus::class  ,
-        'price' => 'integer',      
-        'showcase_images' => 'array'
+        'category' => CategoryProductsStatus::class,
+        'status' => ProductStatus::class,
+        'price' => 'integer',
+        'showcase_images' => 'array',
     ];
 
-   
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-     
+
     public function orders(): HasMany
     {
-       return $this->hasMany(Orders::class, 'product_id');
+        return $this->hasMany(Orders::class, 'product_id');
     }
-    
+
     public function reviews(): HasMany
     {
-       return $this->hasMany(Reviews::class, 'product_id');
+        return $this->hasMany(Reviews::class, 'product_id');
     }
 
     public function whistlist(): HasMany
     {
-       return $this->hasMany(Whishlist::class, 'product_id');
+        return $this->hasMany(Whishlist::class, 'product_id');
     }
-    
+
     public function cartItem(): HasMany
     {
         return $this->hasMany(CartItems::class, 'product_id');
     }
 
-
-
-    
     public function orderItem(): HasMany
     {
         return $this->hasMany(OrderItems::class, 'product_id');
     }
-
-
-
 
     public function getPriceFormattedAttribute()
     {

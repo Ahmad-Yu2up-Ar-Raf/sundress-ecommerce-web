@@ -14,9 +14,10 @@ use Inertia\Inertia;
 Route::middleware('guest')->group(function () {
     Route::prefix('register')->name('register.')->group(function () {
         Route::get('/', [RegisteredUserController::class, 'create'])->name('index');
-        Route::get('/password', fn() => Inertia::render('auth/register/password'))->name('password');
-        Route::get('/role', fn() => Inertia::render('auth/register/role'))->name('role');
-        Route::get('/location', fn() => Inertia::render('auth/register/location'))->name('location');
+        Route::get('/password', fn () => Inertia::render('auth/register/password'))->name('password');
+        Route::get('/role', fn () => Inertia::render('auth/register/role'))->name('role');
+        Route::get('/occupasion', fn () => Inertia::render('auth/register/occupasion'))->name('occupasion');
+        Route::get('/location', fn () => Inertia::render('auth/register/location'))->name('location');
         Route::post('/', [RegisteredUserController::class, 'store'])->name('store');
     });
 
@@ -24,8 +25,7 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store'])
-    ->name('login.store')
-    ;
+        ->name('login.store');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

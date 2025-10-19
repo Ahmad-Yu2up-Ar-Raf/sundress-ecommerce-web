@@ -75,12 +75,12 @@ export const MinimalistHero = ({
   return (
     <div
       className={cn(
-        'relative flex   space-y-20 min-h-dvh w-full flex-col items-center justify-between overflow-hidden bg-background p-8 font-sans md:p-12',
+        'relative flex   space-y-20 min-h-dvh w-full flex-col items-center justify-between overflow-hidden bg-background p-8  md:p-12',
         className
       )}
     >
       {/* Header */}
-      <header className="z-30 flex w-full max-w-7xl items-center justify-between">
+      <header className="z-30  flex w-full container items-center justify-between">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -178,7 +178,7 @@ export const MinimalistHero = ({
       </header>
 
       {/* Main Content Area */}
-      <div className="relative gap-20 md:gap-0 grid w-full max-w-7xl flex-grow grid-cols-1 items-center md:grid-cols-3">
+      <div className="relative gap-30 md:gap-0 grid w-full max-w-[70em] flex-grow grid-cols-1 items-center md:grid-cols-3">
         {/* Left Text Content */}
         {!isMobile && (
 
@@ -206,7 +206,7 @@ export const MinimalistHero = ({
             <motion.img
                 src={imageSrc}
                 alt={imageAlt}
-                className="relative z-10 h-auto w-[50dvw] object-cover md:w-[35dvw] scale-150 lg:w-[20dvw]"
+                className="relative z-10 h-auto w-[12em] object-cover md:w-[35dvw] scale-150 lg:w-[20dvw]"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}

@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'country' => $this->faker->country(),
             'province' => $this->faker->state(),
-            'avatar' => ImageHelper::random(64, 64),  
+           
             'occupasion' => $this->faker->randomElement(UserOccupasion::cases()),
             'phone' => $this->faker->phoneNumber(),     
         ];

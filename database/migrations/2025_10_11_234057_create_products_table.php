@@ -16,19 +16,19 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-              $table->foreignId('user_id')->constrained()->onDelete('cascade');
-    $table->string('name')->unique();
-    $table->longText('description')->nullable();
-    $table->string('country')->default('ID');
-    $table->string('city')->nullable();
-    $table->string('status')->default(ProductStatus::Available->value);
-    $table->string('category')->default(CategoryProductsStatus::Food->value);
-    $table->boolean('free_shipping')->default(false);
-    $table->unsignedBigInteger('price')->default(0);
-    $table->char('currency', 3)->default('IDR');
-    $table->integer('stock')->default(1);
-    $table->string('cover_image');
-    $table->json('showcase_images')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name')->unique();
+            $table->longText('description')->nullable();
+            $table->string('country')->default('ID')->nullable();
+            $table->string('province')->nullable()->nullable();
+            $table->string('status')->default(ProductStatus::Available->value);
+            $table->string('category')->default(CategoryProductsStatus::Food->value);
+            $table->boolean('free_shipping')->default(false);
+            $table->unsignedBigInteger('price')->default(0);
+            $table->char('currency', 3)->default('IDR');
+            $table->integer('stock')->default(1);
+            $table->string('cover_image');
+            $table->json('showcase_images')->nullable();
         });
     }
 

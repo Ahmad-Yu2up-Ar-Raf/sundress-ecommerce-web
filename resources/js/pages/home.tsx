@@ -21,6 +21,8 @@ import { ApiResponse } from "@/types";
 export default function Pages({ ...props }: ApiResponse & {
   dataFreeShipping : ProductsSchema[]
   dataBestRating : ProductsSchema[]
+  productsBestSeller : ProductsSchema[]
+  
 } ) {
 
 console.log(props)
@@ -39,6 +41,7 @@ console.log(props)
 <AppSponsor/>
 <CategoryCarousel/>
 <ProductsCarousel label='Good quality!'title='Top Rating'   loading={false} data={props.dataBestRating!} />
+<ProductsCarousel label='Most Sold!'title='Best Sellers'   loading={false} data={props.productsBestSeller!} />
 {/* <ProductsBestSeller/>
 <ProductsBestRating/> */}
    </Providers>

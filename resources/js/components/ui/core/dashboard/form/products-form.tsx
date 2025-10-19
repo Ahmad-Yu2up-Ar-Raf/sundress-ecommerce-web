@@ -34,29 +34,31 @@ import PictureImageInput  from "@/components/ui/fragments/custom-ui/input/pictur
 import { ProductsSchema as ProductsSchema } from "@/lib/validations/index.t";
 import { CountrySelector, ProvinceSelector } from "@/components/ui/fragments/custom-ui/input/location-input";
 import MoneyInput from "@/components/ui/fragments/custom-ui/input/curency-input";
-import FormFileUpload from "@/components/ui/fragments/custom-ui/input/files-input";
+import FormFileUpload, { FileUploadRef } from "@/components/ui/fragments/custom-ui/input/files-input";
 import { FileWithPreview } from "@/hooks/use-files-upload";
 import { ProductStatusOptions } from "@/config/enums/ProductsStatus";
 import { Switch } from "@/components/ui/fragments/shadcn-ui/switch";
 import { CategoryProductsOptions } from "@/config/enums/CategoryProductsStatus";
 
 
-interface TaskFormProps<T extends FieldValues, >
+interface TaskFormProps<T extends FieldValues>
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   children: React.ReactNode;
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
   isPending: boolean;
-   curentProduct?: ProductsSchema
-   initialFiles?: FileWithPreview[] | undefined
+  currentProduct?: ProductsSchema; // Fix typo: currentProduct → currentProduct
+  fileUploadRef?: React.RefObject<FileUploadRef | null>;
+  initialFiles?: FileWithPreview[] | undefined;
 }
 
 export function ProductForm<T extends FieldValues, >({
   form,
   onSubmit,
- curentProduct,
+ currentProduct,
   children,
   initialFiles,
+   fileUploadRef,
   isPending,
 }: TaskFormProps<T>) {
 
@@ -67,10 +69,6 @@ export function ProductForm<T extends FieldValues, >({
    
 const countryValue = form.watch("country" as FieldPath<T>)
 
-  // Debug log
-  React.useEffect(() => {
-    console.log('📍 Form Country Value:', countryValue)
-  }, [countryValue])
   return (
     <Form {...form}>
       <form
@@ -173,7 +171,7 @@ const countryValue = form.watch("country" as FieldPath<T>)
           onChange={(file) => {
             field.onChange(file)
           }}
-          defaultValue={curentProduct?.cover_image || undefined}
+          defaultValue={currentProduct?.cover_image || undefined}
           error={fieldState.error?.message}
         />
       </FormControl>
@@ -295,7 +293,7 @@ const countryValue = form.watch("country" as FieldPath<T>)
                 <FormFileUpload 
                   {...field}
                   initialFiles={initialFiles}
-                  
+                         ref={fileUploadRef}
                   control={form.control}
                   name="showcase_images"
                   maxSizeMB={5}

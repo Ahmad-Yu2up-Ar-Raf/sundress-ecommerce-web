@@ -65,7 +65,9 @@ const CommandList = React.forwardRef<
   />
 ))
 
-CommandList.displayName = CommandPrimitive.List.displayName
+CommandInput.displayName = CommandPrimitive.Input.displayName
+
+
 
 const CommandEmpty = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,

@@ -122,5 +122,9 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+    
+    'currency' => env('APP_CURRENCY',  'IDR'),
+    'stripe_secret_key' => env('STRIPE_SECRET'),
+ 'api_ninjas' =>  env('API_NINJAS_KEY'),
 
 ];

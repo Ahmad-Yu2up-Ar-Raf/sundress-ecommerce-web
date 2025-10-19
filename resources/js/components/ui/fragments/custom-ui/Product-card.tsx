@@ -45,7 +45,7 @@ const Price = formatIDR(Product.price)
 
      const [isPending, startTransition] = React.useTransition();
      const user = usePage<SharedData>().props.auth.user;
-   const showcase_images = Product.showcase_images 
+   const showcase_images  = Product.showcase_images 
    const appDomain = import.meta.env.APP_URL || 'http://localhost:8000';
 const data = { product_id: Product.id }   
 const { open } = useModal();
@@ -122,7 +122,7 @@ if(user != null){
     try {
 
                  toast.loading("Adding...", { id: "cart"});
-         router.post(route('cart.cart.add'),  data, { 
+         router.post(route('cart.add'),  data, { 
            preserveScroll: true,
            preserveState: true,
            forceFormData: true, 
@@ -158,11 +158,11 @@ if(user != null){
 
   return (
   
-    <Card className={cn("w-full  h-full   gap-4 max-w-sm shadow-none border-0 p-0 bg-background dark:bg-background" )} {...props}>
-        <CardContent className={cn(" group rounded-xl overflow-hidden bg-background relative px-0  min-h-[18em] md:min-h-[21em]  " , className )}>
+    <Card className={cn("w-full   h-full   gap-4 max-w-sm shadow-none border-0 p-0 bg-background dark:bg-background" )} {...props}>
+        <CardContent className={cn(" group rounded-xl overflow-hidden bg-background relative px-0  min-h-[16em] md:min-h-[21em]  " , className )}>
       {label && (
 
-          <Badge  className="absolute z-30 bg-primary/80 rounded-xl top-2.5 left-2.5">
+          <Badge  className="absolute z-30 bg-primary/80 rounded-xl top-2.5 left-2.5 text-primary-foreground">
            {label}
           </Badge>
       )}
@@ -170,7 +170,7 @@ if(user != null){
     <Tooltip>
 
       <TooltipTrigger   onClick={handleWhishlist}   render={  
-        <Button  size={"sm"} variant={"ghost"} className={cn("  hover:bg-primary    z-40       md:py-5     rounded-full" ,
+        <Button  size={"sm"} variant={"ghost"} className={cn("  hover:bg-primary    z-40  px-0      md:py-5     rounded-full" ,
 
 
           ( Product.is_whislisted ) ? 'hover:text-primary  transition-all duration-300   ease-out   [&_svg]:fill-primary hover:[&_svg]:fill-none  hover:[&_svg]:text-accent' : ''
@@ -238,7 +238,7 @@ if(user != null){
               {  showcase_images &&  showcase_images.length > 0 && (
 
         <MediaItem 
-           webViewLink={`${appDomain}${showcase_images[0].preview}`}
+           webViewLink={`${showcase_images[0]}`}
           className="  rounded-xl   transition-all duration-300 ease-out opacity-0    group-hover:opacity-100  object-center  object-cover w-full h-full"
      
           />
@@ -258,7 +258,7 @@ if(user != null){
         <Star className=" size-4 fill-primary text-primary"/>  <span className=" font-medium">{ Product.reviews_avg_star_rating != null ?  Math.round(Product.reviews_avg_star_rating! * 10) / 10 : 0.0 }</span>
 <span className="">({Product.reviews_count})</span>
         </Badge>
-        <CardTitle className=" lg:text-lg leading-6 line-clamp-2">{Product.name} </CardTitle>
+        <CardTitle className=" font-medium text-base tracking-tight lg:text-lg leading-6 line-clamp-2">{Product.name} </CardTitle>
         {/* <CardDescription>
           Enter your email below to login to your account
         </CardDescription> */}
@@ -268,7 +268,7 @@ if(user != null){
       <CardFooter className=" text-left  bg-background  p-0">
         <div className=" flex flex-col">
 
-       <h1 className=" text-left     font-semibold  lg:text-lg ">{Price}</h1>
+       <h1 className=" text-left    font-medium  ">{Price}</h1>
        <p className="   md:text-sm text-xs text-accent-foreground/90 line-clamp-1">{Product.order_item_count || 0} Sold </p>
         </div>
         {/* <Button variant="outline" className="w-full">

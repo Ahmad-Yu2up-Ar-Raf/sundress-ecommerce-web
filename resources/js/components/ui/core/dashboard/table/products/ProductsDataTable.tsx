@@ -9,7 +9,7 @@ import {
     TableRow,
   } from "@/components/ui/fragments/shadcn-ui/table"
   import { ProductsSchema as ProductsSchema } from "@/lib/validations/index.t";
-  import { Box, Calendar, CircleCheck, CircleIcon, CircleXIcon, DoorOpen, EllipsisIcon, Eye, EyeOff, User2Icon, Users2Icon, XIcon } from "lucide-react"
+  import { Box, Calendar, CircleCheck, CircleIcon, CircleXIcon, DollarSign, DoorOpen, EllipsisIcon, Eye, EyeOff, ShoppingCart, Star, User2Icon, Users2Icon, XIcon } from "lucide-react"
   
   import {
     DropdownMenu,
@@ -56,7 +56,7 @@ import {
 import { Badge } from "@/components/ui/fragments/shadcn-ui/badge";
   
   import { TasksTableActionBar } from "./Products-table-action-bar";
-import { UpdateProductsSheet } from "../../sheet/update-barang-sheet";
+import { UpdateProductSheet } from "../../sheet/update-product-sheet";
   import { useInitials } from "@/hooks/use-initials";
    import { DeleteTasksDialog } from "@/components/ui/fragments/custom-ui/delete-task-dialog";
 import { getProductStatusIcon } from "@/lib/utils/products/ProductsStatus-utils";
@@ -301,7 +301,9 @@ import { formatIDR } from "@/hooks/use-money-format";
    const handleUpdateClose = (open: boolean) => {
       setOpenUpdate(open);
       if (!open) {
-        setcurrentProduct(null);
+        setTimeout(() => {
+          setcurrentProduct(null);
+        }, 500)
       }
     };
   
@@ -337,8 +339,7 @@ import { formatIDR } from "@/hooks/use-money-format";
   
       return (
       <>
-      
-      <div 
+           <div 
         className={cn("flex w-full flex-col gap-2.5 overflow-auto")}
       >
       <div className=" w-full flex gap-3.5 justify-between">
@@ -362,15 +363,13 @@ import { formatIDR } from "@/hooks/use-money-format";
       }}
           />
       </div>
-  
-  
-        <div className="overflow-hidden rounded-xl border">
-  
-      <Table>
+        <main className="overflow-hidden rounded-xl border">
+
+      <Table className="">
         <TableCaption className=" sr-only">A list of your recent products.</TableCaption>
         <TableHeader className="bg-accent/15">
           <TableRow>
-            <TableHead className="w-[100px]">   
+            <TableHead className="">   
                   <Checkbox
                checked={isAllSelected}
                            onCheckedChange={HandleSelectAll}
@@ -385,8 +384,10 @@ import { formatIDR } from "@/hooks/use-money-format";
   
             <TableHead>Category</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Avg Rating</TableHead>
             {/* <TableHead>Product Di Pinjam</TableHead> */}
-            <TableHead>Jumlah Product</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Sold</TableHead>
             <TableHead>Created At</TableHead>
           
   
@@ -416,18 +417,21 @@ import { formatIDR } from "@/hooks/use-money-format";
               aria-label="Select row"
               className="translate-y-0.5  mx-3   mr-4"
             /></TableCell>
-         <TableCell className="font-medium  flex items-center gap-4" 
+         <TableCell className="  flex items-center gap-5" 
               
    
               > 
               
-                 <Avatar className=" rounded-xl  relative flex size-10 shrink-0 overflow-hidden">
+                 <Avatar className=" rounded-xl  relative flex size-20 shrink-0 overflow-hidden">
                                           <AvatarImage src={`${products?.cover_image!}`} alt={products.name} />
                                           <AvatarFallback className="rounded-xl  bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                               {getInitial(products.name)}
                                           </AvatarFallback>
                                       </Avatar>
-              {products.name}</TableCell>
+              <h4 className=" font-medium">
+                {products.name}
+                </h4>
+              </TableCell>
    
               
   
@@ -439,39 +443,45 @@ import { formatIDR } from "@/hooks/use-money-format";
   
         </TableCell>
               <TableCell className="">  
-                    <Badge variant="outline" className="text-muted-foreground px-1.5">
-                    <IconProduct/>
+                    <Badge variant="outline" icon={IconProduct} className="py-1 [&>svg]:size-3.5">
+    
           {products.category}
         </Badge>
         </TableCell>
           
             <TableCell>
               
-            <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
-           <IconStatus/>
-            
-              <span className="capitalize ">{products.status}</span>
-           
-            </Badge></TableCell>
+            <Badge icon={IconStatus}  variant="outline" className="py-1 [&>svg]:size-3.5">
+              {products.status}
+              </Badge>
+    </TableCell>
+            <TableCell>
+              
+            <Badge icon={Star} variant="outline" className="py-1 [&>svg]:size-3.5">
+         { products.reviews_avg_star_rating != null ?  Math.round(products.reviews_avg_star_rating! * 10) / 10 : 0.0 }
+              </Badge>
+    </TableCell>
   
-            {/* <TableCell>    
-                   <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
-              <Box />
-            
-              <span className="capitalize  underline-offset-4  hover:underline font-mono">{totalProductPinjaman }</span>
-           
-            </Badge>
-            </TableCell> */}
+    
             <TableCell>    
-                   <Badge variant="outline" className="py-1 [&>svg]:size-3.5">
-              <Box />
+                   <Badge variant="outline" icon={Box} className="py-1 [&>svg]:size-3.5">
+         
             
               <span className="capitalize  underline-offset-4  hover:underline font-mono">{products.stock}</span>
            
             </Badge>
             </TableCell>
      
-            <TableCell className="">{new Date(products.created_at).toLocaleDateString()}</TableCell>
+            <TableCell>    
+                   <Badge variant="outline" icon={ShoppingCart} className="py-1 [&>svg]:size-3.5">
+         
+            
+              <span className="capitalize  underline-offset-4  hover:underline font-mono">{products.order_item_count}</span>
+           
+            </Badge>
+            </TableCell>
+     
+            <TableCell className="">{products.created_at ? new Date(products.created_at).toLocaleDateString() : 'N/A'}</TableCell>
 
               <TableCell className=" w-fit">
                   <DropdownMenu modal={false}>
@@ -529,8 +539,14 @@ import { formatIDR } from "@/hooks/use-money-format";
       
   
       </Table>
-        </div>
-      <div className=  "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
+        </main>
+ 
+  
+  </div>
+    
+
+      
+      <footer className=  "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
         <div className="flex-1 whitespace-nowrap text-muted-foreground text-sm">
       {selectedIds.length} of {Products.length} row(s) selected.
         </div>
@@ -557,7 +573,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               }}
             >
               <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={PaginatedData.perPage} />
+                <SelectValue placeholder={`${PaginatedData.perPage}`} />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -671,8 +687,8 @@ import { formatIDR } from "@/hooks/use-money-format";
             </Button>
           </div>
         </div>
-      </div>
-      </div>
+      </footer>
+
       {deletedId && (
   
       <DeleteTasksDialog open={openDelete} handledeDelete={handleDelete} processing={processing} id={deletedId} trigger={false} onOpenChange={setOpenDelete}/>
@@ -689,9 +705,9 @@ import { formatIDR } from "@/hooks/use-money-format";
         )}
             {currentProduct && (
   
-         <UpdateProductsSheet
+         <UpdateProductSheet
+         product={currentProduct}
            
-                    task={currentProduct }
                     open={openUpdate} 
                     onOpenChange={handleUpdateClose}
                   />

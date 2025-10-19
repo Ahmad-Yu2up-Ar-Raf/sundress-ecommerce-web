@@ -1,7 +1,8 @@
 
 
 
-import { UserOccupationValue } from "@/config/Enums/Ocupassion";
+import { UserOccupationValue } from "@/config/enums/Ocupassion";
+import { UserRoleValues } from "@/config/enums/userRole";
 import * as z from "zod";
 
 export const loginSchema = z.object({
@@ -19,6 +20,7 @@ export const registerCreateSchema = z.object({
       country: z.string().min(2, "location required"),
       province: z.string().min(2, "location required"),
    occupasion: z.enum(UserOccupationValue).optional(),
+   role: z.enum(UserRoleValues).optional(),
 });
 
 

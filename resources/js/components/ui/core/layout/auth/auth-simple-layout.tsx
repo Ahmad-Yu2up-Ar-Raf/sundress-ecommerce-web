@@ -44,7 +44,7 @@ const AuthLayoutTemplate = ({
         <div className="w-[8rem] h-[5rem] bg-background absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
         <div className="w-[8rem] h-[5rem] bg-background absolute z-1 rounded-full bottom-0 animate-pulse pointer-events-none"></div>
  
-      <div className="bg-black text-white p-8 lg:p-12 lg:w-1/2 relative rounded-bl-3xl  overflow-hidden">
+      <div className="bg-black  hidden md:inline text-white p-8 lg:p-12 lg:w-1/2 relative rounded-bl-3xl  overflow-hidden">
         <h1 className="text-2xl lg:text-3xl font-medium leading-tight z-10 tracking-tight relative">
           {quote}
         </h1>
@@ -54,14 +54,14 @@ const AuthLayoutTemplate = ({
           <div className="justify-center max-w-sm flex m-auto flex-col h-full">
             <div className="flex flex-col items-left mb-8">
               <div className={cn("relative mb-4")}>
-                <LogoWhiter className="absolute top-0 size-12 opacity-100 transition-transform ease-in-out duration-500 dark:opacity-0" />
-                <LogoDark className="size-12 opacity-0 transition-transform ease-in-out duration-500 dark:opacity-100" />
+                <LogoWhiter className="absolute top-0 size-10 sm:size-12 opacity-100 transition-transform ease-in-out duration-500 dark:opacity-0" />
+                <LogoDark className="sm:size-12 size-10 opacity-0 transition-transform ease-in-out duration-500 dark:opacity-100" />
               </div>
               
-              <h2 className="text-3xl font-medium mb-2 tracking-tight">
+              <h2 className="sm:text-3xl text-2xl font-medium mb-2 tracking-tight">
                 {title}
               </h2>
-              <p className="text-left opacity-80">
+              <p className="text-left sm:text-base text-sm opacity-80">
                 {description}
               </p>
             </div>

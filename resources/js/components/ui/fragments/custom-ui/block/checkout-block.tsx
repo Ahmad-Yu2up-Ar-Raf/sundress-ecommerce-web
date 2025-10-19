@@ -1,18 +1,19 @@
 "use client";
 
-import { Button } from "@/components/ui/fragments/shadcn-ui/button";
+import { Button, buttonVariants } from "@/components/ui/fragments/shadcn-ui/button";
 import {
 Card,
 CardContent,
 CardHeader,
 CardFooter,
+CardTitle,
 } from "@/components/ui/fragments/shadcn-ui/card";
 import { Badge } from "@/components/ui/fragments/shadcn-ui/badge";
 import { Input } from "@/components/ui/fragments/shadcn-ui/input";
 import { Label } from "@/components/ui/fragments/shadcn-ui/label";
 import { Checkbox } from "@/components/ui/fragments/shadcn-ui/checkbox";
 import { Skeleton } from "@/components/ui/fragments/shadcn-ui/skeleton";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
 CreditCard,
 Truck,
@@ -34,6 +35,7 @@ Smartphone,
 Building2,
 Clock,
 ClipboardList,
+File,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -44,9 +46,16 @@ SelectTrigger,
 SelectValue,
 } from "@/components/ui/fragments/shadcn-ui/select";
 import { PaymentMethodOptions } from "@/config/enums/payment-method";
-import { OptionItem } from "@/types";
+import { cartCart, CheckoutResponse, OptionItem } from "@/types";
 import { CountrySelector, ProvinceSelector } from "../input/location-input";
-
+import { User as profile, type SharedData } from '@/types';
+import { Link, router, usePage } from "@inertiajs/react";
+import { formatIDR } from "@/hooks/use-money-format";
+import CartProductsCard from "@/components/ui/core/main/cart-product-card";
+import { ShippingMethod, shippingMethods } from "@/config/enums/courier";
+import { toast } from "sonner";
+import { Spinner } from "../../shadcn-ui/spinner";
+import { PhoneInput } from "../input/phone-input";
 interface OrderItem {
 id: string;
 name: string;
@@ -60,9 +69,9 @@ discount?: number;
 interface CheckoutSummary {
 subtotal: number;
 discount: number;
-shipping: number;
+shipping: number | undefined;
 tax: number;
-total: number;
+total_price: number;
 }
 
 interface ShippingAddress {
@@ -74,7 +83,8 @@ address: string;
 country: string;
 province: string;
 zipCode: string;
-
+shipping_method: string;
+payment_method: string;
 }
 
 interface PaymentMethod {
@@ -85,9 +95,10 @@ cvv: string;
 nameOfCard: string;
 }
 
-export default function Checkout() {
-const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+export default function Checkout({ data : userCartData }: { data: cartCart[]}) {
+const [orderItems, setOrderItems] = useState<cartCart[]>([]);
 const [isLoading, setIsLoading] = useState<boolean>(true);
+const [loading, setLoading] = useState(false);
 const [currentStep, setCurrentStep] = useState<number>(1);
 const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
   firstName: "",
@@ -98,7 +109,8 @@ const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
   country: "",
   province: "",
   zipCode: "",
-
+  shipping_method :"",
+  payment_method :"",
 });
 const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
   cardNumber: "",
@@ -108,101 +120,51 @@ const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
   nameOfCard: "",
 });
 const [selectedPaymentType, setSelectedPaymentType] =
-  useState<OptionItem>(PaymentMethodOptions[0]);
+useState<OptionItem>(PaymentMethodOptions[0]);
 const [sameAsShipping, setSameAsShipping] = useState<boolean>(true);
 const [savePaymentMethod, setSavePaymentMethod] = useState<boolean>(false);
 const [appliedPromo, setAppliedPromo] = useState<string>("SAVE10");
 const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false);
 
-const sampleOrderItems: OrderItem[] = [
-  {
-    id: "1",
-    name: "Wireless Bluetooth Headphones",
-    price: 89.99,
-    originalPrice: 129.99,
-    image:
-      "https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=1165&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    quantity: 2,
-    discount: 31,
-  },
-  {
-    id: "2",
-    name: "Minimalist Desk Lamp",
-    price: 45.99,
-    image:
-   "https://images.unsplash.com/photo-1617363020293-62faac14783d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    quantity: 1,
-  },
-  {
-    id: "3",
-    name: "Organic Coffee Beans",
-    price: 24.99,
-    originalPrice: 29.99,
-    image:
-      "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop",
-    quantity: 3,
-    discount: 17,
-  },
-];
 
-const shippingMethods = [
-  {
-    id: "standard",
-    name: "Standard Shipping",
-    price: 9.99,
-    time: "5-7 business days",
-  },
-  {
-    id: "express",
-    name: "Express Shipping",
-    price: 19.99,
-    time: "2-3 business days",
-  },
-  {
-    id: "overnight",
-    name: "Overnight Shipping",
-    price: 39.99,
-    time: "Next business day",
-  },
-];
 
-const [selectedShipping, setSelectedShipping] = useState("standard");
+const [selectedShipping, setSelectedShipping]  = useState<OptionItem>(shippingMethods[0]);
 
 useEffect(() => {
   const loadCheckout = async () => {
     setIsLoading(true);
-    // Simulate API call delay
+
     await new Promise((resolve) => setTimeout(resolve, 1200));
-    setOrderItems(sampleOrderItems);
+    setOrderItems(userCartData!);
     setIsLoading(false);
   };
 
   loadCheckout();
-}, []);
+}, [userCartData]);
+
+
+
+ const user = usePage<SharedData>().props.auth.user;
 
 const calculateSummary = (): CheckoutSummary => {
   const subtotal = orderItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0
   );
   const discount = appliedPromo === "SAVE10" ? subtotal * 0.1 : 0;
-  const shipping =
-    selectedShipping === "standard"
-      ? 9.99
-      : selectedShipping === "express"
-      ? 19.99
-      : 39.99;
-  const tax = (subtotal - discount) * 0.08; // 8% tax
-  const total = subtotal - discount + shipping + tax;
+  const shipping = selectedShipping?.price! ; 
+  const tax = (subtotal - discount) * 0.08;
+  const total_price = subtotal - discount + shipping + tax;
 
   return {
     subtotal,
     discount,
     shipping,
     tax,
-    total,
+    total_price,
   };
 };
+
 
 const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
   setShippingAddress((prev) => ({
@@ -264,6 +226,63 @@ const removePromo = () => {
 
 const summary = calculateSummary();
 
+
+
+
+
+const data = {
+  ...paymentMethod,
+  ...shippingAddress,
+  ...summary,
+  shipping_method: selectedShipping.value,
+  payment_method: selectedPaymentType.value,
+  expiryMonth: parseInt(paymentMethod.expiryMonth)
+}
+
+  const [isPending, startTransition] = React.useTransition();
+
+function handlePayment() {
+   
+    
+    
+console.log(data)
+    toast.loading("loading....", {
+      id: "payment"
+    });
+    
+  startTransition(() => {
+    setLoading(true);
+
+    // Prepare data dengan struktur yang benar
+
+
+
+    router.post(route(`checkout.payment`), data, { 
+      preserveScroll: true,
+      preserveState: true,
+
+      onSuccess: () => {
+
+       
+        toast.success("successfully", {
+          id: "payment"
+        });
+        setLoading(false);
+      },
+      onError: (error) => {
+        console.error("Submit error:", error);
+        toast.error(`Error: ${Object.values(error).join(', ')}`, {
+          id: "payment"
+        });
+        setLoading(false);
+      },
+      onFinish: () => {
+        setLoading(false);
+ 
+      }
+    });
+  });
+}
 const CheckoutSkeleton = () => (
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div className="lg:col-span-2 flex flex-col gap-6">
@@ -297,49 +316,86 @@ const CheckoutSkeleton = () => (
   </div>
 );
 
-const OrderSummaryCard = () => (
-  <Card className="flex   flex-col rounded-xl gap-5">
-    <CardHeader>
-      <h3 className="font-semibold flex items-center gap-3">
+const OrderSummaryCard = () => {
+const isShowMore = userCartData.length >3 
+
+
+const handleShowAll = () => {
+
+  setLoading(true);
+
+  router.get(
+    route('checkout.index'), 
+    { perPage: 'all' },
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onError: (error) => {
+        console.error('Submit error:', error);
+        toast.error(`Error: ${Object.values(error).join(', ')}`, {
+          id: 'showMore',
+        });
+     ;
+        setLoading(false);
+      },
+      onFinish: () => {
+        setLoading(false);
+      },
+    }
+  );
+};
+
+  return(
+  <Card className="flex pb-2.5   flex-col rounded-xl gap-5">
+    <CardHeader className=" [.border-b]:pb-3 border-b pb-0 pt-0">
+      <CardTitle className="font-semibold flex items-center gap-3">
         <ShoppingBag className="h-4 w-4" />
         Order Summary
-      </h3>
+      </CardTitle>
     </CardHeader>
-    <CardContent className="flex flex-col gap-5">
+    <CardContent className="flex flex-col gap-7">
       {/* Order Items */}
-      <div className="flex flex-col gap-5">
-        {orderItems.map((item) => (
-          <div key={item.id} className="flex gap-3">
-            <div className="relative w-12 h-12 flex-shrink-0">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-full object-cover rounded-xl"
-              />
-              <Badge
-                size="sm"
-                className="absolute rounded-xl -top-1 -right-1 text-xs min-w-5 h-5 flex items-center justify-center"
-              >
-                {item.quantity}
-              </Badge>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{item.name}</p>
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold">${item.price}</span>
-                {item.originalPrice && (
-                  <span className="text-xs text-muted-foreground line-through">
-                    ${item.originalPrice}
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="text-sm font-semibold">
-              ${(item.price * item.quantity).toFixed(2)}
-            </div>
-          </div>
-        ))}
-      </div>
+      <main className={cn("flex flex-col gap-6   pt-2 relative     overflow-hidden"
+,
+
+!isShowMore &&  'max-h-[40dvh]  '
+      )}>
+        {!isShowMore && (
+
+        <div className='pointer-events-none absolute inset-x-0 bottom-0 h-[35dvh]  bg-gradient-to-t z-50 from-white dark:from-black'>
+        </div>
+        )}
+        {!isShowMore && (
+
+        <div className="absolute w-full bottom-0 z-50 items-center flex justify-center ">
+ <div
+              className={cn(
+                "w-1/2  h-[0.5px] rounded-xl bg-accent-foreground/30"
+              )}
+            />
+        <Button 
+         size={"sm"}
+         disabled={loading}
+        onClick={() => handleShowAll()}
+        variant="outline" className=" text-xs  py-0 rounded-full px-5  right-1/2 left-1/2  font-medium text-accent-foreground ">
+          Show All {
+            loading && <Spinner/>
+          }
+        </Button>
+         <div
+              className={cn(
+                "w-1/2  h-[0.5px] rounded-xl bg-accent-foreground/30"
+              )}
+            />
+        </div>
+        )}
+        {userCartData && userCartData.map((item ,i) =>  {
+          const Product = item.product
+          const price = formatIDR(item.sub_total)
+        return(
+ <CartProductsCard key={i} className="  bg-white dark:bg-black h-[4em]  [&_#card-content-img]:min-w-15" ProductCart={item}/>
+        )})}
+      </main>
       {/* Applied Promo */}
       {appliedPromo && (
         <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl border border-yellow-200">
@@ -363,34 +419,35 @@ const OrderSummaryCard = () => (
       <div className="flex flex-col gap-3 border-t pt-4">
         <div className="flex justify-between text-sm">
           <span>Subtotal</span>
-          <span>${summary.subtotal.toFixed(2)}</span>
+          <span>{formatIDR(parseInt(summary.subtotal.toFixed(2)))}</span>
         </div>
         {summary.discount > 0 && (
           <div className="flex justify-between text-sm text-yellow-600">
             <span>Discount</span>
-            <span>-${summary.discount.toFixed(2)}</span>
+            <span>-{formatIDR(parseInt(summary.discount.toFixed(2)))}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span>Shipping</span>
-          <span>${summary.shipping.toFixed(2)}</span>
+          <span>{formatIDR(parseInt(summary?.shipping!.toFixed(2)))}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span>Tax</span>
-          <span>${summary.tax.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between font-semibold text-lg border-t pt-2">
-          <span>Total</span>
-          <span>${summary.total.toFixed(2)}</span>
+          <span>{formatIDR(parseInt(summary.tax.toFixed(2)))}</span>
         </div>
       </div>
     </CardContent>
+        <CardFooter className="items-center px-6 flex justify-between font-semibold text-lg border-t [.border-t]:py-3 ">
+          <span>Total</span>
+          <span>
+            {formatIDR(parseInt(summary.total_price.toFixed(2)))}</span>
+        </CardFooter>
   </Card>
-);
+)};
 
 if (isLoading) {
   return (
-    <div className="w-full container mx-auto p-6 flex flex-col gap-6">
+    <div className="w-full min-h-dvh container mx-auto p-6 flex flex-col gap-6">
       <div className="flex items-center gap-5">
         <Skeleton className="h-8 w-8 rounded-full" />
         <Skeleton className="h-8 w-32" />
@@ -399,22 +456,30 @@ if (isLoading) {
     </div>
   );
 }
+const steps = [
+        { step: 1, label: "Shipping", icon: Truck },
+        { step: 2, label: "Payment", icon: CreditCard },
+        { step: 3, label: "Review", icon: ClipboardList },
+        { step: 4, label: "Validation", icon: File },
+      ]
+
+
+
 
 return (
-  <div className="w-full container mx-auto p-6 flex flex-col gap-6">
+  <div className="w-full container mx-auto  py-5 px-4 flex flex-col gap-3">
     {/* Header */}
     <div className="flex items-center justify-between">
       <div className="flex items-start gap-5 flex-col">
         {" "}
-        <Button
-          variant="link"
-          size="sm"
-          onClick={() => window.history.back()}
-          className="flex  px-0  has-[>svg]:px-0 items-center gap-1"
+        <Link
+     
+         href="/"
+          className={cn( buttonVariants({ variant: "link"}) ,"flex  px-0  has-[>svg]:px-0 items-center gap-1")}
         >
           <ChevronLeft className="h-4 w-4" />
           Back to Cart
-        </Button>
+        </Link>
         <div className="flex flex-col gap-3">
           <h1 className="text-2xl font-bold flex items-center gap-3">
             Checkout
@@ -424,37 +489,49 @@ return (
           </p>
         </div>
       </div>
-      <Badge variant="secondary" className="flex items-center gap-1">
+      <Badge  className="flex rounded-xl items-center gap-1">
         <Shield className="h-3 w-3" />
         SSL Secured
       </Badge>
     </div>{" "}
     {/* Progress Steps */}
-    <div className="flex items-center justify-start gap-5 sm:gap-6 py-4">
-      {[
-        { step: 1, label: "Shipping", icon: Truck },
-        { step: 2, label: "Payment", icon: CreditCard },
-        { step: 3, label: "Review", icon: ClipboardList },
-      ].map(({ step, label, icon: Icon }, index) => (
-        <div key={step} className="flex items-center gap-3">
-          <div className="flex items-center gap-3">
+    <div className="flex w-full px-0   m-auto  items-center justify-between  gap-2 sm:gap-6 py-4">
+      {steps.map(({ step, label, icon: Icon }, index) => (
+        <div key={step} className={cn("flex   items-center  gap-3",
+
+          index !=  steps.length - 1 && 'w-full'
+        )}>
+          <div className="flex flex-col w-full  gap-2">
+            <div className=" flex w-full  overflow-hidden items-center gap-2">
+
             <div
               className={cn(
-                "flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors",
+                "flex items-center justify-center size-8 p-1.5 md:size-11  md:p-3 rounded-full border-2 transition-colors",
                 currentStep >= step
                   ? "bg-primary border-primary text-white dark:text-black"
                   : "border-border text-muted-foreground"
               )}
             >
               {currentStep > step ? (
-                <Check className="h-4 w-4" />
+                <Check className="size-8 md:size-10" />
               ) : (
-                <Icon className="h-4 w-4" />
+                <Icon className="size-8 md:size-10" />
               )}
+            </div>
+                {  index !=  steps.length - 1 && (
+            <div
+              className={cn(
+                "w-full  h-0.5 rounded-xl",
+                currentStep > step
+                  ? "bg-primary"
+                  : "bg-border"
+              )}
+            />
+          )}
             </div>
             <span
               className={cn(
-                "text-sm font-medium hidden sm:block",
+                "text-[12px] md:text-base font-medium block",
                 currentStep >= step
                   ? "text-foreground"
                   : "text-muted-foreground"
@@ -463,16 +540,7 @@ return (
               {label}
             </span>
           </div>
-          {index < 2 && (
-            <div
-              className={cn(
-                "w-8 h-0.5",
-                currentStep > step
-                  ? "bg-primary"
-                  : "bg-border"
-              )}
-            />
-          )}
+      
         </div>
       ))}
     </div>
@@ -481,14 +549,14 @@ return (
       <div className="lg:col-span-2 flex flex-col gap-6">
         {/* Step 1: Shipping Information */}
         {currentStep === 1 && (
-          <Card className="flex flex-col gap-6">
-            <CardHeader>
-              <h2 className="text-xl font-semibold flex items-center gap-3">
+          <Card className="flex flex-col gap-6 ">
+            <CardHeader className=" [.border-b]:pb-3  border-b ">
+              <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
                 <MapPin className="h-5 w-5" />
                 Shipping Information
-              </h2>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
+            <CardContent className="   flex flex-col gap-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="firstName">First Name *</Label>{" "}
@@ -532,17 +600,17 @@ return (
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="phone">Phone</Label>{" "}
-                  <Input
-                    id="phone"
-                    size="lg"
-                    type="tel"
-                    placeholder="+1 (555) 123-4567"
-                    value={shippingAddress.phone}
-                    onChange={(e) =>
-                      handleAddressChange("phone", e.target.value)
-                    }
-                    leftIcon={<Phone className="h-4 w-4" />}
-                  />
+                  <PhoneInput
+  placeholder="Enter phone number"
+  id="phone"
+  type="tel"
+  value={shippingAddress.phone}
+  onChange={(value) => handleAddressChange("phone", value ?? "")}
+  defaultCountry="ID"
+  disabled={isPending}
+/>
+
+              
                 </div>
               </div>
               <div className="flex flex-col gap-3">
@@ -608,16 +676,19 @@ return (
               <div className="flex flex-col gap-6 border-t pt-7">
                 <Label className=" font-medium text-lg">Shipping Method</Label>
                 <div className="flex flex-col gap-5">
-                  {shippingMethods.map((method) => (
+                  {shippingMethods.map((method , i) => (
                     <div
-                      key={method.id}
+                      key={i}
                       className={cn(
                         "p-3 border rounded-xl cursor-pointer transition-colors",
-                        selectedShipping === method.id
+                        selectedShipping ===  method
                           ? "border-primary bg-primary/5"
                           : "border-border hover:bg-accent/10"
                       )}
-                      onClick={() => setSelectedShipping(method.id)}
+                      onClick={() => {setSelectedShipping(method)
+
+                          handleAddressChange("shipping_method", method.value)
+                      }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -626,27 +697,27 @@ return (
                           <div
                             className={cn(
                               "size-1.5 rounded-full  transition-colors",
-                              selectedShipping === method.id
+                              selectedShipping === method
                                 ? "border-primary  border-2  bg-primary"
                                 : "border-border"
                             )}
                           />
                           </div>
                           <div>
-                            <div className="font-medium">{method.name}</div>
+                            <div className="font-medium">{method.label}</div>
                             <div className="text-sm text-muted-foreground">
-                              {method.time}
+                              {method.subLabel}
                             </div>
                           </div>
                         </div>
-                        <div className="font-semibold">${method.price}</div>
+                        <div className="font-semibold">{formatIDR(method.price)}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className=" border-t">
               <Button
                 onClick={nextStep}
                 disabled={!validateStep(1)}
@@ -660,12 +731,12 @@ return (
         )}{" "}
         {/* Step 2: Payment Information */}
         {currentStep === 2 && (
-          <Card className="flex flex-col gap-6">
-            <CardHeader>
-              <h2 className="text-xl font-semibold flex items-center gap-3">
+          <Card className="flex flex-col gap-6 ">
+           <CardHeader className=" [.border-b]:pb-3  border-b ">
+              <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
                 <CreditCard className="h-5 w-5" />
                 Payment Information
-              </h2>
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               {/* Payment Method Selection */}
@@ -681,20 +752,24 @@ return (
                   variant={"ghost"}
                   size={"lg"}
                     type="button"
-                    onClick={() => setSelectedPaymentType(Item)}
+                    onClick={() => {
+                      setSelectedPaymentType(Item)
+                    
+                            handleAddressChange("payment_method", Item.value)
+                    }}
                     className={cn(
-                      "flex justify-between items-center gap-3 px-4 py-10 border-2 rounded-xl transition-colors text-left",
+                      "flex overflow-hidden justify-between items-center  gap-3 px-4 py-10 border-2 rounded-xl transition-colors ",
                       selectedPaymentType.value ===  Item.value
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
                     )}
                   >
-                    <div className=" flex items-center   gap-3  ">
+                    <div className="  text-left overflow-hidden    max-w-xs  flex items-center   gap-3  ">
                     <Item.icon className="size-5 text-primary" />
-                    <div className="">
+                    <div className=" w-full">
 
                       <div className="font-medium">{Item.label}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs line-clamp-1 text-muted-foreground">
                         {Item.description}
                       </div>
                     </div>
@@ -830,7 +905,8 @@ return (
 
              
             </CardContent>{" "}
-            <CardFooter className="flex justify-between">
+           <CardFooter className=" flex justify-between border-t">
+        
               <Button
                 variant="outline"
                 size="lg"
@@ -852,12 +928,12 @@ return (
         )}
         {/* Step 3: Review Order */}
         {currentStep === 3 && (
-          <Card className="flex flex-col gap-6">
-            <CardHeader>
-              <h2 className="text-xl font-semibold flex items-center gap-3">
+          <Card className="flex  flex-col gap-6">
+           <CardHeader className=" [.border-b]:pb-3  border-b ">
+              <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
                 <ClipboardList className="h-5 w-5" />
                 Review Your Order
-              </h2>
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
               {/* Shipping Address Review */}
@@ -867,6 +943,7 @@ return (
                   <p>
                     {shippingAddress.firstName} {shippingAddress.lastName}
                   </p>
+                  <p>{shippingAddress.phone}</p>
                   <p>{shippingAddress.address}</p>
                   <p>
                     {shippingAddress.country}, {shippingAddress.province}{" "}
@@ -879,51 +956,26 @@ return (
               <div className="flex flex-col gap-3">
                 <h3 className="font-medium">Payment Method</h3>
                 <div className="text-sm text-muted-foreground p-3 bg-input/10 border rounded-xl ">
-                  {selectedPaymentType.value === "bank_transfer" && (
+                  {selectedPaymentType.value === "bank_transfer" ? (
                     <>
                       <p>
                         **** **** **** {paymentMethod.cardNumber.slice(-4)}
                       </p>
                       <p>{paymentMethod.nameOfCard}</p>
                     </>
-                  )}
-                  {/* {selectedPaymentType === "paypal" && (
-                    <div className="flex items-center gap-3">
-                      <Wallet className="h-4 w-4 text-yellow-600" />
-                      <span>PayPal</span>
+                  ) : (
+<div className="flex items-center gap-3">
+                      <selectedPaymentType.icon className="h-4 w-4 text-yellow-600" />
+                      <span>{selectedPaymentType.label}</span>
                     </div>
                   )}
-                  {selectedPaymentType === "apple-pay" && (
-                    <div className="flex items-center gap-3">
-                      <Smartphone className="h-4 w-4 text-gray-800" />
-                      <span>Apple Pay</span>
-                    </div>
-                  )}
-                  {selectedPaymentType === "google-pay" && (
-                    <div className="flex items-center gap-3">
-                      <Smartphone className="h-4 w-4 text-yellow-600" />
-                      <span>Google Pay</span>
-                    </div>
-                  )}
-                  {selectedPaymentType === "bank-transfer" && (
-                    <div className="flex items-center gap-3">
-                      <Building2 className="h-4 w-4 text-yellow-800" />
-                      <span>Bank Transfer</span>
-                    </div>
-                  )}
-                  {selectedPaymentType === "bnpl" && (
-                    <div className="flex items-center gap-3">
-                      <Clock className="h-4 w-4 text-purple-600" />
-                      <span>
-                        Buy Now Pay Later (4 payments of $
-                        {(summary.total / 4).toFixed(2)})
-                      </span>
-                    </div>
-                  )} */}
+                 
                 </div>
               </div>{" "}
               {/* Terms and Conditions */}
-              <div className="flex items-start gap-3 border-t pt-4">
+            </CardContent>{" "}
+             <CardFooter className=" [.border-t]:pb-3  gap-6 flex flex-col border-t">
+              <div className="flex  items-start gap-3 w-full  ">
                 <Checkbox
                   id="agreeTerms"
                   checked={agreeToTerms}
@@ -933,38 +985,45 @@ return (
                 />
                 <Label
                   htmlFor="agreeTerms"
-                  className="text-sm leading-relaxed"
+                  className="  line-clamp-1 text-[15px] leading-relaxed"
                 >
                   I agree to the{" "}
-                  <Button variant="link" className="p-0 h-auto text-sm">
+                  <Button variant="link" className="p-0  h-auto ">
                     Terms of Service
                   </Button>{" "}
                   and{" "}
-                  <Button variant="link" className="p-0 h-auto text-sm">
+                  <Button variant="link" className="p-0 h-auto ">
                     Privacy Policy
                   </Button>
                 </Label>
               </div>
-            </CardContent>{" "}
-            <CardFooter className="flex justify-between">
+              <div className=" w-full flex justify-between">
+
               {" "}
               <Button
                 variant="outline"
                 size="lg"
+                disabled={loading}
                 onClick={prevStep}
                 className="flex items-center gap-3"
               >
+              {loading ? <Spinner/> :
                 <ChevronLeft className="h-4 w-4" />
+                }
                 Back
               </Button>{" "}
               <Button
-                disabled={!validateStep(3)}
+                disabled={!validateStep(3) || loading}
                 size="lg"
+                onClick={() => handlePayment()}
                 className="bg-yellow-600 hover:bg-yellow-700 flex items-center gap-3"
               >
-                <Lock className="h-4 w-4" />
-                Complete Order ${summary.total.toFixed(2)}
+                {loading ? <Spinner/> :
+         <Lock className="h-4 w-4" />
+                }   
+                Complete Order 
               </Button>
+              </div>
             </CardFooter>
           </Card>
         )}
@@ -975,7 +1034,7 @@ return (
         <OrderSummaryCard />
 
         {/* Security Badge */}
-        <Card>
+        <Card className=" ">
           <CardContent className="px-4 py-0">
             <div className="flex items-center gap-3 text-sm">
               <Shield className="h-5 w-5 text-yellow-600" />

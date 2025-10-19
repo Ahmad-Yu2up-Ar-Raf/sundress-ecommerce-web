@@ -37,8 +37,8 @@ export function SectionCards({dataCards}: componentsProps) {
             {card.value}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-          <card.icon className="size-4" />
+            <Badge variant="outline" icon={card.icon} className=" text-accent-foreground">
+    
               {card.label }
             </Badge>
           </CardAction>

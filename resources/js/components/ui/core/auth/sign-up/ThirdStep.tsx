@@ -78,7 +78,7 @@ function ThirdStep() {
       setLoading(true)
       startTransition(async () => { 
         setData(input);
-          router.visit("/register/role" , { 
+          router.visit("/register/occupasion" , { 
                         preserveScroll: true,
                         preserveState: true,
                         forceFormData: true, 

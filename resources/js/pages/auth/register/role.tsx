@@ -1,10 +1,10 @@
 import LastStep from '@/components/ui/core/auth/sign-up/LastStep'
+import React from 'react'
 
-
-function role() {
+function laststep() {
   return (
-   <LastStep/>
+  <LastStep/>
   )
 }
 
-export default role
+export default laststep

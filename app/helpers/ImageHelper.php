@@ -2,24 +2,34 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Str;
-
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ImageHelper
 {
     /**
-     * Ambil image random dari Picsum
+     * Ambil image random dari Foodish API.
+     * 
+     * Mengembalikan langsung URL gambar (string),
+     * misal: "https://foodish-api.com/images/pasta/pasta23.jpg"
      *
-     * @param int $width
-     * @param int $height
-     * @return string
+     * @return string|null
      */
-    public static function random(int $width = 700, int $height = 800): string
-    {
-        // buat seed unik biar tiap data beda
-        $seed = Str::uuid();
+   protected static $cache = [];
 
-        // kembalikan URL dinamis sesuai width & height
-        return "https://picsum.photos/seed/{$seed}/{$width}/{$height}/";
+    public static function random(): ?string
+    {
+        if (empty(self::$cache)) {
+            $categories = ['burger', 'pasta', 'pizza', 'rice', 'dessert'];
+            foreach ($categories as $cat) {
+                $url = "https://foodish-api.com/api/images/{$cat}";
+                $response = Http::get($url);
+                if ($response->successful()) {
+                    self::$cache[] = $response->json()['image'];
+                }
+            }
+        }
+
+        return self::$cache[array_rand(self::$cache)] ?? null;
     }
 }

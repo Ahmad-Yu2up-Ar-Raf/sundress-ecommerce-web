@@ -33,7 +33,7 @@ class Orders extends Model
         'expiryMonth',
         'expiryYear',
         'notes',
-        'payment_proof',
+
         'payment_method',
         'paid_at',
     ];

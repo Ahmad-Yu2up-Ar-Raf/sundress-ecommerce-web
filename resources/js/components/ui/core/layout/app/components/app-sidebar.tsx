@@ -77,14 +77,14 @@ const data: DataShape = {
   seller: [
     { title: "Dashboard", url: "/seller", icon: LayoutDashboardIcon, isActive: false },
     { title: "Products", url: "/seller/products", icon: BoxIcon, isActive: false },
-    { title: "Orders", url: "/seller/Orders", icon: ShoppingBag, isActive: false },
+    { title: "Orders", url: "/seller/orders", icon: ShoppingBag, isActive: false },
 
   ],
 
   buyer: [
     { title: "Dashboard", url: "/buyer", icon: LayoutDashboardIcon, isActive: false },
     { title: "Whistlist", url: "/buyer/whishlist", icon: Heart, isActive: false },
-   { title: "Orders", url: "/buyer/Orders", icon: ShoppingBag, isActive: false },
+   { title: "Orders", url: "/buyer/orders", icon: ShoppingBag, isActive: false },
   ],
 
   navSecondary: [

@@ -74,9 +74,15 @@ const navItems: Tp[] = [
 
 export   function SiteHeader() {
 
-  const user = usePage<SharedData>().props.auth.user;
+const user = usePage<SharedData>().props.auth.user;
+
+const userCartData = user?.cart ?? [];
+const userCartCount = user?.cart_count_quantity ?? 0;
+const userCartTotal = user?.cart_total ?? 0;
+const userWhishlist = user?.whishlist_count ?? 0;
+
     const { open } = useModal();
-  const onClick = () => router.visit('/login');
+const onClick = () => open({ redirectTo: "/" });
 
      const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(false);
@@ -97,7 +103,7 @@ export   function SiteHeader() {
       
     }
   });
-console.log(user.order)
+
    return (
   <>
 
@@ -114,12 +120,12 @@ console.log(user.order)
           duration: delay ?  0. : 0.2,
           delay: delay ? 3 : 0,
         }}
-    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background/95 backdrop-blur-md fixed top-0 z-50  ", 
+    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background backdrop-blur-md fixed top-0 z-50  ", 
 
    
 
     )}>
-        <main className=" max-w-[1260px] m-auto px-10  justify-between md:flex ">
+        <main className=" max-w-[69.62em] m-auto   justify-between md:flex ">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-bold flex items-center gap-3 ">
               <Logo className=" [&_svg]:size-9" />
@@ -145,27 +151,33 @@ console.log(user.order)
               </NavigationMenu>
             </div>
           <div className="items-center flex gap-5">
+
+           
             <div className=" flex items-center gap-2 border-r-2 border-accent-foreground/30 pr-6">
   <Button variant={"ghost"} size={"icon"}>
 
 
    <Search className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out " />
   </Button>
- <CartProductsSheet  order={user.order}/>
+  
+ <CartProductsSheet  cartTotal={userCartTotal} cartCount={userCartCount}  cart={userCartData}/>
       <Button variant={"ghost"} className=" relative" size={"icon"}>
 
          <Heart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
-            { user?.whishlist_count! > 0 && (
+            {  userWhishlist! > 0 &&(
 
-         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] px-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{user.whishlist_count}</span>
+         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] px-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{userWhishlist}</span>
          )}
       </Button>
       
             </div>
-           
             {user != null  ? ( 
-
-            <DropdownMenuUserMenuDemo profile={user} />
+              
+              <>
+              
+  
+              <DropdownMenuUserMenuDemo profile={user} />
+              </>
             ) : (
 
              

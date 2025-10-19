@@ -19,11 +19,7 @@ class ReviewsFactory extends Factory
             'product_id' => Products::factory(),
             'comments' => $this->faker->paragraph(),
             'star_rating' => $this->faker->numberBetween(1, 5),
-            'media' => [
-                ImageHelper::random(700, 800),
-                ImageHelper::random(700, 800),
-                ImageHelper::random(700, 800),
-            ],
+            
         ];
     }
 }

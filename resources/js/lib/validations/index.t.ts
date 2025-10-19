@@ -52,14 +52,14 @@ export const whistlistSchemat = z.object({
 export const productsSchema = z.object({
     id: z.number().optional(),
   name: z.string().min(4, "Name is required"),
-  city: z.string().optional(),
-  country: z.string(),
   province: z.string().optional(),
+  country: z.string().optional(),
+
   currency: z.string().optional(),
   free_shipping : z.boolean().optional(),
   cover_image: imageSchema,
   description: z.string().optional(),
-  stock: z.coerce.number().min(2, "Harga is required"),
+  stock: z.coerce.number().min(1, "Stock is required"),
    is_whislisted: z.boolean().optional(),
   category: z.enum(CategoryProductsValues),
   created_at: z.string().optional(),
@@ -67,7 +67,10 @@ export const productsSchema = z.object({
     reviews_count:  z.number().optional(),
     order_item_count:  z.number().optional(),
     reviews_avg_star_rating:  z.number().optional(),
-     price: z.coerce.number().min(0.001, "Harga is required"),
+     price: z.coerce
+    .number()
+    .min(1000, "Harga minimal Rp1.000")
+    .max(1000000000, "Harga terlalu tinggi"), // opsional: batas atas
    status: z.enum(ProductStatusValues),
 
  showcase_images: z

@@ -35,12 +35,12 @@ import { router } from "@inertiajs/react";
 
 
 
-interface UpdateTaskSheetProps
+interface UpdateProductSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
-  task: ProductsSchema | null;
+  product: ProductsSchema | null;
 }
 
-export function UpdateProductsSheet({ task, ...props }: UpdateTaskSheetProps) {
+export function UpdateProductSheet({ product, ...props }: UpdateProductSheetProps) {
   const [isPending, startTransition] = React.useTransition();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -49,40 +49,56 @@ export function UpdateProductsSheet({ task, ...props }: UpdateTaskSheetProps) {
   const form = useForm<ProductsSchema>({
     mode: "onSubmit",
     defaultValues: {
-        ...task,
-    name: task?.name,
-    cover_image:  task?.cover_image,
-    description: task?.description,
-    stock: task?.stock,
+  name:product?.name,
+  province: product?.province,
+  country: product?.country,
+status: product?.status,
+  currency: product?.currency,
+  free_shipping : product?.free_shipping,
+  cover_image:  product?.cover_image,
+  description: product?.description,
+  stock: product?.stock,
+  
+  category: product ?.category  ,
 
-   category: task?.category,
-    status: task?.status,
+ 
+     price:product?.price,
+
+ showcase_images: product?.showcase_images,
     },
     resolver: zodResolver(productsSchema),
   });
 
 
-console.log(task)
+console.log(product)
 
   React.useEffect(() => {
-    if (task) {
+    if (product) {
       form.reset({
-        ...task,
-    name: task?.name,
-    cover_image:  task?.cover_image,
-    description: task?.description,
-    stock: task?.stock,
+  name:product?.name,
+  province: product?.province,
+  country: product?.country,
+status: product?.status,
+  currency: product?.currency,
+  free_shipping : product?.free_shipping,
+  cover_image:  product?.cover_image,
+  description: product?.description,
+  stock: product?.stock,
+  
+  category: product ?.category  ,
 
-   category: task?.category,
-    status: task?.status,
+ 
+     price:product?.price,
+
+ showcase_images: product?.showcase_images,
 
       });
     }
-  }, [task, form]);
+  }, [product, form]);
 
   function onSubmit(input: ProductsSchema) {
-    if (!task) {
-      toast.error("Task data not found");
+    if (!product) {
+      toast.error("Product data not found");
       return;
     }
     setLoading(true);
@@ -94,7 +110,7 @@ console.log(input)
     
     startTransition(async () => {
       try {
-     
+        // Prepare data dengan struktur yang benar
         const formData = {
           ...input,
           _method: "PUT",
@@ -103,7 +119,7 @@ console.log(input)
 
   
 
-        router.post(route('dashboard.products.update', task.id), formData, {
+        router.post(route('seller.products.update', product.id), formData, {
           preserveScroll: true,
           preserveState: true,
           forceFormData: true,
@@ -112,13 +128,13 @@ console.log(input)
           },
           onStart: (visit) => {
             console.log('Update request started');
-            toast.loading('Updating products data...', { id: 'update-toast' });
+            toast.loading('Updating product data...', { id: 'update-toast' });
           },
           onSuccess: (page) => {
             console.log('Update success response:', page);
             setLoading(false);
             props.onOpenChange?.(false);
-            toast.success('Products updated successfully', { id: 'update-toast' });
+            toast.success('Product updated successfully', { id: 'update-toast' });
             form.reset();
                 console.log(`data created`, input)
           },
@@ -145,7 +161,7 @@ console.log(input)
                 }
               });
             } else {
-              toast.error('Failed to update products data', { id: 'update-toast' });
+              toast.error('Failed to update product data', { id: 'update-toast' });
             }
           },
           onFinish: () => {
@@ -156,7 +172,8 @@ console.log(input)
         });
         
       } catch (error) {
-        toast.error("Failed to update products", { id: "products-updated" });
+        console.log(error)
+        toast.error("Failed to update product", { id: "product-updated" });
         setIsSubmitting(false);
         setLoading(false);
       }
@@ -171,12 +188,12 @@ console.log(input)
       <Sheet {...props} modal={true}>
         <SheetContent className="flex flex-col gap-6 overflow-y-scroll">
            <SheetHeader className="text-left sm:px-7 space-y-1 bg-background  z-50 sticky top-0   p-4 border-b  ">
-                   <SheetTitle className=" text-lg">Update<Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">{task?.name}</Button> </SheetTitle>
+                   <SheetTitle className=" text-lg">Update<Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">{product?.name}</Button> </SheetTitle>
                    <SheetDescription className=" sr-only">
-                     Fill in the details below to update the task
+                     Fill in the details below to update the product
                    </SheetDescription>
                  </SheetHeader>
-          <ProductForm<ProductsSchema> form={form} onSubmit={onSubmit} isPending={loading}   >
+          <ProductForm<ProductsSchema> form={form} onSubmit={onSubmit} initialFiles={product!.showcase_images ? product!.showcase_images   : undefined} isPending={loading}   >
             <SheetFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
                       <SheetClose disabled={loading} asChild onClick={() => form.reset()}>
                         <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">
@@ -199,12 +216,12 @@ console.log(input)
       <Drawer  {...props} modal={true}>
   <DrawerContent className="flex flex-col  ">
     <DrawerHeader className="text-left sm:px-7 z-50  space-y-1 bg-background    p-4 border-b  ">
-    <DrawerTitle className=" text-xl">Update<Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">{task?.name}</Button> </DrawerTitle>
+    <DrawerTitle className=" text-xl">Update<Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base">{product?.name}</Button> </DrawerTitle>
           <DrawerDescription className=" text-sm">
-                     Fill in the details below to update the task
+                     Fill in the details below to update the product
                    </DrawerDescription>
     </DrawerHeader>
-      <ProductForm<ProductsSchema>  form={form} onSubmit={onSubmit} isPending={loading}    >
+      <ProductForm<ProductsSchema>  form={form} onSubmit={onSubmit}  initialFiles={product!.showcase_images ? product!.showcase_images   : undefined} isPending={loading}    >
     <DrawerFooter className="gap-3 px-3 py-4 w-full flex-row justify-end  flex  border-t sm:space-x-0">
          <DrawerClose disabled={loading} asChild onClick={() => form.reset()}>
                         <Button  disabled={loading} type="button" className="  w-fit" size={"sm"} variant="outline">

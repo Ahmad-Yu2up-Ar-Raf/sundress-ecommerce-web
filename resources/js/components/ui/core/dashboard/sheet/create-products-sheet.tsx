@@ -69,7 +69,7 @@ function onSubmit(input: ProductsSchema) {
     
     
 console.log(input)
-    toast.loading("products creating....", {
+    toast.loading("Loading....", {
       id: "create-products"
     });
     
@@ -80,7 +80,7 @@ console.log(input)
 
 
 
-    router.post(route(`seller.products.store`), input, { 
+    router.post(route(`cart.checkout`), input, { 
       preserveScroll: true,
       preserveState: true,
 
@@ -110,13 +110,15 @@ console.log(input)
 if (!isDesktop) {
   return (
     <Sheet open={props.open} onOpenChange={props.onOpenChange} modal={true} >
- 
-      <SheetTrigger asChild  className={cn(props.trigger == false && "sr-only" )} >
+ {props.trigger && (
+  
+      <SheetTrigger asChild  >
         <Button variant="outline" className=" text-sm  w-fit bg-background" size="sm">
           <Plus  className=" mr-3 "/>
           Add New 
         </Button>
       </SheetTrigger>
+ )}
       <SheetContent className="flex flex-col gap-6 overflow-y-scroll ">
         <SheetHeader className="text-left sm:px-6 space-y-1 bg-background z-30  sticky top-0   p-4 border-b  ">
           <SheetTitle className=" text-lg">Add New <Button type="button"   variant={"outline"} className=" ml-2  px-2.5 text-base capitalize">products</Button> </SheetTitle>

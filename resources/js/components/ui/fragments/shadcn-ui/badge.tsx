@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils";
 import { type LucideIcon } from "lucide-react";
 
 const badgeVariants = cva(
-  "flex items-center justify-center gap-1.5 rounded-[calc(var(--radius)-4px)] border text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "flex  items-center justify-center gap-1.5 rounded-[calc(var(--radius)-4px)] border text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80 focus-visible:ring-ring shadow-sm/2",
+          "border-transparent g-primary hover:bg-primary/80 focus-visible:ring-ring shadow-sm/2",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-ring",
         destructive:
@@ -55,7 +55,7 @@ function Badge({
 
   return (
     <span
-      className={cn(badgeVariants({ variant, size }), "   text-white", className)}
+      className={cn(badgeVariants({ variant, size }), " w-fit  rounded-xl   text-accent-foreground ", className)}
       {...props}
     >
       {Icon && iconPosition === "left" && (

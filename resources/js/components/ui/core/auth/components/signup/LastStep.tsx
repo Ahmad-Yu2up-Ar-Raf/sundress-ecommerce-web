@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/fragments/shadcn-ui/
 
 import { Label } from '@/components/ui/fragments/shadcn-ui/label';
 import { UserOccupation } from '@/config/enums/Ocupassion';
+import { UserRoleOptions } from '@/config/enums/userRole';
 interface TaskFormProps<T extends FieldValues, >
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   children: React.ReactNode;
@@ -45,7 +46,7 @@ function SignUpFormLastStep<T extends FieldValues, >({
         <FormField
               disabled={isPending}
                control={form.control}
-         name={"occupasion" as FieldPath<T>}
+         name={"role" as FieldPath<T>}
                render={({ field }) => (
                  <FormItem 
                  
@@ -56,7 +57,7 @@ function SignUpFormLastStep<T extends FieldValues, >({
                            disabled={isPending}
                             onValueChange={field.onChange}
                         className="gap-2 " defaultValue="user">
-      {UserOccupation.map((item, i ) => (
+      {UserRoleOptions.map((item, i ) => (
 
       <FormItem 
       

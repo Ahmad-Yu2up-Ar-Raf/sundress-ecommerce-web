@@ -83,7 +83,7 @@ function CategoryCarousel({ linkLabel = "Explore more" , title="Products categor
   i > 0 ? 'pl-1' : 'pl-0',
                 )}
               >
-                 <CategoryCard CategoryData={item }  className=' min-h-[8em] '/>
+                 <CategoryCard CategoryData={item }  className=' min-h-[7em] '/>
               </CarouselItem>
             ))}
           
