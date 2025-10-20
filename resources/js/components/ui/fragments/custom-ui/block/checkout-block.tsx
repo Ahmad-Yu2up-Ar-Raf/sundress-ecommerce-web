@@ -65,7 +65,7 @@ image: string;
 quantity: number;
 discount?: number;
 }
-
+import { loadStripe } from '@stripe/stripe-js';
 interface CheckoutSummary {
 subtotal: number;
 discount: number;
@@ -242,45 +242,29 @@ const data = {
   const [isPending, startTransition] = React.useTransition();
 
 function handlePayment() {
-   
-    
-    
-console.log(data)
-    toast.loading("loading....", {
-      id: "payment"
-    });
-    
-  startTransition(() => {
-    setLoading(true);
+  toast.loading("Setting up payment...", { id: "payment" });
+  setLoading(true);
 
-    // Prepare data dengan struktur yang benar
-
-
-
-    router.post(route(`checkout.payment`), data, { 
-      preserveScroll: true,
-      preserveState: true,
-
-      onSuccess: () => {
-
-       
-        toast.success("successfully", {
-          id: "payment"
-        });
-        setLoading(false);
-      },
-      onError: (error) => {
-        console.error("Submit error:", error);
-        toast.error(`Error: ${Object.values(error).join(', ')}`, {
-          id: "payment"
-        });
-        setLoading(false);
-      },
-      onFinish: () => {
-        setLoading(false);
- 
-      }
-    });
+  // ✅ FIX: Use router.post for external redirect
+  router.post(route('checkout.payment'), data, {
+    preserveScroll: false,
+    preserveState: false, // Critical for external redirect
+    onSuccess: (page) => {
+      // This may not fire if redirecting to Stripe
+      toast.dismiss("payment");
+    },
+    onError: (errors) => {
+      console.error("Checkout error:", errors);
+      toast.error(
+        `Error: ${Object.values(errors).join(', ')}`,
+        { id: "payment" }
+      );
+      setLoading(false);
+    },
+    onFinish: () => {
+      // May not fire on external redirect
+      setLoading(false);
+    },
   });
 }
 const CheckoutSkeleton = () => (
@@ -317,7 +301,7 @@ const CheckoutSkeleton = () => (
 );
 
 const OrderSummaryCard = () => {
-const isShowMore = userCartData.length >3 
+const isShowMore =  true
 
 
 const handleShowAll = () => {
@@ -346,10 +330,10 @@ const handleShowAll = () => {
 };
 
   return(
-  <Card className="flex pb-2.5   flex-col rounded-xl gap-5">
+  <Card className="flex pb-2.5 bg-background shadow-none border-2 border-muted   flex-col rounded-xl gap-5">
     <CardHeader className=" [.border-b]:pb-3 border-b pb-0 pt-0">
       <CardTitle className="font-semibold flex items-center gap-3">
-        <ShoppingBag className="h-4 w-4" />
+        <ShoppingBag className="h-4 w-4 sr-only" />
         Order Summary
       </CardTitle>
     </CardHeader>
@@ -393,7 +377,7 @@ const handleShowAll = () => {
           const Product = item.product
           const price = formatIDR(item.sub_total)
         return(
- <CartProductsCard key={i} className="  bg-white dark:bg-black h-[4em]  [&_#card-content-img]:min-w-15" ProductCart={item}/>
+ <CartProductsCard key={i} className="   bg-background h-[4em]  [&_#card-content-img]:min-w-15" ProductCart={item}/>
         )})}
       </main>
       {/* Applied Promo */}
@@ -489,7 +473,7 @@ return (
           </p>
         </div>
       </div>
-      <Badge  className="flex rounded-xl items-center gap-1">
+      <Badge variant={"outline"}  className="flex rounded-xl items-center gap-1">
         <Shield className="h-3 w-3" />
         SSL Secured
       </Badge>
@@ -531,7 +515,7 @@ return (
             </div>
             <span
               className={cn(
-                "text-[12px] md:text-base font-medium block",
+                "text-[10px] md:text-sm font-medium block",
                 currentStep >= step
                   ? "text-foreground"
                   : "text-muted-foreground"
@@ -549,10 +533,10 @@ return (
       <div className="lg:col-span-2 flex flex-col gap-6">
         {/* Step 1: Shipping Information */}
         {currentStep === 1 && (
-          <Card className="flex flex-col gap-6 ">
+          <Card className="flex shadow-none border-2 border-muted  bg-background flex-col gap-6 ">
             <CardHeader className=" [.border-b]:pb-3  border-b ">
               <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
-                <MapPin className="h-5 w-5" />
+                <MapPin className="h-5 w-5 sr-only " />
                 Shipping Information
               </CardTitle>
             </CardHeader>
@@ -731,10 +715,10 @@ return (
         )}{" "}
         {/* Step 2: Payment Information */}
         {currentStep === 2 && (
-          <Card className="flex flex-col gap-6 ">
+          <Card className="flex shadow-none border-2 border-muted  bg-background flex-col gap-6 ">
            <CardHeader className=" [.border-b]:pb-3  border-b ">
               <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
-                <CreditCard className="h-5 w-5" />
+                <CreditCard className="h-5 w-5 sr-only" />
                 Payment Information
               </CardTitle>
             </CardHeader>
@@ -889,7 +873,7 @@ return (
    <div className="border-t pt-6">
                   <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                     <div className="flex items-start gap-3">
-                      <selectedPaymentType.icon className="h-5 w-5 text-yellow-600 mt-0.5" />
+                      <selectedPaymentType.icon className="h-5 w-5  text-yellow-600 mt-0.5" />
                       <div>
                         <h4 className="font-medium text-yellow-900">
                           {selectedPaymentType.label}
@@ -928,10 +912,10 @@ return (
         )}
         {/* Step 3: Review Order */}
         {currentStep === 3 && (
-          <Card className="flex  flex-col gap-6">
+          <Card className="flex shadow-none border-2 border-muted  bg-background flex-col gap-6 ">
            <CardHeader className=" [.border-b]:pb-3  border-b ">
               <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
-                <ClipboardList className="h-5 w-5" />
+                <ClipboardList className="h-5 w-5 sr-only" />
                 Review Your Order
               </CardTitle>
             </CardHeader>
@@ -1034,10 +1018,10 @@ return (
         <OrderSummaryCard />
 
         {/* Security Badge */}
-        <Card className=" ">
+        <Card className=" flex shadow-none border-2 border-muted  bg-background flex-col gap-6  ">
           <CardContent className="px-4 py-0">
             <div className="flex items-center gap-3 text-sm">
-              <Shield className="h-5 w-5 text-yellow-600" />
+              <Shield className="h-5 w-5  text-yellow-600" />
               <div>
                 <div className="font-medium">Secure & Encrypted</div>
                 <div className="text-muted-foreground">

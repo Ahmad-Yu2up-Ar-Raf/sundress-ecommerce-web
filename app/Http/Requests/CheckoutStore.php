@@ -11,19 +11,11 @@ use Illuminate\Validation\Rule;
 
 class CheckoutStore extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return Auth::check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -34,20 +26,19 @@ class CheckoutStore extends FormRequest
                 'required',
                 'email',
                 'max:255',
-                // perhatikan: unique di orders mungkin tidak cocok untuk repeat buyer
-                // gunakan Rule::unique hanya jika kamu mau 1 email = 1 order saja
-                Rule::unique('orders', 'email'),
+                // ✅ REMOVED unique constraint - allow repeat customers!
             ],
             'phone' => [
                 'required',
-                'string'
+                'string',
+                'max:20', // Add max length
             ],
             'country' => 'required|string|max:100',
             'province' => 'required|string|max:100',
             'zipCode' => [
                 'required',
                 'string',
-             
+                'max:10',
             ],
             'address' => 'nullable|string|max:1000',
             'notes' => 'nullable|string|max:1000',
@@ -57,21 +48,22 @@ class CheckoutStore extends FormRequest
                 'required',
                 Rule::in(PaymentMethod::values()),
             ],
-            'payment_intent' => 'nullable|string|max:255',
             'nameOfCard' => 'nullable|string|max:255',
             'cardNumber' => [
                 'nullable',
-                'digits:4',
-                'regex:/^[0-9]{4}$/',
+                'string', // Changed from digits:4
+                'max:4',
             ],
-            'expiryMonth' => 'nullable|integer|max:12',
+            'expiryMonth' => 'nullable|integer|min:1|max:12',
             'expiryYear' => 'nullable|integer|min:' . date('Y') . '|max:' . (date('Y') + 20),
+            'cvv' => 'nullable|string|max:4', // Add CVV validation
 
-            // Order + pricing
-            'total_price' => 'required|numeric|min:1000|max:9999999999999.99',
-            'website_commission' => 'nullable|numeric|min:0|max:1000000000',
-            'online_payment_commission' => 'nullable|numeric|min:0|max:1000000000',
-            'vendor_subtotal' => 'nullable|numeric|min:0|max:1000000000',
+            // ✅ ADD: Frontend sends these from summary
+            'subtotal' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'shipping' => 'required|numeric|min:0',
+            'tax' => 'required|numeric|min:0',
+            'total_price' => 'required|numeric|min:100', // Minimum 100 (IDR or cents)
 
             // Shipping
             'shipping_method' => [
@@ -79,29 +71,22 @@ class CheckoutStore extends FormRequest
                 Rule::in(ShippingMethod::values()),
             ],
 
-            // Optional timestamps
+            // Optional fields
             'paid_at' => 'nullable|date',
-
-            // Order status
             'status' => [
                 'nullable',
                 Rule::in(OrderStatus::values()),
             ],
-
-        
         ];
     }
 
-    /**
-     * Custom messages (opsional)
-     */
     public function messages(): array
     {
         return [
-            'email.unique' => 'Email ini sudah digunakan dalam pesanan lain.',
-            'phone.regex' => 'Nomor telepon harus dalam format yang valid',
-            'zipCode.regex' => 'Kode pos harus terdiri dari 4–10 digit angka.',
-            'total_price.min' => 'Total harga minimal Rp1.000.',
+            'email.email' => 'Email harus valid.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'zipCode.required' => 'Kode pos wajib diisi.',
+            'total_price.min' => 'Total harga minimal Rp100.',
             'payment_method.in' => 'Metode pembayaran tidak valid.',
             'shipping_method.in' => 'Metode pengiriman tidak valid.',
         ];

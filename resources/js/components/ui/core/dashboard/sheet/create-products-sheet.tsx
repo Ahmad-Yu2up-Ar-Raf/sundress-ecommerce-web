@@ -76,11 +76,7 @@ console.log(input)
   startTransition(() => {
     setLoading(true);
 
-    // Prepare data dengan struktur yang benar
-
-
-
-    router.post(route(`cart.checkout`), input, { 
+    router.post(route(`seller.products.store`), input, { 
       preserveScroll: true,
       preserveState: true,
 

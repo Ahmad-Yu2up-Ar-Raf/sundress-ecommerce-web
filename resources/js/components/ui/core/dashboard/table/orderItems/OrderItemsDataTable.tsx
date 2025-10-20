@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/fragments/shadcn-ui/table"
-  import { ProductsSchema as ProductsSchema } from "@/lib/validations/index.t";
+
   import { Box, Calendar, CircleCheck, CircleIcon, CircleXIcon, DollarSign, DoorOpen, EllipsisIcon, Eye, EyeOff, ShoppingCart, Star, User2Icon, Users2Icon, XIcon } from "lucide-react"
   
   import {
@@ -26,10 +26,10 @@ import {
   } from "@/components/ui/fragments/shadcn-ui/dropdown-menu";
   import { Button } from "@/components/ui/fragments/shadcn-ui/button";
 
-  import { CreateproductsSheet } from "../../sheet/create-products-sheet";
+
   import { Input } from "@/components/ui/fragments/shadcn-ui/input";
   import React from "react";
-  import { Filters, PaginatedData, ProductResponse } from "@/types";
+  import { ApiResponseOrderItems } from "@/types";
   import debounce from "lodash.debounce";
   import { router as inertiaRouter, router, usePage } from '@inertiajs/react'
   
@@ -55,22 +55,23 @@ import {
  import { EmptyState } from "@/components/ui/fragments/custom-ui/emtyp-state";
 import { Badge } from "@/components/ui/fragments/shadcn-ui/badge";
   
-  import { TasksTableActionBar } from "./Products-table-action-bar";
-import { UpdateProductSheet } from "../../sheet/update-product-sheet";
-  import { useInitials } from "@/hooks/use-initials";
-   import { DeleteTasksDialog } from "@/components/ui/fragments/custom-ui/delete-task-dialog";
-import { getProductStatusIcon } from "@/lib/utils/products/ProductsStatus-utils";
-import { ProductStatus, ProductStatusOptions } from "@/config/enums/ProductsStatus";
-import { CategoryProductsStatus } from "@/config/enums/CategoryProductsStatus";
-import { getCategoryIcon } from "@/lib/utils/products/category-utils";
+
+
+import { useInitials } from "@/hooks/use-initials";
+import { DeleteTasksDialog } from "@/components/ui/fragments/custom-ui/delete-task-dialog";
+
+
 import { formatIDR } from "@/hooks/use-money-format";
+import { TasksTableActionBar } from "./OrderItems-table-action-bar";
+import { getOrderItemStatusIcon } from "@/lib/utils/orders/getOrderItemStatus";
+import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
   
   
 
   
-  export function ProductDataTable({ data}: { data : ProductResponse}) {
+  export function OrderDataTable({ data}: { data : ApiResponseOrderItems}) {
     const PaginatedData =  data.meta.pagination
-    const Products =  data.data
+    const Orders =  data.data
     const filters =  data.meta.filters
   const [selectedIds, setSelectedIds] = React.useState<(number )[]>([]);
     const [open, setOpen] = React.useState(false);
@@ -85,7 +86,7 @@ import { formatIDR } from "@/hooks/use-money-format";
       const debouncedSearch = React.useMemo(
       () =>
         debounce((search: string) => {
-          router.get(route(`seller.products.index`), {
+          router.get(route(`seller.orders.index`), {
             search: search
           }, {
             preserveState: true,
@@ -95,7 +96,7 @@ import { formatIDR } from "@/hooks/use-money-format";
       [pathNames] // Update dependencies
   );
   
-    const AllIds: number[] = Products.map(item => item.id!);
+    const AllIds: number[] = Orders.map(item => item.id!);
   
     // Check if all items are selected
     const isAllSelected = AllIds.length > 0 && AllIds.every(id => selectedIds.includes(id));
@@ -108,8 +109,8 @@ import { formatIDR } from "@/hooks/use-money-format";
   const id: number[] = [taskId] 
   
   console.log(taskId)
-            toast.loading("Product deleting...",  { id: "products-delete" });
-        router.delete(route(`seller.products.destroy`, id), {
+            toast.loading("Order deleting...",  { id: "orders-delete" });
+        router.delete(route(`seller.orders.destroy`, id), {
           data: { ids: id } ,
           preserveScroll: true,
           preserveState: true,
@@ -117,14 +118,14 @@ import { formatIDR } from "@/hooks/use-money-format";
             setProcessing(true);
           },
           onSuccess: () => {
-            toast.success("Product deleted successfully",  { id: "products-delete" });
+            toast.success("Order deleted successfully",  { id: "orders-delete" });
             setOpenModal(false);
             router.reload(); 
             
           },
           onError: (errors: any) => {
             console.error("Delete error:", errors);
-            toast.error(errors?.message || "Failed to delete the products" , { id: "products-delete" });
+            toast.error(errors?.message || "Failed to delete the orders" , { id: "orders-delete" });
           },
           onFinish: () => {
             setProcessing(false);
@@ -135,7 +136,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               
       } catch (error) {
         console.error("Delete operation error:", error);
-        toast.error("An unexpected error occurred",  { id: "products-delete" });
+        toast.error("An unexpected error occurred",  { id: "orders-delete" });
         setProcessing(false);
       }
     };
@@ -187,17 +188,17 @@ import { formatIDR } from "@/hooks/use-money-format";
     const onTaskDelete = React.useCallback(() => {
       setCurrentAction("delete");
       setIsAnypending(true)
-      toast.loading("Deleting data...", { id: "products-delete" });
+      toast.loading("Deleting data...", { id: "orders-delete" });
       
       startTransition(async () => {
         try {
-          router.delete(route(`seller.products.destroy`, selectedIds), {
+          router.delete(route(`seller.orders.destroy`, selectedIds), {
             data: { ids: selectedIds },
             preserveScroll: true,
             preserveState: true,
    
             onSuccess: () => {
-              toast.success("Products deleted successfully", { id: "products-delete" });
+              toast.success("Orders deleted successfully", { id: "orders-delete" });
            setSelectedIds([])
               router.reload(); 
                 setIsAnypending(false)
@@ -207,16 +208,16 @@ import { formatIDR } from "@/hooks/use-money-format";
                 setCurrentAction(null);
                         setIsAnypending(false)
               console.error("Delete error:", errors);
-              toast.error(errors?.message || "Failed to delete the products", { id: "products-delete" });
+              toast.error(errors?.message || "Failed to delete the orders", { id: "orders-delete" });
             },
           });
   
         } catch (error) {
-          toast.error("Failed to delete items", { id: "products-delete" });
+          toast.error("Failed to delete items", { id: "orders-delete" });
           setCurrentAction(null);
         }
       });
-    }, [Products, selectedIds, pathNames]);
+    }, [Orders, selectedIds, pathNames]);
   
   
   
@@ -246,7 +247,7 @@ import { formatIDR } from "@/hooks/use-money-format";
         
           
         
-                router.post(route(`seller.products.status`, selectedIds), formData, {
+                router.post(route(`seller.orders.status`, selectedIds), formData, {
                   preserveScroll: true,
                   preserveState: true,
                   forceFormData: true,
@@ -255,13 +256,13 @@ import { formatIDR } from "@/hooks/use-money-format";
                   },
                   onStart: (visit) => {
                     console.log('Update request started');
-                    toast.loading('Updating products data...', { id: 'update-toast' });
+                    toast.loading('Updating orders data...', { id: 'update-toast' });
                   },
                   onSuccess: (page) => {
                     console.log('Update success response:', page);
                    setCurrentAction(null);
                         setIsAnypending(false)
-                    toast.success('Products updated successfully', { id: 'update-toast' });
+                    toast.success('Orders updated successfully', { id: 'update-toast' });
               
                   },
                   onError: (errors) => {
@@ -289,51 +290,26 @@ import { formatIDR } from "@/hooks/use-money-format";
           }
         });
       }, 
-      [Products, selectedIds, pathNames],
+      [Orders, selectedIds, pathNames],
     );
   
-  const [currentProduct , setcurrentProduct ] = React.useState<(ProductsSchema) | null>(null);
-      const [openUpdate, setOpenUpdate] = React.useState(false)
-    const handleEdit = (products: ProductsSchema) => {
-      setcurrentProduct(products);
-      setOpenUpdate(true);
-    };
-   const handleUpdateClose = (open: boolean) => {
-      setOpenUpdate(open);
-      if (!open) {
-        setTimeout(() => {
-          setcurrentProduct(null);
-        }, 500)
-      }
-    };
-  
+
   
    
     const getInitial = useInitials()
   
-    if(Products.length == 0 && filters.search == "")
+    if(Orders.length == 0 && filters.search == "")
   
    
     return(
       <>
     <EmptyState
             icons={[Calendar]}
-            title={`No Product data yet`}
-            description={`Start by adding your first products`}
-            action={{
-              label: `Add products`,
-              onClick: () => setOpen(true)
-            }}
-          />
-          <SheetComponents 
-         
+            title={`No Order data yet`}
+            description={`Start by adding your first orders`}
            
-           trigger={false}
-            open={open}
-           onOpenChange={() => {
-        setOpen(!open)
-      }}
           />
+          
       </>
     )
   
@@ -353,20 +329,12 @@ import { formatIDR } from "@/hooks/use-money-format";
                 }}
                 className="md:max-w-[20em]   col-span-2  h-8 w-full  "
               />
-                  <SheetComponents 
-         
-           
-           trigger
-            open={open}
-           onOpenChange={() => {
-        setOpen(!open)
-      }}
-          />
+                
       </div>
         <main className="overflow-hidden rounded-xl border">
 
       <Table className="">
-        <TableCaption className=" sr-only">A list of your recent products.</TableCaption>
+        <TableCaption className=" sr-only">A list of your recent orders.</TableCaption>
         <TableHeader className="bg-accent/15">
           <TableRow>
             <TableHead className="">   
@@ -377,18 +345,18 @@ import { formatIDR } from "@/hooks/use-money-format";
               aria-label="Select all"
               className="translate-y-0.5  mx-3   mr-4"
             /></TableHead>
-            {Products.length >= 1 && (
+            {Orders.length >= 1 && (
               <>
-            <TableHead className=" ">Name</TableHead>
-            <TableHead className=" ">Price</TableHead>
+            <TableHead className=" ">Product</TableHead>
+            <TableHead className=" ">Sub Total</TableHead>
   
-            <TableHead>Category</TableHead>
+         
             <TableHead>Status</TableHead>
-            <TableHead>Avg Rating</TableHead>
-            {/* <TableHead>Product Di Pinjam</TableHead> */}
-            <TableHead>Stock</TableHead>
-            <TableHead>Sold</TableHead>
-            <TableHead>Created At</TableHead>
+       
+            {/* <TableHead>Order Di Pinjam</TableHead> */}
+            <TableHead>Order Quantity</TableHead>
+          
+            <TableHead>Order At</TableHead>
           
   
             <TableHead className="">action</TableHead>
@@ -399,21 +367,20 @@ import { formatIDR } from "@/hooks/use-money-format";
           </TableRow>
         </TableHeader>
         <TableBody>
-          {Products.length > 0 ?  Products.map((product) =>{ 
+          {Orders.length > 0 ?  Orders.map((order) =>{ 
+  const product = order.product
+       const status = order.status as OrderItemStatus
+       const IconStatus = getOrderItemStatusIcon(status );
+    
 
-       const status = product.status as ProductStatus
-       const category = product.category as CategoryProductsStatus
-       const IconStatus = getProductStatusIcon(status );
-       const IconProduct = getCategoryIcon(category );
-
-          const price = formatIDR(product.price)
+          const price = formatIDR(order!.sub_total)
           return(
    
-            <TableRow key={product.id}>
+            <TableRow key={order.id}>
               <TableCell className="font-medium sticky right-0 ">
                  <Checkbox
-                checked={selectedIds.includes(product.id!)}
-                        onCheckedChange={() => HandleSelect(product.id!)}
+                checked={selectedIds.includes(order.id!)}
+                        onCheckedChange={() => HandleSelect(order.id!)}
               aria-label="Select row"
               className="translate-y-0.5  mx-3   mr-4"
             /></TableCell>
@@ -423,13 +390,13 @@ import { formatIDR } from "@/hooks/use-money-format";
               > 
               
                  <Avatar className=" rounded-xl  relative flex size-20 shrink-0 overflow-hidden">
-                                          <AvatarImage src={`${product?.cover_image!}`} alt={product.name} />
+                                          <AvatarImage src={`${product?.cover_image!}`} alt={`${order.id}`} />
                                           <AvatarFallback className="rounded-xl  bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                              {getInitial(product.name)}
+                                              {getInitial(product?.name!)}
                                           </AvatarFallback>
                                       </Avatar>
               <h4 className=" font-medium">
-                {product.name}
+                {product?.name!}
                 </h4>
               </TableCell>
    
@@ -442,46 +409,27 @@ import { formatIDR } from "@/hooks/use-money-format";
           {price}
   
         </TableCell>
-              <TableCell className="">  
-                    <Badge variant="outline" icon={IconProduct} className="py-1 [&>svg]:size-3.5">
-    
-          {product.category}
-        </Badge>
-        </TableCell>
+             
           
             <TableCell>
               
             <Badge icon={IconStatus}  variant="outline" className="py-1 [&>svg]:size-3.5">
-              {product.status}
+              {order.status}
               </Badge>
     </TableCell>
-            <TableCell>
-              
-            <Badge icon={Star} variant="outline" className="py-1 [&>svg]:size-3.5">
-         { product.reviews_avg_star_rating != null ?  Math.round(product.reviews_avg_star_rating! * 10) / 10 : 0.0 }
-              </Badge>
-    </TableCell>
+       
   
     
             <TableCell>    
                    <Badge variant="outline" icon={Box} className="py-1 [&>svg]:size-3.5">
          
             
-              <span className="capitalize  underline-offset-4  hover:underline font-mono">{product.stock}</span>
+              <span className="capitalize  underline-offset-4  hover:underline font-mono">{order.quantity}</span>
            
             </Badge>
             </TableCell>
      
-            <TableCell>    
-                   <Badge variant="outline" icon={ShoppingCart} className="py-1 [&>svg]:size-3.5">
-         
-            
-              <span className="capitalize  underline-offset-4  hover:underline font-mono">{product.order_item_count}</span>
-           
-            </Badge>
-            </TableCell>
-     
-            <TableCell className="">{product.created_at ? new Date(product.created_at).toLocaleDateString() : 'N/A'}</TableCell>
+            <TableCell className="">{order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}</TableCell>
 
               <TableCell className=" w-fit">
                   <DropdownMenu modal={false}>
@@ -496,18 +444,13 @@ import { formatIDR } from "@/hooks/use-money-format";
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
           
-                <DropdownMenuItem
-                  onSelect={() => handleEdit(product)}
-                >
-                  Edit
-                </DropdownMenuItem>
-    
+             
   
-                <DropdownMenuSeparator />
+   
                 <DropdownMenuItem
                onSelect={() => {
                 setOpenDelete(true)
-               setDeletedId(product.id!)
+               setDeletedId(order.id!)
               }}
                 >
                   Delete
@@ -527,7 +470,7 @@ import { formatIDR } from "@/hooks/use-money-format";
         ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={Products.length}
+                    colSpan={Orders.length}
                     className="h-24 text-center"
                   >
                     No results.
@@ -548,7 +491,7 @@ import { formatIDR } from "@/hooks/use-money-format";
       
       <footer className=  "flex w-full flex-col-reverse items-center justify-between gap-4 overflow-auto p-1 sm:flex-row sm:gap-8">
         <div className="flex-1 whitespace-nowrap text-muted-foreground text-sm">
-      {selectedIds.length} of {Products.length} row(s) selected.
+      {selectedIds.length} of {Orders.length} row(s) selected.
         </div>
         <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:gap-6 lg:gap-8">
           <div className="flex items-center space-x-2">
@@ -557,7 +500,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               value={`${PaginatedData.perPage}`}
               onValueChange={(value) => {
                   inertiaRouter.get(
-             route(`seller.products.index`),
+             route(`seller.orders.index`),
              { 
                perPage:value,
                
@@ -595,7 +538,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               className="hidden h-8 w-8 p-0 lg:flex"
               onClick={() => {
                    inertiaRouter.get(
-             route(`seller.products.index`),
+             route(`seller.orders.index`),
              { 
                page: 1,
                search: filters?.search,
@@ -618,7 +561,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               className="h-8 w-8 p-0"
                   onClick={() => {
                    inertiaRouter.get(
-             route(`seller.products.index`),
+             route(`seller.orders.index`),
              { 
                page: PaginatedData.currentPage - 1,
         
@@ -642,7 +585,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               className="h-8 w-8 p-0"
               onClick={() => {
                    inertiaRouter.get(
-             route(`seller.products.index`),
+             route(`seller.orders.index`),
              { 
                page: PaginatedData.currentPage + 1,
         
@@ -666,7 +609,7 @@ import { formatIDR } from "@/hooks/use-money-format";
               className="hidden h-8 w-8 p-0 lg:flex"
                 onClick={() => {
                    inertiaRouter.get(
-             route(`seller.products.index`),
+             route(`seller.orders.index`),
              { 
                page: PaginatedData.lastPage,
         
@@ -703,40 +646,9 @@ import { formatIDR } from "@/hooks/use-money-format";
             // getIsActionPending={getIsActionPending}
           />
         )}
-            {currentProduct && (
-  
-         <UpdateProductSheet
-         product={currentProduct}
-           
-                    open={openUpdate} 
-                    onOpenChange={handleUpdateClose}
-                  />
-            )}
+         
       </>
     )
   }
   
   
-  
-  const SheetComponents = React.memo(({ 
-  
-    open, 
-    trigger,
-    onOpenChange,
-  }: {
-  
-    trigger?: boolean
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
-  }) => {
-  
-    return (
-      <CreateproductsSheet
-        trigger={trigger} 
-        open={open} 
-        onOpenChange={onOpenChange}
-      />
-    );
-  });
-  
-  SheetComponents.displayName = 'SheetComponents';

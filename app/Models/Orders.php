@@ -40,12 +40,11 @@ class Orders extends Model
 
     protected $casts = [
         'paid_at' => 'datetime',
-        'total_price' => 'integer', // atau 'string' jika sangat besar; sesuaikan
+        'total_price' => 'integer', 
         'expiryMonth' => 'integer',
         'expiryYear' => 'integer',
         'phone' => 'string',
         'zipCode' => 'string',
-        // Enum casting (Laravel mendukung casting enum-backed values)
         'status' => OrderStatus::class,
         'payment_method' => PaymentMethod::class,
     ];

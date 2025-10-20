@@ -53,7 +53,18 @@ class Products extends Model
     {
         return $this->belongsTo(User::class);
     }
+public function seller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
+    // Alias jika ingin konsisten dengan nama "vendor"
+    public function vendor(): BelongsTo
+    {
+        return $this->seller();
+    }
+
+ 
     public function orders(): HasMany
     {
         return $this->hasMany(Orders::class, 'product_id');

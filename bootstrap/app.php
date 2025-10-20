@@ -28,6 +28,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
             'role' => RoleMiddleware::class,
         ]);
+
+
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*'
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

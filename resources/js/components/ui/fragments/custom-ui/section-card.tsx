@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/fragments/shadcn-ui/card"
 import { cn } from "@/lib/utils";
 import { DataCard } from "@/types";
+import { TrendingUp } from "lucide-react";
 
 
 
@@ -37,16 +38,16 @@ export function SectionCards({dataCards}: componentsProps) {
             {card.value}
           </CardTitle>
           <CardAction>
-            <Badge variant="outline" icon={card.icon} className=" text-accent-foreground">
+            <Badge variant="outline" icon={TrendingUp} className=" text-accent-foreground">
     
               {card.label }
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col  items-start  text-sm">
-          <p className="line-clamp-1     font-medium ">
-    {card.description}
-          </p>
+         <div className="line-clamp-1 flex gap-2 font-medium">
+            Trending up this month <TrendingUp className="size-4" />
+          </div>
           <p className="text-muted-foreground line-clamp-1">
  Start by add another  {card.label }
           </p>

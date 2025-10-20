@@ -66,6 +66,10 @@ export const chartConfig = {
     label: "Shipped",
     color: "var(--chart-4)",
   },
+  approved: {
+    label: "Approved",
+    color: "var(--chart-4)",
+  },
   delivered: {
     label: "Delivered",
     color: "var(--chart-1)",

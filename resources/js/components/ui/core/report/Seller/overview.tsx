@@ -24,28 +24,28 @@ const dataCards: DataCard[] = [
     description: "Total jumlah produk kamu",
     value: reports.totalProducts,
     icon: Package,
-    label: "Products",
+    label: "+12.5%",
   },
   {
     title: "Total Orders",
     description: "Total seluruh pesanan",
     value: reports.totalOrders,
     icon: ShoppingBag,
-    label: "Orders",
+    label: "+12.5%",
   },
     {
     title: "Total Pendapatan",
-    description: "Total seluruh pendapatan dari pesanan diterima",
+    description: "Total seluruh pendapatan dari ",
     value: revenue, // pastikan field ini dikirim dari backend
     icon: Wallet, // bisa pakai ikon lain: Coins, Banknote, atau DollarSign dari lucide-react
-    label: "Revenue",
+    label: "+12.5%",
   },
   {
     title: "Approved Orders",
     description: "Total pesanan yang diterima",
     value: reports.totalOrdersDiterima,
     icon: CircleFadingArrowUp,
-    label: "Approved",
+    label: "+12.5%",
   },
 
 ];
@@ -61,21 +61,13 @@ const dataCards: DataCard[] = [
           <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 sm:grid-cols-2  *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs gap-y-4 md:gap-x-4 @5xl/main:grid-cols-3">
             {/* Grafik tren harian */}
             <ChartAreaInteractive
-              className="col-span-2 "
+              className="col-span-3 "
               chartData={reports.countsByDate}
             />
 
             {/* Pie chart status produk */}
           
-<ChartBarActive
-  data={reports.topProducts.slice(0, 5)} // ambil top 5 saja
-  title="Top 5 Best-Selling Products"
-  description="Displaying your top 5 products with the highest sales"
-  footerText="Data based on your products"
-  subFooter="Showing top 5 products with the most expensive orderItem"
-  
-  className="your-custom-class"
-/>
+
             {/* Pie chart status pesanan */}
 
               <ChartPie
@@ -87,6 +79,15 @@ const dataCards: DataCard[] = [
               data={reports.ProductsstatusCount}
               nameKey="Products"
             />
+            <ChartBarActive
+  data={reports.topProducts.slice(0, 5)} // ambil top 5 saja
+  title="Top 5 Best-Selling Products"
+  description="Displaying your top 5 products with the highest sales"
+  footerText="Data based on your products"
+  subFooter="Showing top 5 products with the most expensive orderItem"
+  
+  className="your-custom-class"
+/>
             <ChartPie
               showFooter
               className="col-span-2 lg:col-span-1"
@@ -98,7 +99,7 @@ const dataCards: DataCard[] = [
             />
 
             {/* Pie chart kategori produk */}
-            <ChartPie
+            {/* <ChartPie
               showFooter
               className="col-span-2 lg:col-span-1"
               title="Products Distribution - Category"
@@ -106,7 +107,7 @@ const dataCards: DataCard[] = [
               description="Jumlah produk berdasarkan kategori"
               data={reports.ProductscategoryCount}
               nameKey="Category"
-            />
+            /> */}
           </div>
         </div>
       </section>

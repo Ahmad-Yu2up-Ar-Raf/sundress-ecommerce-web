@@ -1,10 +1,11 @@
 import { OptionItem } from "@/types";
-import { Truck, Rocket, Zap } from "lucide-react"; // lucide icons untuk tampilan yang kontekstual
+import { Truck, Rocket, Zap, Ship, Plane } from "lucide-react";
 
 export enum ShippingMethod {
   STANDARD = "standard",
   EXPRESS = "express",
   OVERNIGHT = "overnight",
+
 }
 
 export const shippingMethods: OptionItem[] = [
@@ -15,6 +16,8 @@ export const shippingMethods: OptionItem[] = [
     description: "Pilihan hemat untuk pengiriman reguler",
     icon: Truck,
     price: 15000,
+    color: "text-gray-500",
+    bgColor: "bg-gray-100",
   },
   {
     value: ShippingMethod.EXPRESS,
@@ -23,6 +26,8 @@ export const shippingMethods: OptionItem[] = [
     description: "Lebih cepat sampai dengan biaya sedikit lebih tinggi",
     icon: Rocket,
     price: 30000,
+    color: "text-blue-500",
+    bgColor: "bg-blue-100",
   },
   {
     value: ShippingMethod.OVERNIGHT,
@@ -31,5 +36,8 @@ export const shippingMethods: OptionItem[] = [
     description: "Pengiriman tercepat untuk kebutuhan mendesak",
     icon: Zap,
     price: 50000,
+    color: "text-yellow-500",
+    bgColor: "bg-yellow-100",
   },
+ 
 ];

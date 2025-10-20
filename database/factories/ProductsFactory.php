@@ -14,18 +14,20 @@ class ProductsFactory extends Factory
 
     public function definition(): array
     {
+        $faker = \Faker\Factory::create();
+    $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
         return [
             'user_id' => User::factory(),
-            'name' => $this->faker->unique()->words(3, true),
-            'description' => $this->faker->paragraph(),
-            'free_shipping' => $this->faker->boolean(),
-            'status' => $this->faker->randomElement(['available', 'not_available']),
-            'category' => $this->faker->randomElement(CategoryProductsStatus::cases()),
-            'price' => $this->faker->numberBetween(10000, 1000000),
+            'name' => $faker->unique()->foodName(),
+            'description' => $faker->paragraph(),
+            'free_shipping' => $faker->boolean(),
+            'status' => $faker->randomElement(['available', 'not_available']),
+            'category' => $faker->randomElement(CategoryProductsStatus::cases()),
+            'price' => $faker->numberBetween(10000, 1000000),
             'currency' => 'IDR',
-            'province' => $this->faker->city(),
-            'country' => $this->faker->country(),
-            'stock' => $this->faker->numberBetween(0, 100),
+            'province' => $faker->city(),
+            'country' => $faker->country(),
+            'stock' => $faker->numberBetween(0, 100),
 
             'cover_image' => ImageHelper::random(),
             'showcase_images' => [
@@ -33,7 +35,7 @@ class ProductsFactory extends Factory
                 ImageHelper::random(),
                 ImageHelper::random(),
             ],
-            'created_at' => $this->faker->dateTimeBetween('now', '+1 month'), // <- ini
+            'created_at' => $faker->dateTimeBetween('now', '+1 month'), // <- ini
             'updated_at' => now(),
         ];
     }

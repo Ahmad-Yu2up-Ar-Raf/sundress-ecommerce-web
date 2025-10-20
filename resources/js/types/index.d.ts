@@ -1,4 +1,5 @@
 import { ProductsSchema } from '@/lib/validations/index.t';
+import { OrderItemType, OrderType } from '@/lib/validations/orders';
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
@@ -13,7 +14,7 @@ export type PagePropsSellerOverview = {
 
 export interface TopProducts {
     name: string;
-    orderItem_count: number;
+    order_item_count: number;
 }
 export interface ReportsSeller {
   totalProducts: number;
@@ -196,6 +197,24 @@ export interface ApiResponse {
   message: string;
   meta?: Meta;
   data?: ProductsSchema[];
+ 
+}
+export interface ApiResponseOrderItems {
+  status: boolean;
+ 
+  message: string;
+  meta: Meta;
+  data: OrderItemType[];
+ 
+}
+export interface ApiResponseOrders {
+  status: boolean;
+ 
+  message: string;
+  meta?: Meta;
+  data?: OrderType[] & {
+    items: OrderItemType[] 
+  };
  
 }
 

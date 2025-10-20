@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrderItem;
 use App\Enums\OrderStatus;
 use App\Models\OrderItems;
 use App\Models\Orders;
@@ -24,7 +25,7 @@ class OrderItemsFactory extends Factory
 
     public function definition(): array
     {
-        $statuses = array_map(fn($case) => $case->value, OrderStatus::cases());
+        $statuses = array_map(fn($case) => $case->value, OrderItem::cases());
 
         return [
             // jika tidak diberi saat create(), factory akan membuat order & product baru

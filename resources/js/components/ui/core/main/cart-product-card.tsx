@@ -131,7 +131,7 @@ const handleDelete = (taskId: number) => {
                         <CardTitle className="capitalize font-medium tracking-tight text-sm leading-6 line-clamp-1">
                             {Product.name}
                         </CardTitle>
-                        <CardDescription className="tracking-tight text-[11px] mb-2.5">
+                        <CardDescription className="tracking-tight text-[11px] ">
                             Stock • {Product.stock}
                         </CardDescription>
                     </div>

@@ -125,6 +125,6 @@ return [
     
     'currency' => env('APP_CURRENCY',  'IDR'),
     'stripe_secret_key' => env('STRIPE_SECRET'),
- 'api_ninjas' =>  env('API_NINJAS_KEY'),
+    'stripe_webhook' => env('STRIPE_WEBHOOK_SECRET'),
 
 ];

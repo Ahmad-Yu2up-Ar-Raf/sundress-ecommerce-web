@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils"
 // Interface untuk data dari server
 interface ServerData {
     name: string;
-    orderItem: number;
+    order_item_count: number;
 }
 
 // Interface untuk props komponen
@@ -68,7 +68,7 @@ export function ChartBarActive({
     
     const transformedData = data.map((item, index) => ({
       name: item.name,
-      orderItem: item.orderItem,
+      orderItem: item.order_item_count,
       fill: colors[index]
     }))
     

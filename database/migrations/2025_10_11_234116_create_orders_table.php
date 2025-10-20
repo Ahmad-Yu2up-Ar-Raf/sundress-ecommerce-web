@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
+          $table->foreignId('user_id')->constrained("users")->onDelete('cascade');
             $table->string('country');
             $table->string('province');
             $table->string('phone');
@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('nameOfCard')->nullable();
             $table->string('email')->unique();
             $table->string('cardNumber', 4)->nullable();
+              $table->json('payment_metadata')->nullable(); // store line items breakdown per seller
+    $table->enum('payment_status', ['pending', 'processing', 'succeeded', 'failed', 'refunded'])->default('pending');
+    $table->string('idempotency_key')->nullable()->unique(); // prevent duplicate webhooks
             $table->decimal('website_commission', 20 , 4)->nullable();
             $table->decimal('online_payment_commission', 20 , 4)->nullable();
             $table->decimal('vendor_subtotal', 20 , 4)->nullable();

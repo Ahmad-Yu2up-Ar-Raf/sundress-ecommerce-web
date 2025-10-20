@@ -13,7 +13,7 @@ const selectTriggerVariants = cva(
     variants: {
       variant: {
         default:
-          "hover:bg-accent/60 hover:text-accent-foreground shadow-sm/2",
+          "hover:bg-accent/60   hover:text-accent-foreground shadow-sm/2",
         outline: "border-2 hover:border-ring shadow-sm/2",
         ghost:
           "border-transparent hover:bg-accent hover:text-accent-foreground",
