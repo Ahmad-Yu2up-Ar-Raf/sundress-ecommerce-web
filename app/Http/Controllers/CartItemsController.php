@@ -8,6 +8,7 @@ use App\Models\CartItems;
 use App\Models\OrderItems;
 use App\Models\Orders;
 use App\Models\Products;
+use App\Services\CartService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,8 +20,9 @@ use Stripe\Stripe;
 
 class CartItemsController extends Controller
 {
-    public function index(Request $request)
+    public function index(CartService $cartService ,Request $request)
     {
+        dd($cartService);
         $perPage = $request->input('perPage', 3);
         $page = (int) $request->input('page', 1);
 
@@ -71,100 +73,42 @@ class CartItemsController extends Controller
         ]);
     }
 
-    public function add(CartStore $request): RedirectResponse
+    public function add(Request $request , Products $product , CartService $cartService)
     {
-        $data = $request->validated();
-        $userId = Auth::id();
-        $qtyToAdd = $data['quantity'] ?? 1;
-
-        return DB::transaction(function () use ($userId, $data, $qtyToAdd) {
-            $product = Products::where('id', $data['product_id'])->lockForUpdate()->first();
-            
-            if (!$product) {
-                return back()->with('error', 'Product not found');
-            }
-            
-            if ($product->stock <= 0) {
-                return back()->with('error', 'Product out of stock');
-            }
-
-            $cartItem = CartItems::where('user_id', $userId)
-                ->where('product_id', $product->id)
-                ->lockForUpdate()
-                ->first();
-
-            if ($cartItem) {
-                $newQty = min($cartItem->quantity + $qtyToAdd, $product->stock);
-                
-                if ($newQty <= 0) {
-                    $cartItem->delete();
-                    return back()->with('success', 'Item removed from cart');
-                }
-                
-                $cartItem->update([
-                    'quantity' => $newQty,
-                    'sub_total' => $product->price * $newQty,
-                ]);
-                
-                return back()->with('success', 'Cart updated');
-            }
-
-            $finalQty = min($qtyToAdd, $product->stock);
-            CartItems::create([
-                'user_id' => $userId,
-                'product_id' => $product->id,
-                'quantity' => $finalQty,
-                'sub_total' => $product->price * $finalQty,
-            ]);
-
-            return back()->with('success', 'Product added to cart');
-        });
-    }
-
-    public function update(Request $request, CartItems $cartItem): RedirectResponse
-    {
-        $data = $request->validate([
-            'quantity' => 'required|integer|min:0',
-            'sub_total' => 'required|numeric|min:0',
+        $request->mergeIfMissing([
+        'quantity' => 1
         ]);
 
-        try {
-            return DB::transaction(function () use ($cartItem, $data) {
-                $product = $cartItem->product()->lockForUpdate()->first();
+       $data = $request->validate([
+      'quantity' => ['nullable','integer' , 'min:1']
+       ]);
 
-                if (!$product) {
-                    return back()->with('error', 'Product not found');
-                }
+       $cartService->addItemToCart(
+        $product,
+        $data['quantity'],
+       );
 
-                $newQty = (int) $data['quantity'];
 
-                if ($newQty <= 0) {
-                    $cartItem->delete();
-                    return back()->with('success', 'Item removed from cart');
-                }
-
-                if ($newQty > $product->stock) {
-                    return back()->with('error', 'Not enough stock');
-                }
-
-                $cartItem->quantity = $newQty;
-                $cartItem->sub_total = $product->price * $newQty;
-                $cartItem->save();
-
-                return back()->with('success', 'Cart updated successfully');
-            });
-        } catch (\Throwable $e) {
-            Log::error('Cart update failed: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return back()->with('error', 'Failed to update cart');
-        }
+       return back()->with('succes' , "Product added to cart succesfully");
     }
 
-    public function destroy(CartItems $cartItem): RedirectResponse
+    public function update(Request $request,Products $product ,CartService $cartService)
     {
-        $cartItem->delete();
+            $request->validate([
+      'quantity' => ['integer' , 'min:1']
+       ]);
+
+       $quantity = $request->input('quantity');
+
+       $cartService->updateItemQuantity($product->id, $quantity);
+         return back()->with('succes' , "Product updated to cart succesfully");
+    }
+
+    public function destroy(Request $request,Products $product ,CartService $cartService): RedirectResponse
+    {
+        
+        $cartService->removeItemFromCart($product->id);
+
         return back()->with('success', 'Product removed from cart');
     }
 

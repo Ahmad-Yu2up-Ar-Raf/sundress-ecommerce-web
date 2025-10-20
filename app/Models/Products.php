@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enums\CategoryProductsStatus;
 use App\Enums\ProductStatus;
 use App\Observers\ProductsObserver;
+use Illuminate\Database\Eloquent\Builder;
+
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -95,6 +97,16 @@ public function seller(): BelongsTo
         if ($this->currency === 'IDR') {
             return number_format($this->price, 0, ',', '.');
         }
+    }
+
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', ProductStatus::Available->value)->where('stock', '>', 0);
+    }
+    public function scopeForWebsite(Builder $query): Builder
+    {
+        return $query->published();
     }
 
     public function updateRatingStats()
