@@ -20,7 +20,7 @@ class OrderItemsController extends Controller
     $status = $request->input('status');
 
 
-    $query = OrderItems::where('seller_id', Auth::id())->with("product");
+    $query = OrderItems::where('vendor_id', Auth::id())->with("product");
 
 
     if ($search) {

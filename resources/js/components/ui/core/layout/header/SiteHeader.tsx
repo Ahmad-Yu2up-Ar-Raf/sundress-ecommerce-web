@@ -76,10 +76,11 @@ export   function SiteHeader() {
 
 const user = usePage<SharedData>().props.auth.user;
 
-const userCartData = user?.cart ?? [];
-const userCartCount = user?.cart_count_quantity ?? 0;
-const userCartTotal = user?.cart_total ?? 0;
-const userWhishlist = user?.whishlist_count ?? 0;
+const userCartData = usePage<SharedData>().props.cart ?? [];
+const userCartCount = usePage<SharedData>().props.cart_count_quantity ?? 0;
+const userCartTotal = usePage<SharedData>().props.cart_total ?? 0;
+const userWhishlist = usePage<SharedData>().props.whishlist;
+const userWhishlistCount = userWhishlist?.length;
 
     const { open } = useModal();
 const onClick = () => open({ redirectTo: "/" });
@@ -104,6 +105,8 @@ const onClick = () => open({ redirectTo: "/" });
     }
   });
 
+
+  console.log(userCartData)
    return (
   <>
 
@@ -125,7 +128,7 @@ const onClick = () => open({ redirectTo: "/" });
    
 
     )}>
-        <main className=" max-w-[69.62em] m-auto   justify-between md:flex ">
+        <main className=" max-w-[75em] m-auto   justify-between md:flex ">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-bold flex items-center gap-3 ">
               <Logo className=" [&_svg]:size-9" />
@@ -164,9 +167,9 @@ const onClick = () => open({ redirectTo: "/" });
       <Button variant={"ghost"} className=" relative" size={"icon"}>
 
          <Heart className="size-5 text-accent-foreground/70 hover:text-primary cursor-pointer transition-all duration-300 ease-out" />
-            {  userWhishlist! > 0 &&(
+            {  userWhishlistCount! > 0 &&(
 
-         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] px-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{userWhishlist}</span>
+         <span className={(" absolute bottom-[-0.2em] bg-primary rounded-full py-[1.8px] px-1.5  text-xs text-primary-foreground right-[-0.3em]")}>{userWhishlistCount}</span>
          )}
       </Button>
       

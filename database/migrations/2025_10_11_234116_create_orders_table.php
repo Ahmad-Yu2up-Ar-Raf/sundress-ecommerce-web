@@ -29,8 +29,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('cardNumber', 4)->nullable();
               $table->json('payment_metadata')->nullable(); // store line items breakdown per seller
-    $table->enum('payment_status', ['pending', 'processing', 'succeeded', 'failed', 'refunded'])->default('pending');
-    $table->string('idempotency_key')->nullable()->unique(); // prevent duplicate webhooks
+             $table->enum('payment_status', ['pending', 'processing', 'succeeded', 'failed', 'refunded'])->default('pending');
+            $table->string('idempotency_key')->nullable()->unique(); // prevent duplicate webhooks
             $table->decimal('website_commission', 20 , 4)->nullable();
             $table->decimal('online_payment_commission', 20 , 4)->nullable();
             $table->decimal('vendor_subtotal', 20 , 4)->nullable();

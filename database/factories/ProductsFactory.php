@@ -15,10 +15,9 @@ class ProductsFactory extends Factory
     public function definition(): array
     {
         $faker = \Faker\Factory::create();
-    $faker->addProvider(new \FakerRestaurant\Provider\en_US\Restaurant($faker));
         return [
-            'user_id' => User::factory(),
-            'name' => $faker->unique()->foodName(),
+            'vendor_id' => User::factory(),
+            'name' => $faker->unique()->name(),
             'description' => $faker->paragraph(),
             'free_shipping' => $faker->boolean(),
             'status' => $faker->randomElement(['available', 'not_available']),

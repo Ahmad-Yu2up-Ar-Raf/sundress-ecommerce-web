@@ -178,7 +178,7 @@ export const MinimalistHero = ({
       </header>
 
       {/* Main Content Area */}
-      <div className="relative gap-30 md:gap-0 grid w-full max-w-[70em] flex-grow grid-cols-1 items-center md:grid-cols-3">
+      <div className="relative gap-30 md:gap-0 grid w-full max-w-[75em] flex-grow grid-cols-1 items-center md:grid-cols-3">
         {/* Left Text Content */}
         {!isMobile && (
 

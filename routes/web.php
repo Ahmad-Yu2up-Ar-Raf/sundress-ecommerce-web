@@ -16,24 +16,27 @@ Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 // ✅ Stripe webhook MUST be outside auth middleware
 
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::patch('/{product}', [CartItemsController::class, 'update'])->name('update');
+    Route::post('/add', [CartItemsController::class, 'add'])->name('add');
+    Route::delete('/{product}', [CartItemsController::class, 'destroy'])->name('destroy');
+});
+Route::prefix('whistlist')->name('whistlist.')->group(function () {
+
+    Route::post('/store', [CartItemsController::class, 'store'])->name('store');
+    Route::delete('/{product}', [CartItemsController::class, 'destroy'])->name('destroy');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('whistlist', WhishlistController::class);
+
     Route::resource('orders', OrdersController::class);
 
-    Route::post('unwhistlist', [WhishlistController::class, 'unwhislited'])
-        ->name('unwhistlist');
-    
+
     Route::middleware(['role:buyer'])->prefix('buyer')->name('buyer.')->group(function () {
         Route::resource('/', BuyyerController::class);
         Route::resource('/orders', OrdersController::class);
     });
     
-    Route::prefix('cart')->name('cart.')->group(function () {
-        Route::patch('/{cartItem}', [CartItemsController::class, 'update'])->name('update');
-        Route::post('/add', [CartItemsController::class, 'add'])->name('add');
-        Route::delete('/{cartItem}', [CartItemsController::class, 'destroy'])->name('destroy');
-    });
 
     // ✅ FIX: Checkout routes
     Route::prefix('checkout')->name('checkout.')->group(function () {

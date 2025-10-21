@@ -54,7 +54,6 @@ const onClick = () => open({ redirectTo: "/" });
 
      function handleWhishlist() {
 
-if(user != null){
 
   setLoading(true)
   startTransition(async () => {
@@ -62,22 +61,21 @@ if(user != null){
       if(Product.is_whislisted == true) {
        toast.loading("Removing...", { id: "whishlist"});
   
-       router.post(route('unwhistlist'),  data, { 
-           preserveScroll: true,
-           preserveState: true,
-           forceFormData: true, 
-           onSuccess: (success) => {              
-     
-             toast.success("Products removed from whishlist", { id: "whishlist"});
-             setLoading(false);
-           },
-           onError: (error) => {
-             console.error("Submit error:" , error);
-           toast.error(`Error: ${Object.values(error).join(', ')}` , {id: "whishlist"});
-             setLoading(false);
-             
-           }
-         });
+         router.delete(route('whishlist.destroy', Product.id), {
+             preserveScroll: true,
+                preserveState: true,
+            onBefore: () => setLoading(true),
+            onSuccess: () => {
+              toast.success("Product deleted successfully", { id: "products-delete" });
+              // reload untuk memastikan data fresh
+              router.reload();
+            },
+            onError: (errors: any) => {
+              console.error("Delete error:", errors);
+              toast.error(errors?.message || "Failed to delete the product", { id: "products-delete" });
+            },
+            onFinish: () => setLoading(false)
+          });
      }else {
                  toast.loading("Adding...", { id: "whishlist"});
          router.post(route('whistlist.store'),  data, { 
@@ -103,11 +101,6 @@ if(user != null){
       toast.error("Network error");
     } 
   });
-}else {
-
-  onClick()
-
-}
 
  
 
@@ -115,14 +108,14 @@ if(user != null){
   }
      function handleCart() {
 
-if(user != null){
+
 
   setLoading(true)
   startTransition(async () => {
     try {
 
                  toast.loading("Adding...", { id: "cart"});
-         router.post(route('cart.add'),  data, { 
+         router.post(route('cart.add', Product.id),  data, { 
            preserveScroll: true,
            preserveState: true,
            forceFormData: true, 
@@ -145,11 +138,6 @@ if(user != null){
       toast.error("Network error");
     } 
   });
-}else {
-
-  onClick()
-
-}
 
  
 

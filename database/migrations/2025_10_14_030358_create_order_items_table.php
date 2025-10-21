@@ -18,18 +18,17 @@ return new class extends Migration
             $table->timestamps();
         
             
-            // Add index for seller queries
-            $table->index('seller_id');
+    
             
+            $table->foreignId('vendor_id')->constrained("vendors")->onDelete('cascade');
 
-    $table->decimal('shipping_cost', 15, 2)->nullable()->default(0);
+            $table->decimal('shipping_cost', 15, 2)->nullable()->default(0);
             $table->string('status')->default(OrderItem::Pending->value);
-            $table->foreignId('seller_id')->constrained("users")->onDelete('cascade');
             $table->unsignedInteger('quantity')->default(1);
             $table->foreignId('product_id')->constrained("products")->onDelete('cascade');
             $table->foreignId('order_id')->constrained("orders")->onDelete('cascade');
             $table->unsignedBigInteger('sub_total')->default(0);
-                     $table->bigInteger('seller_amount')->default(0)->after('sub_total');
+            $table->bigInteger('seller_amount')->default(0)->after('sub_total');
             $table->bigInteger('platform_commission')->default(0)->after('seller_amount');
         });
     }

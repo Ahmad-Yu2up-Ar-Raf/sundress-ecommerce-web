@@ -16,14 +16,13 @@ class OrderItems extends Model
     protected $table = 'order_items';
 
     protected $fillable = [
-        'seller_id',
+        'vendor_id',
         'order_id',
         'quantity',
         'seller_amount',
         'platform_commission',
         'product_id',
         'sub_total',
-     
         'status',
     ];
 
@@ -33,9 +32,9 @@ class OrderItems extends Model
         'status' => OrderItem::class,
     ];
 
-    public function seller(): BelongsTo
+    public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'seller_id');
+        return $this->belongsTo(User::class, 'vendor_id');
     }
 
     public function order(): BelongsTo
@@ -53,38 +52,34 @@ class OrderItems extends Model
         static::updated(function (OrderItems $item) {
             // normalisasi nilai status baru menjadi string lowercase
             $newStatus = $item->status;
-            // jika enum (BackedEnum), ambil value; kalau string tetap pakai string
             if (is_object($newStatus) && isset($newStatus->value)) {
                 $newStatusVal = (string) $newStatus->value;
             } else {
                 $newStatusVal = (string) $newStatus;
             }
             $newStatusNorm = strtolower($newStatusVal);
-
-            // toleransi beberapa variasi nama ('approve' / 'approved')
+    
             $isApproved = in_array($newStatusNorm, ['approve', 'approved']);
-
+    
             // hanya lanjut jika field status berubah ke approved
             if (! $item->wasChanged('status') || ! $isApproved) {
                 return;
             }
-
-            // lakukan pengecekan dan update dalam transaction untuk mencegah race
+    
             DB::transaction(function () use ($item) {
                 // lock order row supaya tidak ada race saat banyak seller approve bersamaan
                 $order = $item->order()->lockForUpdate()->first();
                 if (! $order) {
                     return;
                 }
-
-                // ambil collection item (dalam memori) untuk memudahkan normalisasi cast enum
+    
                 $items = $order->items()->get();
-
+    
                 if ($items->isEmpty()) {
                     return;
                 }
-
-                // hitung yang sudah approved (normalisasi mirip di atas)
+    
+                // hitung yang sudah approved
                 $approvedCount = $items->filter(function ($it) {
                     $s = $it->status;
                     if (is_object($s) && isset($s->value)) {
@@ -94,24 +89,37 @@ class OrderItems extends Model
                     }
                     return in_array(strtolower($sv), ['approve', 'approved']);
                 })->count();
-
+    
                 $totalCount = $items->count();
-
+    
                 // jika semua items sudah approved => set order ke Processing
                 if ($approvedCount === $totalCount) {
-                    // ambil status order saat ini (normalisasi)
                     $current = $order->status;
                     $currentVal = is_object($current) && isset($current->value) ? (string) $current->value : (string) $current;
                     $currentNorm = strtolower($currentVal);
-
-                    // jangan turunkan jika status sudah lebih maju
+    
                     $higherStatuses = ['processing', 'shipped', 'delivered', 'cancelled', 'refunded'];
                     if (! in_array($currentNorm, $higherStatuses)) {
-                        $order->status = OrderStatus::Processing; // cast ke enum, Orders model sudah punya casting
-                        $order->save();
+                        // PENTING: Gunakan updateQuietly agar tidak trigger observer lagi
+                        $order->updateQuietly([
+                            'status' => OrderStatus::Processing
+                        ]);
                     }
                 }
             });
+        });
+    
+        // TAMBAHKAN: Pastikan vendor_id tidak pernah null saat updating
+        static::updating(function (OrderItems $item) {
+            if (empty($item->vendor_id) && !$item->isDirty('vendor_id')) {
+                // Jika vendor_id null dan tidak sedang diubah, ambil dari original
+                $item->vendor_id = $item->getOriginal('vendor_id');
+            }
+            
+            // Jika masih null, ambil dari product
+            if (empty($item->vendor_id) && $item->product) {
+                $item->vendor_id = $item->product->vendor_id;
+            }
         });
     }
 }

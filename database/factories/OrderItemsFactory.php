@@ -31,7 +31,7 @@ class OrderItemsFactory extends Factory
             // jika tidak diberi saat create(), factory akan membuat order & product baru
             'order_id'   => Orders::factory(),
             'product_id' => Products::factory(),
-            'seller_id'  => null, // akan diisi di afterCreating berdasarkan product->user_id
+            'vendor_id'  => null, // akan diisi di afterCreating berdasarkan product->user_id
             'quantity'   => $this->faker->numberBetween(1, 3),
             'sub_total'  => 0, // akan dihitung di afterCreating
             'status'     => $this->faker->randomElement($statuses),
@@ -49,13 +49,13 @@ class OrderItemsFactory extends Factory
             if (! $product) {
                 // tak seharusnya terjadi, tapi aman fallback
                 $item->sub_total = 0;
-                $item->seller_id = null;
+                $item->vendor_id = null;
                 $item->save();
                 return;
             }
 
-            // set seller_id dari product owner
-            $item->seller_id = $product->user_id;
+            // set vendor_id dari product owner
+            $item->vendor_id = $product->user_id;
 
             // pastikan quantity tidak melebihi stok bila stok ada
             $stock = (int) $product->stock;

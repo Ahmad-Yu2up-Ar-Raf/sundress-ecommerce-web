@@ -21,7 +21,7 @@ class Products extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'user_id',
+        'vendor_id',
         'name',
         'free_shipping',
         'description',
@@ -51,22 +51,12 @@ class Products extends Model
         'showcase_images' => 'array',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-public function seller(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 
-    // Alias jika ingin konsisten dengan nama "vendor"
     public function vendor(): BelongsTo
     {
-        return $this->seller();
+        return $this->belongsTo(Vendors::class, 'vendor_id');
     }
 
- 
     public function orders(): HasMany
     {
         return $this->hasMany(Orders::class, 'product_id');

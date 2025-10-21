@@ -71,7 +71,6 @@ export function CartProductsSheet({ ...props}: type) {
 
   const contentRef = React.useRef<HTMLDivElement>(null);
 
-  // Handle scroll lock and Lenis prevention
   React.useEffect(() => {
     // Lock body scroll
     const originalOverflow = document.body.style.overflow;
@@ -80,7 +79,7 @@ export function CartProductsSheet({ ...props}: type) {
     document.body.style.overflow = 'hidden';
     document.body.style.paddingRight = '0px';
 
-    // Get Lenis instance if exists
+   
     const lenis = (window as any).lenis;
     if (lenis) {
       lenis.stop();

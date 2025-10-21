@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\CartService;
+use App\Services\WhishlistService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -35,35 +37,41 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
+    public function share(Request $request ): array
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+        $cartService = app(CartService::class);
+        $whishlistService = app(WhishlistService::class);
 
+
+
+
+        $totalQuantity = $cartService->getTotalQuantity();
+        $totalPrice = $cartService->getTotalPrice();
+        $cartItems = $cartService->getCartItems();
+        
+        $whishlistItems = $whishlistService->getWhishlist();
         return [
             ...parent::share($request),
+            'csrf_token' => csrf_token(),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
-
+            'succes' => session('succes'),
+            'whishlist' => $whishlistItems,
             'auth' => [
                 'user' => $request->user() ? [
                     ...$request->user()->toArray(),
                     'roles' => $request->user()->getRoleNames(),
-                    'cart' => $request->user()
-    ->cartItems()
-    ->with('product')
-    ->orderBy('created_at', 'desc')
-    ->limit(10)
-    ->get(),
-
-                    'cart_count_quantity' => $request->user()->cartItems()->sum('quantity'),
-                    'cart_total' => $request->user()->cartItems()->sum('sub_total'),
-                    'whishlist_count' => $request->user()->whishlist()->count(),
+     
                 ] : null,
             ],
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'cart_total' => $totalPrice,
+            'cart_count_quantity' => $totalQuantity,
+            'cart' => $cartItems,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

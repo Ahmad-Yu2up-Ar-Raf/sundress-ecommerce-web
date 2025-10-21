@@ -20,93 +20,53 @@ use Stripe\Stripe;
 
 class CartItemsController extends Controller
 {
-    public function index(CartService $cartService ,Request $request)
+    public function index(CartService $cartService )
     {
-        dd($cartService);
-        $perPage = $request->input('perPage', 3);
-        $page = (int) $request->input('page', 1);
-
-        $query = CartItems::where('user_id', Auth::id())
-            ->with('product.seller')
-            ->orderBy('created_at', 'asc');
-
-        $data = [];
-        $pagination = [
-            'total' => 0,
-            'currentPage' => $page,
-            'perPage' => (int) $perPage,
-            'lastPage' => 0,
-            'hasMore' => false,
-        ];
-
-        if ($perPage === 'all') {
-            $collection = $query->get();
-            $data = $collection->values()->all();
-            $count = $collection->count();
-            
-            $pagination = [
-                'total' => $count,
-                'currentPage' => 1,
-                'perPage' => $count,
-                'lastPage' => ($count > 0) ? 1 : 0,
-                'hasMore' => false,
-            ];
-        } else {
-            $perPageInt = (int) $perPage > 0 ? (int) $perPage : 3;
-            $paginator = $query->paginate($perPageInt, ['*'], 'page', $page);
-            $data = $paginator->items();
-
-            $pagination = [
-                'total' => $paginator->total(),
-                'currentPage' => $paginator->currentPage(),
-                'perPage' => $paginator->perPage(),
-                'lastPage' => $paginator->lastPage(),
-                'hasMore' => $paginator->currentPage() < $paginator->lastPage(),
-            ];
-        }
-
+    
         return Inertia::render('checkout/index', [
             'status' => true,
             'message' => 'CartItems retrieved successfully',
-            'data' => $data,
-            'pagination' => $pagination,
+            'data' => $cartService->getCartItems(),
+           
         ]);
     }
 
-    public function add(Request $request , Products $product , CartService $cartService)
-    {
-        $request->mergeIfMissing([
-        'quantity' => 1
-        ]);
+ public function add(Request $request, CartService $cartService)
+{
+    $data = $request->validate([
+        'product_id' => ['required', 'integer', 'exists:products,id'],
+        'quantity'   => ['nullable', 'integer', 'min:1'],
+    ]);
 
-       $data = $request->validate([
-      'quantity' => ['nullable','integer' , 'min:1']
-       ]);
+    $quantity = $data['quantity'] ?? 1;
+    $productId = $data['product_id'];
 
-       $cartService->addItemToCart(
-        $product,
-        $data['quantity'],
-       );
+    // ambil product model (pastikan ada)
+    $product = Products::findOrFail($productId);
 
+    // panggil service — biarkan service yang hitung sub_total
+    $cartService->addItemToCart($product, $quantity);
 
-       return back()->with('succes' , "Product added to cart succesfully");
-    }
+    return back()->with('success', 'Product added to cart successfully');
+}
 
     public function update(Request $request,Products $product ,CartService $cartService)
     {
             $request->validate([
-      'quantity' => ['integer' , 'min:1']
+      'quantity' => [ 'required' ,'integer' , 'min:1'],
+      'sub_total' => [ 'required' ,'integer' , 'min:1']
        ]);
 
        $quantity = $request->input('quantity');
+       $sub_total = $request->input('sub_total');
 
-       $cartService->updateItemQuantity($product->id, $quantity);
+       $cartService->updateItemQuantity($product->id, $quantity, $sub_total);
          return back()->with('succes' , "Product updated to cart succesfully");
     }
 
     public function destroy(Request $request,Products $product ,CartService $cartService): RedirectResponse
     {
-        
+     
         $cartService->removeItemFromCart($product->id);
 
         return back()->with('success', 'Product removed from cart');
@@ -157,13 +117,13 @@ public function checkout(CheckoutStore $request)
                 // 'status' atau 'paid_at' bisa di-set jika ingin
             ]);
 
-            // 2) create order items (per cart item) — assign seller_id dari product->user_id
+            // 2) create order items (per cart item) — assign vendor_id dari product->user_id
             foreach ($cartItems as $item) {
                 $product = $item->product;
                 $sellerId = $product->user_id ?? ($product->seller->id ?? null);
 
                 OrderItems::create([
-                    'seller_id' => $sellerId,
+                    'vendor_id' => $sellerId,
                     'order_id' => $order->id,
                     'quantity' => (int) $item->quantity,
                     'seller_amount' => (int) $item->sub_total,      

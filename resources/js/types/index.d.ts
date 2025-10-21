@@ -34,15 +34,32 @@ export interface ReportsSeller {
 export interface cartCart {
   id: number
    product : ProductsSchema
+   product_id : number
    created_at: string
    updated_at: string
   product_id: number
   quantity: number
+  unit_price: number
   sub_total: number
-  user_id: number
+  vendor: Vendor
+}
+
+export interface Vendor {
+  cover_image: string
+  created_at: string
+  id:number
+  user_id:number
+  store_addres: string
+  store_name: string
+  updated_at: string
+
 }
 
 
+export interface GroupedCart {
+  items: cartCart[]
+  vendor : Vendor
+}
 export interface ChartDataType {
     date: string;
    
@@ -80,11 +97,23 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+
+
+export interface whishlist {
+  id : number
+  product_id : number
+  product: ProductsSchema
+  vendor: Vendor
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
-        
+    cart_total?: number;
+    whishlist?: whishlist[];
+    cart_count_quantity?: number;
+    cart?: cartCart[];
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
     [key: string]: unknown;
@@ -92,10 +121,8 @@ export interface SharedData {
 
 export interface User {
     id: number;
-whishlist_count?: number;
-        cart_total?: number;
-    cart_count_quantity?: number;
-    cart?: cartCart[];
+
+       
     name: string;
     email: string;
     avatar?: string;

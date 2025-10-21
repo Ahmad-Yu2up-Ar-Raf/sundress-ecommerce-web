@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\CartService;
+use App\Services\WhishlistService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,12 +29,16 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request, CartService $cartService  , WhishlistService $whishlistService ): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
     $user = Auth::user();
+
+
+    $cartService->moveCartItemsToDatabase($user->id);
+    $whishlistService->moveWhishlistToDatabase($user->id);
           return ($user->hasRole('seller') 
             ? redirect()->intended(route('seller.index', absolute: false) )
             :  redirect()->intended(route('buyer.index', absolute: false) ));

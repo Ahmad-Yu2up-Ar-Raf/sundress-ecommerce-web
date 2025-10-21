@@ -30,7 +30,7 @@ type componentProps = {
 // di bagian atas komponen, destructure supaya jelas
 export default function CartProductsCard({ ProductCart, className }: componentProps) {
   const Product = ProductCart.product
-  const cartItemId = ProductCart.id
+  const productId = Product.id
 
   const [value, setValue] = useState(ProductCart.quantity)
   const [subTotal, setSubTotal] = useState<number>(Product.price * ProductCart.quantity)
@@ -41,11 +41,11 @@ export default function CartProductsCard({ ProductCart, className }: componentPr
 
   const debouncedUpdate = useCallback(
     debounce((quantity: number, calculatedSubTotal: number) => {
-      console.log('Updating cart:', { quantity, calculatedSubTotal, cartItemId })
-      console.log('patch url ->', route('cart.update', cartItemId)) // debug: lihat url
+      console.log('Updating cart:', { quantity, calculatedSubTotal, productId })
+      console.log('patch url ->', route('cart.update', productId)) // debug: lihat url
 
       router.patch(
-        route('cart.update', cartItemId),
+        route('cart.update', productId),
         {
           quantity,
           sub_total: calculatedSubTotal
@@ -58,7 +58,7 @@ export default function CartProductsCard({ ProductCart, className }: componentPr
         }
       )
     }, 600),
-    [cartItemId] // depend on cart item id
+    [productId] // depend on cart item id
   )
 
   const handleQuantityChange = (newQuantity: number) => {
@@ -69,12 +69,12 @@ export default function CartProductsCard({ ProductCart, className }: componentPr
 
  const [processing, setProcessing] = React.useState(false);
 
-const handleDelete = (taskId: number) => {
+const handleDelete = (id: number) => {
   try {
     setProcessing(true);
     toast.loading("Product deleting...", { id: "products-delete" });
 
-    router.delete(route('cart.destroy', taskId), {
+    router.delete(route('cart.destroy', id), {
        preserveScroll: true,
           preserveState: true,
       onBefore: () => setProcessing(true),
@@ -151,7 +151,7 @@ const handleDelete = (taskId: number) => {
                 <Trash2
                 
                 onClick={() => {
-                  handleDelete(cartItemId)
+                  handleDelete(productId!)
                 }}
                 className="cursor-pointer size-3.5 text-muted-foreground hover:text-accent-foreground"/>
                 

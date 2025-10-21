@@ -19,8 +19,7 @@ return new class extends Migration
             $table->foreignId('product_id')
             ->index()
             ->constrained("products")->cascadeOnDelete();
-            $table->unsignedBigInteger('price');
-            $table->boolean('saved_for_later')->default(false);
+            $table->unsignedBigInteger('sub_total');
         });
     }
 

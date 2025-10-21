@@ -39,7 +39,7 @@ export const paymentMethodEnum = z.enum([...PaymentMethodValues]);
 
 export const orderItemSchema = z.object({
   id: z.number().optional(),
-  seller_id: z.coerce.number().min(1, "seller_id is required"),
+  vendor_id: z.coerce.number().min(1, "vendor_id is required"),
   order_id: z.number().optional(),
   product_id: z.coerce.number().min(1, "product_id is required"),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),

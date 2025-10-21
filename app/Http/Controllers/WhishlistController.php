@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\WhishlistStore;
+use App\Models\Products;
 use App\Models\Whishlist;
+use App\Services\WhishlistService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,43 +31,35 @@ class WhishlistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(WhishlistStore $request) : RedirectResponse
+    public function store(Request $request,  WhishlistService $whishlistService) : RedirectResponse
     {  
               
-       Whishlist::create([
-                ...$request->validated(),
-                 'user_id' => Auth::id(),
-            ]);
+        $data = $request->validate([
+            'product_id' => ['required', 'integer', 'exists:products,id'],
+          
+        ]);
+    
 
-         
-
-             return back()->with('success', 'Whishlist added successfully');
+        $productId = $data['product_id'];
+    
+        // ambil product model (pastikan ada)
+        $product = Products::findOrFail($productId);
+    
+        // panggil service — biarkan service yang hitung sub_total
+        $whishlistService->addItemToWhishlist($product);
+    
+        return back()->with('success', 'Product added to whishlist successfully');
 
     }
 
 
-    public function unwhislited(Request $request) : RedirectResponse
+    public function destroy(Products $product ,WhishlistService $whishlistService) : RedirectResponse
     {  
               
 
-    $user = Auth::user();
-    $token = $request->bearerToken();
-    $product_id = $request->get('product_id');
+        $whishlistService->removeItemFromWhishlist($product->id);
 
-
-    if($user){
-        $whishlist = Whishlist::where('user_id' , $user->id)->where('product_id', $product_id);
-              
-   
-              $whishlist->delete();
-        
-    }
-
-
-
-      
-
-           return back()->with('success', 'Whishlist removed successfully');
+        return back()->with('success', 'Product removed from whishlish');
 
     }
 
@@ -96,8 +90,5 @@ class WhishlistController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Whishlist $whishlist)
-    {
-        //
-    }
+  
 }

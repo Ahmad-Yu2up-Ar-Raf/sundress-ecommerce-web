@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-
+use App\Http\Controllers\WhishlistController;
 use App\Services\CartService;
+use App\Services\WhishlistService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,9 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(CartService::class , function() {
-            return new CartService();
-        });
+        $this->app->singleton(CartService::class);
+        $this->app->singleton(WhishlistService::class);
     }
 
     /**

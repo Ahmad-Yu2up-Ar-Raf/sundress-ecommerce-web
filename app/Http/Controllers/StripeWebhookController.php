@@ -109,7 +109,7 @@ class StripeWebhookController extends Controller
                     foreach ($vendorData['items'] as $item) {
                         OrderItems::create([
                             'order_id' => $order->id,
-                            'seller_id' => $sellerId,
+                            'vendor_id' => $sellerId,
                             'product_id' => $item['product_id'],
                             'quantity' => $item['quantity'],
                             'sub_total' => $item['sub_total'],
@@ -122,7 +122,7 @@ class StripeWebhookController extends Controller
 
                     Log::info('Revenue split calculated', [
                         'order_id' => $order->id,
-                        'seller_id' => $sellerId,
+                        'vendor_id' => $sellerId,
                         'subtotal' => $sellerSubtotal,
                         'platform_commission' => $platformCommission,
                         'seller_final' => $sellerFinalAmount,

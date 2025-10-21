@@ -9,7 +9,7 @@ function Neslatter() {
   return (
     <section className=" px-5  py-20">
 
-<Card className="w-full max-w-[69em]    flex flex-col justify-center  rounded-xl bg-primary/20 relative md:py-15 py-10 md:text-center  m-auto  gap-6  ">
+<Card className="w-full max-w-[75em]    flex flex-col justify-center  rounded-xl bg-primary/20 relative md:py-15 py-10 md:text-center  m-auto  gap-6  ">
     {/* <MediaItem webViewLink='https://koro.imgix.net/media/5b/07/fc/1687174556/Newsletter-Background-Image.jpg'
     className=' absolute w-full h-full '
     /> */}
