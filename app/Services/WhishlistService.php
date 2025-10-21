@@ -131,7 +131,7 @@ class WhishlistService
          Whishlist::where('user_id', $userId)->where('product_id', $productId)->delete();
     }
 
-
+    
 
     public function removeItemFromCookies(int $productId ): void
     {
