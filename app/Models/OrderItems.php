@@ -22,12 +22,12 @@ class OrderItems extends Model
         'seller_amount',
         'platform_commission',
         'product_id',
-        'sub_total',
+        'price',
         'status',
     ];
 
     protected $casts = [
-        'sub_total' => 'integer',
+        'price' => 'integer',
         'quantity' => 'integer',
         'status' => OrderItem::class,
     ];

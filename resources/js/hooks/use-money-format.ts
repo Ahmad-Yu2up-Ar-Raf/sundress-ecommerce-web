@@ -1,7 +1,10 @@
- export const formatIDR = (value: number | undefined): string => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0, // Adjust as needed for decimal places (Rupiah typically doesn't use decimals)
-    }).format(value!);
-  };
+export const formatUSD = (value: number | undefined): string => {
+  if (value == null || isNaN(value)) return '$0.00';
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};

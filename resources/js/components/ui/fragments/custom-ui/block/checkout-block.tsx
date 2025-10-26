@@ -36,6 +36,7 @@ Building2,
 Clock,
 ClipboardList,
 File,
+Notebook,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -45,16 +46,17 @@ SelectItem,
 SelectTrigger,
 SelectValue,
 } from "@/components/ui/fragments/shadcn-ui/select";
-import { PaymentMethodOptions } from "@/config/enums/payment-method";
+
 import { cartCart, CheckoutResponse, OptionItem } from "@/types";
 import { CountrySelector, ProvinceSelector } from "../input/location-input";
 import { User as profile, type SharedData } from '@/types';
 import { Link, router, usePage } from "@inertiajs/react";
-import { formatIDR } from "@/hooks/use-money-format";
+import { formatUSD } from "@/hooks/use-money-format";
 import CartProductsCard from "@/components/ui/core/main/cart-product-card";
 import { ShippingMethod, shippingMethods } from "@/config/enums/courier";
 import { toast } from "sonner";
 import { Spinner } from "../../shadcn-ui/spinner";
+import { Content, type Content as contentType } from "@tiptap/react"
 import { PhoneInput } from "../input/phone-input";
 interface OrderItem {
 id: string;
@@ -66,6 +68,8 @@ quantity: number;
 discount?: number;
 }
 import { loadStripe } from '@stripe/stripe-js';
+import { Textarea } from "../../shadcn-ui/textarea";
+import { MinimalTiptapEditor } from "../minimal-tiptap";
 interface CheckoutSummary {
 subtotal: number;
 discount: number;
@@ -84,15 +88,12 @@ country: string;
 province: string;
 zipCode: string;
 shipping_method: string;
-payment_method: string;
+additional_information: string;
 }
 
-interface PaymentMethod {
-cardNumber: string;
-expiryMonth: string;
-expiryYear: string;
-cvv: string;
-nameOfCard: string;
+interface AdditionalInformation {
+note: contentType;
+
 }
 
 export default function Checkout({ data : userCartData }: { data: cartCart[]}) {
@@ -110,19 +111,13 @@ const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
   province: "",
   zipCode: "",
   shipping_method :"",
-  payment_method :"",
+  additional_information :"",
 });
-const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>({
-  cardNumber: "",
-  expiryMonth: "",
-  expiryYear: "",
-  cvv: "",
-  nameOfCard: "",
+const [additionalInformation, setAdditionalInformation] = useState<AdditionalInformation>({
+  note: "",
+
 });
-const [selectedPaymentType, setSelectedPaymentType] =
-useState<OptionItem>(PaymentMethodOptions[0]);
-const [sameAsShipping, setSameAsShipping] = useState<boolean>(true);
-const [savePaymentMethod, setSavePaymentMethod] = useState<boolean>(false);
+
 const [appliedPromo, setAppliedPromo] = useState<string>("SAVE10");
 const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false);
 
@@ -147,12 +142,14 @@ useEffect(() => {
  const user = usePage<SharedData>().props.auth.user;
 
 const calculateSummary = (): CheckoutSummary => {
+  // ✅ CRITICAL: Gunakan item.price (dari cart_items table) bukan item.product.price
   const subtotal = orderItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.price, // ✅ item.price sudah = product.price * quantity
     0
   );
+  
   const discount = appliedPromo === "SAVE10" ? subtotal * 0.1 : 0;
-  const shipping = selectedShipping?.price! ; 
+  const shipping = selectedShipping?.price || 0; 
   const tax = (subtotal - discount) * 0.08;
   const total_price = subtotal - discount + shipping + tax;
 
@@ -165,7 +162,7 @@ const calculateSummary = (): CheckoutSummary => {
   };
 };
 
-
+const MINIMUM_USD = 0.50;
 const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
   setShippingAddress((prev) => ({
     ...prev,
@@ -173,12 +170,16 @@ const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
   }));
 };
 
-const handlePaymentChange = (field: keyof PaymentMethod, value: string) => {
-  setPaymentMethod((prev) => ({
+const handleAdditionalChange = (field: keyof AdditionalInformation, value: Content) => {
+  setAdditionalInformation((prev) => ({
     ...prev,
     [field]: value,
   }));
 };
+
+
+
+
 const validateStep = (step: number): boolean => {
   switch (step) {
     case 1:
@@ -192,17 +193,9 @@ const validateStep = (step: number): boolean => {
         shippingAddress.zipCode
       );
     case 2:
-      if (selectedPaymentType.value === "bank_transfer") {
-        return !!(
-          paymentMethod.cardNumber &&
-          paymentMethod.expiryMonth &&
-          paymentMethod.expiryYear &&
-          paymentMethod.cvv &&
-          paymentMethod.nameOfCard
-        );
-      }
-      // For other payment methods, we just need them to be selected
-      return !!selectedPaymentType;
+     return !!(
+        additionalInformation.note
+      );
     case 3:
       return agreeToTerms;
     default:
@@ -229,28 +222,35 @@ const summary = calculateSummary();
 
 
 
-
 const data = {
-  ...paymentMethod,
+  ...additionalInformation,
   ...shippingAddress,
   ...summary,
   shipping_method: selectedShipping.value,
-  payment_method: selectedPaymentType.value,
-  expiryMonth: parseInt(paymentMethod.expiryMonth)
 }
 
   const [isPending, startTransition] = React.useTransition();
 
 function handlePayment() {
+  const summary = calculateSummary();
+  
+
   toast.loading("Setting up payment...", { id: "payment" });
   setLoading(true);
 
-  // ✅ FIX: Use router.post for external redirect
+  const data = {
+    ...additionalInformation,
+    ...shippingAddress,
+    ...summary, // ✅ Kirim summary yang sudah dihitung dengan benar
+    shipping_method: selectedShipping.value,
+  };
+
+  console.log('Payment Data:', data); // ✅ Debug
+
   router.post(route('checkout.payment'), data, {
     preserveScroll: false,
-    preserveState: false, // Critical for external redirect
+    preserveState: false,
     onSuccess: (page) => {
-      // This may not fire if redirecting to Stripe
       toast.dismiss("payment");
     },
     onError: (errors) => {
@@ -262,7 +262,6 @@ function handlePayment() {
       setLoading(false);
     },
     onFinish: () => {
-      // May not fire on external redirect
       setLoading(false);
     },
   });
@@ -375,7 +374,7 @@ const handleShowAll = () => {
         )}
         {userCartData && userCartData.map((item ,i) =>  {
           const Product = item.product
-          const price = formatIDR(item.sub_total)
+          const price = formatUSD(item.price)
         return(
  <CartProductsCard key={i} className="   bg-background h-[4em]  [&_#card-content-img]:min-w-15" ProductCart={item}/>
         )})}
@@ -403,28 +402,28 @@ const handleShowAll = () => {
       <div className="flex flex-col gap-3 border-t pt-4">
         <div className="flex justify-between text-sm">
           <span>Subtotal</span>
-          <span>{formatIDR(parseInt(summary.subtotal.toFixed(2)))}</span>
+          <span>{formatUSD(summary.subtotal)}</span>
         </div>
         {summary.discount > 0 && (
           <div className="flex justify-between text-sm text-yellow-600">
             <span>Discount</span>
-            <span>-{formatIDR(parseInt(summary.discount.toFixed(2)))}</span>
+            <span>-{formatUSD(summary.discount)}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span>Shipping</span>
-          <span>{formatIDR(parseInt(summary?.shipping!.toFixed(2)))}</span>
+          <span>{formatUSD(summary.shipping || 0)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span>Tax</span>
-          <span>{formatIDR(parseInt(summary.tax.toFixed(2)))}</span>
+          <span>{formatUSD(summary.tax)}</span>
         </div>
       </div>
     </CardContent>
         <CardFooter className="items-center px-6 flex justify-between font-semibold text-lg border-t [.border-t]:py-3 ">
           <span>Total</span>
           <span>
-            {formatIDR(parseInt(summary.total_price.toFixed(2)))}</span>
+            {formatUSD(summary.total_price)}</span>
         </CardFooter>
   </Card>
 )};
@@ -442,9 +441,9 @@ if (isLoading) {
 }
 const steps = [
         { step: 1, label: "Shipping", icon: Truck },
-        { step: 2, label: "Payment", icon: CreditCard },
+        { step: 2, label: "Additional", icon: Notebook },
         { step: 3, label: "Review", icon: ClipboardList },
-        { step: 4, label: "Validation", icon: File },
+        { step: 4, label: "Payments", icon: CreditCard },
       ]
 
 
@@ -553,7 +552,7 @@ return (
                     onChange={(e) =>
                       handleAddressChange("firstName", e.target.value)
                     }
-                    leftIcon={<User className="h-4 w-4" />}
+                  
                   />
                 </div>
                 <div className="flex flex-col gap-3">
@@ -579,7 +578,7 @@ return (
                     onChange={(e) =>
                       handleAddressChange("email", e.target.value)
                     }
-                    leftIcon={<Mail className="h-4 w-4" />}
+                   
                   />
                 </div>
                 <div className="flex flex-col gap-3">
@@ -630,19 +629,7 @@ return (
                                     countryName={shippingAddress.country as string}
                               
                                   />
-                  {/* <Select
-                  
-                  >
-                    <SelectTrigger className="text-sm " size={"lg"}>
-                      <SelectValue placeholder="Select province" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CA">California</SelectItem>
-                      <SelectItem value="NY">New York</SelectItem>
-                      <SelectItem value="TX">Texas</SelectItem>
-                      <SelectItem value="FL">Florida</SelectItem>
-                    </SelectContent>
-                  </Select> */}
+               
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="zipCode">ZIP Code *</Label>{" "}
@@ -694,7 +681,7 @@ return (
                             </div>
                           </div>
                         </div>
-                        <div className="font-semibold">{formatIDR(method.price)}</div>
+                        <div className="font-semibold">{formatUSD(method.price)}</div>
                       </div>
                     </div>
                   ))}
@@ -719,174 +706,29 @@ return (
            <CardHeader className=" [.border-b]:pb-3  border-b ">
               <CardTitle className="lg:text-xl  text-lg font-semibold flex items-center gap-3">
                 <CreditCard className="h-5 w-5 sr-only" />
-                Payment Information
+                Additional Information
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">
-              {/* Payment Method Selection */}
-              <div className="flex flex-col gap-5">
-                <Label className="text-base sr-only font-medium">
-                  Choose Payment Method
-                </Label>
-                <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
-                 {PaymentMethodOptions.map((Item , i ) => (
-
-                  <Button
-                  key={i}
-                  variant={"ghost"}
-                  size={"lg"}
-                    type="button"
-                    onClick={() => {
-                      setSelectedPaymentType(Item)
-                    
-                            handleAddressChange("payment_method", Item.value)
-                    }}
-                    className={cn(
-                      "flex overflow-hidden justify-between items-center  gap-3 px-4 py-10 border-2 rounded-xl transition-colors ",
-                      selectedPaymentType.value ===  Item.value
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <div className="  text-left overflow-hidden    max-w-xs  flex items-center   gap-3  ">
-                    <Item.icon className="size-5 text-primary" />
-                    <div className=" w-full">
-
-                      <div className="font-medium">{Item.label}</div>
-                      <div className="text-xs line-clamp-1 text-muted-foreground">
-                        {Item.description}
-                      </div>
-                    </div>
-                    </div>
-                    
-                            <div className=" w-fit mr-0 p-1 rounded-full border-2">
-
-                          <div
-                            className={cn(
-                              "size-1.5 rounded-full  transition-colors",
-                            selectedPaymentType.value ===  Item.value
-                                ? "border-primary  border-2  bg-primary"
-                                : "border-border"
-                            )}
-                          />
-                          </div>
-                  </Button>
-                 ))}
-
-         
+              {/* Additional Information Selection */}
+          <div className="flex flex-col gap-3">
+                  <Label htmlFor="note" className=" sr-only">Additional Notes *</Label>{" "}
+                  <MinimalTiptapEditor
+ value={additionalInformation.note}
+                    onChange={(e) =>
+                      handleAdditionalChange("note", e)
+                    }
+      className="w-full"
+      editorContentClassName="p-5"
+      output="html"
+      placeholder="Enter your description..."
+      autofocus={true}
+      editable={true}
+      editorClassName="focus:outline-hidden"
+    />
                 </div>
-              </div>
 
-              {/* Credit Card Form - Only show when card is selected */}
-              {selectedPaymentType.value === "bank_transfer" ? (
-                <div className="flex flex-col gap-5 border-t pt-6">
-                  <div className="flex flex-col gap-3">
-                    <Label htmlFor="nameOfCard">Name on Card *</Label>{" "}
-                    <Input
-                      id="nameOfCard"
-                      size="lg"
-                      placeholder="John Doe"
-                      value={paymentMethod.nameOfCard}
-                      onChange={(e) =>
-                        handlePaymentChange("nameOfCard", e.target.value)
-                      }
-                      leftIcon={<User className="h-4 w-4" />}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Label htmlFor="cardNumber">Card Number *</Label>{" "}
-                    <Input
-                      id="cardNumber"
-                      size="lg"
-                      placeholder="1234 5678 9012 3456"
-                      value={paymentMethod.cardNumber}
-                      onChange={(e) =>
-                        handlePaymentChange("cardNumber", e.target.value)
-                      }
-                      leftIcon={<CreditCard className="h-4 w-4" />}
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-5">
-                    <div className="flex flex-col gap-3">
-                      <Label htmlFor="expiryMonth">Month *</Label>
-                      <Select
-                        value={paymentMethod.expiryMonth}
-                        onValueChange={(value) =>
-                          handlePaymentChange("expiryMonth", value)
-                        }
-                      >
-                        <SelectTrigger className="text-sm" size={"lg"}>
-                          <SelectValue placeholder="MM" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 12 }, (_, i) => (
-                            <SelectItem
-                              key={i + 1}
-                              value={String(i + 1).padStart(2, "0")}
-                            >
-                              {String(i + 1).padStart(2, "0")}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <Label htmlFor="expiryYear">Year *</Label>
-                      <Select
-                        value={paymentMethod.expiryYear}
-                        onValueChange={(value) =>
-                          handlePaymentChange("expiryYear", value)
-                        }
-                      >
-                        <SelectTrigger className="text-sm" size={"lg"}>
-                          <SelectValue placeholder="YYYY" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 10 }, (_, i) => (
-                            <SelectItem
-                              key={2024 + i}
-                              value={String(2024 + i)}
-                            >
-                              {2024 + i}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <Label htmlFor="cvv">CVV *</Label>{" "}
-                      <Input
-                        id="cvv"
-                        size="lg"
-                        placeholder="123"
-                        maxLength={4}
-                        value={paymentMethod.cvv}
-                        onChange={(e) =>
-                          handlePaymentChange("cvv", e.target.value)
-                        }
-                        leftIcon={<Lock className="h-4 w-4" />}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-   <div className="border-t pt-6">
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                    <div className="flex items-start gap-3">
-                      <selectedPaymentType.icon className="h-5 w-5  text-yellow-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-medium text-yellow-900">
-                          {selectedPaymentType.label}
-                        </h4>
-                        <p className="text-sm text-yellow-700 mt-1">
-                        {selectedPaymentType.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
+          
              
             </CardContent>{" "}
            <CardFooter className=" flex justify-between border-t">
@@ -936,25 +778,21 @@ return (
                   <p>{shippingAddress.email}</p>
                 </div>
               </div>{" "}
-              {/* Payment Method Review */}
+              {/* Additional Information Review */}
               <div className="flex flex-col gap-3">
-                <h3 className="font-medium">Payment Method</h3>
-                <div className="text-sm text-muted-foreground p-3 bg-input/10 border rounded-xl ">
-                  {selectedPaymentType.value === "bank_transfer" ? (
-                    <>
-                      <p>
-                        **** **** **** {paymentMethod.cardNumber.slice(-4)}
-                      </p>
-                      <p>{paymentMethod.nameOfCard}</p>
-                    </>
-                  ) : (
-<div className="flex items-center gap-3">
-                      <selectedPaymentType.icon className="h-4 w-4 text-yellow-600" />
-                      <span>{selectedPaymentType.label}</span>
-                    </div>
-                  )}
+                <h3 className="font-medium">Additional Information</h3>
+            
+                      {/* <p>
+                        {additionalInformation.note}
+                      </p> */}
+             <div 
+          className="text-sm text-muted-foreground p-3 bg-input/10 border rounded-xl prose prose-sm max-w-none"
+          dangerouslySetInnerHTML={{ 
+            __html: additionalInformation.note as string || '<p class="text-muted-foreground">No additional notes</p>' 
+          }}
+        />
                  
-                </div>
+      
               </div>{" "}
               {/* Terms and Conditions */}
             </CardContent>{" "}

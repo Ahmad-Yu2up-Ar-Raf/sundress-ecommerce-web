@@ -45,7 +45,7 @@ export const orderItemSchema = z.object({
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
   seller_amount: z.coerce.number().min(0, "seller_amount must be >= 0"),
   platform_commission: z.coerce.number().min(0).optional().default(0),
-  sub_total: z.coerce.number().min(0, "sub_total must be >= 0"),
+  price: z.coerce.number().min(0, "price must be >= 0"),
   // optional status if present on OrderItems
   status: orderStatusEnum.optional(),
   created_at: z.string().optional(),
@@ -61,7 +61,7 @@ export const orderSchema = z.object({
 
   // relations
   user_id: z.coerce.number().min(1, "user_id is required"),
-  items: z.array(orderItemSchema).optional(),
+  order_items: z.array(orderItemSchema).optional(),
 
   // Buyer / shipping info (from $fillable / CheckoutStore rules)
   firstName: z.string().min(1, "First name is required"),
@@ -75,34 +75,8 @@ export const orderSchema = z.object({
   shipping_method: z.string().min(1, "Shipping method is required"),
 
   // payment fields
-  payment_method: paymentMethodEnum,
-  nameOfCard: z.string().optional().nullable(),
-  // cardNumber stored as "last 4 digits" — optional but if present should be <=4 chars
-  cardNumber: z
-    .string()
-    .optional()
-    .nullable()
-    .refine((v) => !v || /^[0-9]{1,4}$/.test(v), {
-      message: "cardNumber should be last 1–4 digits (numbers only)",
-    }),
-  expiryMonth: z
-    .union([z.coerce.number().int(), z.coerce.string().transform((s) => parseInt(s, 10))])
-    .optional()
-    .refine((v) => v === undefined || (Number.isInteger(v) && v >= 1 && v <= 12), {
-      message: "expiryMonth must be 1-12",
-    })
-    .nullable(),
-  expiryYear: z
-    .union([z.coerce.number().int(), z.coerce.string().transform((s) => parseInt(s, 10))])
-    .optional()
-    .nullable()
-    .refine((v) => {
-      if (v === undefined || v === null) return true;
-      const now = new Date();
-      return Number.isInteger(v) && v >= now.getFullYear() && v <= now.getFullYear() + 20;
-    }, {
-      message: "expiryYear must be current year .. current+20",
-    }),
+
+
 
   // totals & meta
   subtotal: z.coerce.number().min(0).optional(),

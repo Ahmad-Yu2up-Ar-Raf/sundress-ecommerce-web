@@ -21,7 +21,7 @@ class OrdersController extends Controller
     $status = $request->input('status');
 
 
-    $query = Orders::where('user_id', Auth::id())->with("items.product")->withCount("items");
+    $query = Orders::where('user_id', Auth::id())->with("orderItems.product")->withCount("orderItems");
 
 
     if ($search) {

@@ -13,6 +13,7 @@ use App\Http\Controllers\WhishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::post('/stripe/webhook', [StripeController::class, 'webhook'])->name('stripe.webhook');
 
 // ✅ Stripe webhook MUST be outside auth middleware
 
@@ -21,10 +22,10 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/add', [CartItemsController::class, 'add'])->name('add');
     Route::delete('/{product}', [CartItemsController::class, 'destroy'])->name('destroy');
 });
-Route::prefix('whistlist')->name('whistlist.')->group(function () {
+Route::prefix('whishlist')->name('whishlist.')->group(function () {
 
-    Route::post('/store', [CartItemsController::class, 'store'])->name('store');
-    Route::delete('/{product}', [CartItemsController::class, 'destroy'])->name('destroy');
+    Route::post('/store', [WhishlistController::class, 'store'])->name('store');
+    Route::delete('/{product}', [WhishlistController::class, 'destroy'])->name('destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -43,9 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [CartItemsController::class, 'index'])->name('index');
         Route::post('/payment', [CartItemsController::class, 'checkout'])->name('payment');
         
-        // ✅ FIX: Typo "succes" → "success"
+  
+    });
+    Route::prefix('stripe')->name('stripe.')->group(function () {
+      
+        
+  
         Route::get('/success', [StripeController::class, 'success'])->name('success');
-        Route::get('/cancelled', [StripeController::class, 'cancelled'])->name('cancelled');
+        Route::get('/failure', [StripeController::class, 'failure'])->name('failure');
     });
 
     Route::middleware(['role:seller'])->prefix('seller')->name('seller.')->group(function () {

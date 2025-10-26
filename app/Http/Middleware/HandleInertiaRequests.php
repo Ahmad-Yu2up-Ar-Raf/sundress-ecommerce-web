@@ -56,7 +56,11 @@ class HandleInertiaRequests extends Middleware
             'csrf_token' => csrf_token(),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'succes' => session('succes'),
+            'succes' => [
+               'massage' => session('succes'),
+               'time' =>  microtime(true),
+            ],
+            'error' => session('error'),
             'whishlist' => $whishlistItems,
             'auth' => [
                 'user' => $request->user() ? [

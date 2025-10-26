@@ -1,7 +1,6 @@
 <?php
 
-use App\Enums\OrderItem;
-use App\Enums\OrderStatus;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,20 +15,10 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-        
-            
-    
-            
-            $table->foreignId('vendor_id')->constrained("vendors")->onDelete('cascade');
-
-            $table->decimal('shipping_cost', 15, 2)->nullable()->default(0);
-            $table->string('status')->default(OrderItem::Pending->value);
             $table->unsignedInteger('quantity')->default(1);
             $table->foreignId('product_id')->constrained("products")->onDelete('cascade');
             $table->foreignId('order_id')->constrained("orders")->onDelete('cascade');
-            $table->unsignedBigInteger('sub_total')->default(0);
-            $table->bigInteger('seller_amount')->default(0)->after('sub_total');
-            $table->bigInteger('platform_commission')->default(0)->after('seller_amount');
+            $table->decimal('price', 20 , 4); 
         });
     }
 

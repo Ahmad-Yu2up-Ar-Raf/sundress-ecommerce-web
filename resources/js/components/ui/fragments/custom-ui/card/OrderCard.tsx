@@ -59,7 +59,7 @@ function OrderCard({ Order }: { Order: OrderType }) {
           </Badge>
         </div>
         <CardDescription className="text-sm font-medium line-clamp-2 leading-4.5">
-          {Order.items?.map((item, i) => (
+          {Order.order_items?.map((item, i) => (
             <span key={i}>
               {item.product?.name} ({item.quantity}x);{" "}
             </span>

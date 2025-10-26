@@ -34,8 +34,8 @@ return new class extends Migration
             $table->string('status')->default(ProductStatus::Available->value);
             $table->string('category')->default(CategoryProductsStatus::Food->value);
             $table->boolean('free_shipping')->default(false);
-            $table->unsignedBigInteger('price')->default(0);
-            $table->char('currency', 3)->default('IDR');
+            $table->decimal('price', 20 , 4)->nullable();
+            $table->char('currency', 3)->default('USD');
             $table->integer('stock')->default(1);
             $table->string('cover_image');
             $table->json('showcase_images')->nullable();

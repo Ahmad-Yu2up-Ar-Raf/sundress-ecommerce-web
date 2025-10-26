@@ -63,8 +63,7 @@ import { getProductStatusIcon } from "@/lib/utils/products/ProductsStatus-utils"
 import { ProductStatus, ProductStatusOptions } from "@/config/enums/ProductsStatus";
 import { CategoryProductsStatus } from "@/config/enums/CategoryProductsStatus";
 import { getCategoryIcon } from "@/lib/utils/products/category-utils";
-import { formatIDR } from "@/hooks/use-money-format";
-  
+
   
 
   
@@ -406,7 +405,7 @@ import { formatIDR } from "@/hooks/use-money-format";
        const IconStatus = getProductStatusIcon(status );
        const IconProduct = getCategoryIcon(category );
 
-          const price = formatIDR(product.price)
+          const price = product.price_formatted
           return(
    
             <TableRow key={product.id}>

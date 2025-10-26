@@ -21,7 +21,7 @@ interface TextInputProps<T extends FieldValues, >
 
 // Indonesian currency config
 const moneyFormatter = Intl.NumberFormat("id-ID", {
-  currency: "IDR",
+  currency: "",
   currencyDisplay: "symbol",
   currencySign: "standard",
   style: "currency",

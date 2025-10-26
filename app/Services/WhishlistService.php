@@ -80,7 +80,7 @@ class WhishlistService
             
             if ($product) {
                 
-                // ✅ PENTING: Update quantity dan sub_total sekaligus
+                // ✅ PENTING: Update quantity dan price sekaligus
                 $whishlistItem->delete();
                 
                 Log::info('Whishlist Item removed', [

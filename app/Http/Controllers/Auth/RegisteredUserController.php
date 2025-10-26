@@ -6,6 +6,8 @@ use App\Enums\RoleEnums;
 use App\Enums\UserOccupasion;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\CartService;
+use App\Services\WhishlistService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +33,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request ,  CartService $cartService  , WhishlistService $whishlistService ): RedirectResponse
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -64,7 +66,8 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
         $user->assignRole($request['role']);
-
+    $cartService->moveCartItemsToDatabase($user->id);
+    $whishlistService->moveWhishlistToDatabase($user->id);
         Auth::login($user);
 
         return $request->user()->hasRole('seller')

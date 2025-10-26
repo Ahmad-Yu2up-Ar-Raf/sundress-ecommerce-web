@@ -4,10 +4,10 @@ import { CheckoutResponse } from '@/types'
 
 
 
-function index({ data }: CheckoutResponse) {
-  console.log(data)
+function index({ ...props}: CheckoutResponse) {
+  console.log(props)
   return (
-  <Checkout  data={data}/>
+  <Checkout  data={props.data}/>
   )
 }
 

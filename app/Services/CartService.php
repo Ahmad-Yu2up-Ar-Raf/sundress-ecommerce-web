@@ -49,12 +49,12 @@ public function removeItemFromCart(int $productId )
        }
 }
 
-    public function updateItemQuantity(int $productId , int $quantity = 1 ,  $sub_total)
+    public function updateItemQuantity(int $productId , int $quantity = 1 ,  $price)
     {
         if(Auth::check()){
-            $this->updateItemQuantityInDatabase($productId, $quantity , $sub_total );
+            $this->updateItemQuantityInDatabase($productId, $quantity , $price );
            }else{
-            $this->updateItemQuantityInCookies($productId, $quantity , $sub_total );
+            $this->updateItemQuantityInCookies($productId, $quantity , $price );
            }
            
     }
@@ -85,47 +85,42 @@ public function removeItemFromCart(int $productId )
                     ->values()
                     ->all();
     
-                $products = Products::whereIn('id', $productIds)
-                    ->with('vendor')
-                    ->forWebsite()
-                    ->get()
-                    ->keyBy('id');
-    
+             $products = Products::whereIn('id', $productIds)
+    ->with('vendor')
+    ->forWebsite()
+    ->get()
+    ->keyBy('id');
                 $cartItemData = [];
-    
-                foreach ($cartItemsRaw as $raw) {
-                    // raw mungkin associative array from cookies or DB record with keys
-                    $productId = isset($raw['product_id']) ? (int) $raw['product_id'] : null;
-                    if (! $productId) continue;
-    
-                    $productModel = $products->get($productId);
-                    if (! $productModel) continue; // produk sudah tidak ada / tidak published
-    
-                    // quantity fallback
-                    $quantity = isset($raw['quantity']) ? max(1, (int)$raw['quantity']) : 1;
-    
-                    // Determine unit price safely:
-                    // If raw has sub_total but no unit_price, compute unit_price = sub_total / quantity
-                    if (isset($raw['sub_total']) && $quantity > 0) {
-                        $unitPrice = (int) round((int)$raw['sub_total'] / $quantity);
-                    } else {
-                        // fallback to product price
-                        $unitPrice = (int) $productModel->price;
-                    }
-    
-                    $subTotal = (int) ($unitPrice * $quantity);
-    
-                    $cartItemData[] = [
-                        'id' => $raw['id'] ?? (string) Str::uuid(),
-                        'product_id' => $productModel->id,
-                        'quantity' => $quantity,
-                        'unit_price' => $unitPrice,
-                        'sub_total' => $subTotal,
-                        // flatten product & vendor jadi array supaya konsisten saat json/response
-                        'product' => $productModel->toArray(),
-                        'vendor' => $productModel->vendor ? $productModel->vendor->toArray() : null,
-                    ];
-                }
+foreach ($cartItemsRaw as $raw) {
+    $productId = isset($raw['product_id']) ? (int) $raw['product_id'] : null;
+    if (! $productId) continue;
+
+    $productModel = $products->get($productId);
+    if (! $productModel) continue;
+
+    // quantity fallback
+    $quantity = isset($raw['quantity']) ? max(1, (int)$raw['quantity']) : 1;
+
+    // unit price logic...
+    if (isset($raw['price']) && $quantity > 0) {
+        $unitPrice = (int) round((int)$raw['price'] / $quantity);
+    } else {
+        $unitPrice = (int) $productModel->price;
+    }
+
+    $subTotal = (int) ($unitPrice * $quantity);
+
+    $cartItemData[] = [
+        'id' => $raw['id'] ?? (string) Str::uuid(),
+        'product_id' => $productModel->id,
+        'quantity' => $quantity,
+        'unit_price' => $unitPrice,
+        'price' => $subTotal,
+        'product' => $productModel->toArray(), // sudah termasuk price_formatted, cover_image_url, showcase_images_url
+        'vendor' => $productModel->vendor ? $productModel->vendor->toArray() : null,
+    ];
+}
+
     
                 $this->cachedCartItems = $cartItemData;
             }
@@ -159,14 +154,14 @@ public function removeItemFromCart(int $productId )
         $total = 0;
 
         foreach ($this->getCartItems() as $item) {
-            $total += $item["quantity"] * $item['sub_total'];
+            $total += $item["quantity"] * $item['price'];
         }
         return $total;
     }
 
 
 
-    public function updateItemQuantityInDatabase(int $productId , int $quantity = 1 , int $sub_total): void
+    public function updateItemQuantityInDatabase(int $productId , int $quantity = 1 , int $price): void
     {
         $userId = Auth::id();
         $cartItem = CartItems::where('user_id', $userId)->where('product_id', $productId)->first();
@@ -174,13 +169,13 @@ public function removeItemFromCart(int $productId )
         if($cartItem){
             $cartItem->update([
                 'quantity' => $quantity,
-                'sub_total' => $sub_total,
+                'price' => $price,
             ]);
         }
 
         
     }
-    public function updateItemQuantityInCookies(int $productId , int $quantity = 1 , int $sub_total): void
+    public function updateItemQuantityInCookies(int $productId , int $quantity = 1 , int $price): void
     {
         $cartItem = $this->getCartItemsFromCookies();
         $itemKey = $productId;
@@ -188,7 +183,7 @@ public function removeItemFromCart(int $productId )
 
         if(isset($cartItem[$itemKey])){
             $cartItem[$itemKey]['quantity'] = $quantity;
-            $cartItem[$itemKey]['sub_total'] = $sub_total;
+            $cartItem[$itemKey]['price'] = $price;
             
         }
 
@@ -213,10 +208,10 @@ public function removeItemFromCart(int $productId )
                 $newQuantity = $cartItem->quantity + $quantity;
                 $newSubTotal = (int)($product->price * $newQuantity);
                 
-                // ✅ PENTING: Update quantity dan sub_total sekaligus
+                // ✅ PENTING: Update quantity dan price sekaligus
                 $cartItem->update([
                     'quantity' => $newQuantity,
-                    'sub_total' => $newSubTotal,
+                    'price' => $newSubTotal,
                 ]);
                 
                 Log::info('Cart item updated', [
@@ -224,7 +219,7 @@ public function removeItemFromCart(int $productId )
                     'product_id' => $productId,
                     'old_quantity' => $cartItem->quantity - $quantity,
                     'new_quantity' => $newQuantity,
-                    'new_sub_total' => $newSubTotal
+                    'new_price' => $newSubTotal
                 ]);
             }
         } else {
@@ -233,18 +228,18 @@ public function removeItemFromCart(int $productId )
                 'user_id' => $userId,
                 'product_id' => $productId,
                 'quantity' => $quantity,
-                'sub_total' => $subTotal,
+                'price' => $subTotal,
             ]);
             
             Log::info('Cart item created', [
                 'product_id' => $productId,
                 'quantity' => $quantity,
-                'sub_total' => $subTotal
+                'price' => $subTotal
             ]);
         }
     }
 
-    public function saveItemToCookies(int $productId , int $quantity = 1 ,  int $sub_total): void
+    public function saveItemToCookies(int $productId , int $quantity = 1 ,  int $price): void
     {
 
 
@@ -255,13 +250,13 @@ public function removeItemFromCart(int $productId )
 
         if(isset($cartItems[$itemKey])){
             $cartItems[$itemKey]['quantity'] += $quantity;
-            $cartItems[$itemKey]['sub_total'] = $sub_total;
+            $cartItems[$itemKey]['price'] = $price;
         }else{
             $cartItems[$itemKey] = [
                 'id' => Str::uuid(),
                 'product_id' => $productId,
                 'quantity' => $quantity,
-                'sub_total' => $sub_total,
+                'price' => $price,
 
             ];
         }
@@ -298,7 +293,7 @@ public function removeItemFromCart(int $productId )
                 'id' => $cartItem->id,
                 'product_id' => $cartItem->product_id,
                 'quantity'=> $cartItem->quantity,
-                'sub_total' => $cartItem->sub_total,
+                'price' => $cartItem->price,
             ];
         })->toArray();
 
@@ -334,17 +329,18 @@ public function removeItemFromCart(int $productId )
                     'product_id' => $i['product_id'],
                     'quantity' => $i['quantity'],
                     'unit_price' => $i['unit_price'],
-                    'sub_total' => $i['sub_total'],
+                    'price' => $i['price'],
                     'product' => $i['product'],
                 ];
             })->values()->toArray();
     
             return [
+                'vendor_id' => $vendorId,
                 'vendor' => $vendor,
                 'items' => $itemsArr,
                 'total_quantity' => (int) $items->sum('quantity'),
-                // total_price: jumlahkan sub_total (karena sub_total = unit_price * quantity)
-                'total_price' => (int) $items->sum(fn($it) => $it['sub_total']),
+                // total_price: jumlahkan price (karena price = unit_price * quantity)
+                'total_price' => (int) $items->sum(fn($it) => $it['price']),
             ];
         })->values()->toArray();
     
@@ -365,14 +361,14 @@ public function removeItemFromCart(int $productId )
             if ($existingItem) {
                 $existingItem->update([
                     'quantity' => $existingItem->quantity + $cartItem['quantity'],
-                    'sub_total' => $cartItem['sub_total'],
+                    'price' => $cartItem['price'],
                 ]);
             }else{
                 CartItems::create([
                     'user_id' => $userId,
                     'product_id' => $cartItem['product_id'],
                     'quantity' => $cartItem['quantity'],
-                    'sub_total' => $cartItem['sub_total'],
+                    'price' => $cartItem['price'],
                 ]);
             }
         }

@@ -61,7 +61,7 @@ import { useInitials } from "@/hooks/use-initials";
 import { DeleteTasksDialog } from "@/components/ui/fragments/custom-ui/delete-task-dialog";
 
 
-import { formatIDR } from "@/hooks/use-money-format";
+import { formatUSD } from "@/hooks/use-money-format";
 import { TasksTableActionBar } from "./OrderItems-table-action-bar";
 import { getOrderItemStatusIcon } from "@/lib/utils/orders/getOrderItemStatus";
 import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
@@ -373,7 +373,7 @@ import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
        const IconStatus = getOrderItemStatusIcon(status );
     
 
-          const price = formatIDR(order!.sub_total)
+          const price = formatUSD(order!.price)
           return(
    
             <TableRow key={order.id}>

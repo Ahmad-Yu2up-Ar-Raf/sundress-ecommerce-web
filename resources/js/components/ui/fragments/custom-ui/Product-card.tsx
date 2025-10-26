@@ -22,7 +22,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/fragments/animate-ui/tooltip"
 import { ProductsSchema } from "@/lib/validations/index.t"
-import { formatIDR } from "@/hooks/use-money-format"
 
 import React from "react"
 
@@ -41,8 +40,7 @@ type ProductProps  = {
 
 export function ProductCard({  Product ,className  , label , isWhistlist,...props }: ProductProps & React.HTMLAttributes<HTMLDivElement>) {
   const [loading, setLoading] = React.useState(false);  
-const Price = formatIDR(Product.price)
-
+const Price = Product.formatted_price
      const [isPending, startTransition] = React.useTransition();
      const user = usePage<SharedData>().props.auth.user;
    const showcase_images  = Product.showcase_images 
@@ -78,7 +76,7 @@ const onClick = () => open({ redirectTo: "/" });
           });
      }else {
                  toast.loading("Adding...", { id: "whishlist"});
-         router.post(route('whistlist.store'),  data, { 
+         router.post(route('whishlist.store'),  data, { 
            preserveScroll: true,
            preserveState: true,
            forceFormData: true, 

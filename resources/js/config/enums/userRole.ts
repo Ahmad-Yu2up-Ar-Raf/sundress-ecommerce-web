@@ -3,26 +3,24 @@ import { ShoppingCart, Store } from "lucide-react";
 
 /**
  * NOTE:
- * - Saya pakai value "buyyer" sesuai permintaanmu.
- * - Saya sangat menyarankan mempertimbangkan "buyer" (ejaan umum) agar konsisten
- *   dengan konvensi dan kemungkinan nama route / role di backend.
+ * - Using value "buyer" (correct English spelling).
+ * - Adjust wording to sound natural for an English onboarding UI.
  */
 
 export const UserRoleOptions: OptionItem[] = [
   {
-    value: "buyer", // sesuai permintaan; pertimbangkan 'buyer' sebagai alternatif
-    label: "Mau Jajan",
+    value: "buyer",
+    label: "Shop Now",
     icon: ShoppingCart,
-    subLabel: "Beli sebagai pembeli",
-    description: "Cari, bandingkan, dan beli produk — cocok kalau kamu mau belanja saja.",
-    // price atau properti lain bisa ditambahkan bila diperlukan
+    subLabel: "Buy as a customer",
+    description: "Discover, compare, and purchase products — perfect if you just want to shop.",
   },
   {
     value: "seller",
-    label: "Buka Toko",
+    label: "Open a Store",
     icon: Store,
-    subLabel: "Daftarkan tokomu",
-    description: "Jual produkmu ke banyak pembeli. Cocok jika kamu ingin membuat dan mengelola toko.",
+    subLabel: "Register your shop",
+    description: "Sell your products to many customers. Ideal if you want to build and manage your own store.",
   },
 ];
 

@@ -45,7 +45,7 @@ class WhishlistController extends Controller
         // ambil product model (pastikan ada)
         $product = Products::findOrFail($productId);
     
-        // panggil service — biarkan service yang hitung sub_total
+        // panggil service — biarkan service yang hitung price
         $whishlistService->addItemToWhishlist($product);
     
         return back()->with('success', 'Product added to whishlist successfully');

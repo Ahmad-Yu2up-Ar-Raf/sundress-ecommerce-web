@@ -33,7 +33,7 @@ class OrderItemsFactory extends Factory
             'product_id' => Products::factory(),
             'vendor_id'  => null, // akan diisi di afterCreating berdasarkan product->user_id
             'quantity'   => $this->faker->numberBetween(1, 3),
-            'sub_total'  => 0, // akan dihitung di afterCreating
+            'price'  => 0, // akan dihitung di afterCreating
             'status'     => $this->faker->randomElement($statuses),
             'created_at' => now(),
             'updated_at' => now(),
@@ -48,7 +48,7 @@ class OrderItemsFactory extends Factory
 
             if (! $product) {
                 // tak seharusnya terjadi, tapi aman fallback
-                $item->sub_total = 0;
+                $item->price = 0;
                 $item->vendor_id = null;
                 $item->save();
                 return;
@@ -64,7 +64,7 @@ class OrderItemsFactory extends Factory
             }
 
             // hitung subtotal
-            $item->sub_total = (int) ($product->price * $item->quantity);
+            $item->price = (int) ($product->price * $item->quantity);
 
             $item->save();
 
@@ -76,10 +76,10 @@ class OrderItemsFactory extends Factory
                 }
             }
 
-            // sinkronkan total_price di order (agar order.total_price = SUM(order_items.sub_total))
+            // sinkronkan total_price di order (agar order.total_price = SUM(order_items.price))
             $order = $item->order()->first();
             if ($order) {
-                $sum = $order->items()->sum('sub_total');
+                $sum = $order->items()->sum('price');
                 $order->total_price = (int) $sum;
                 $order->save();
             }

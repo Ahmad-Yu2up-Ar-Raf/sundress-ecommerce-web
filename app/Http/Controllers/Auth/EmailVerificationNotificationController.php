@@ -21,7 +21,8 @@ class EmailVerificationNotificationController extends Controller
         }
 
         $request->user()->sendEmailVerificationNotification();
-
+  // simpan sent timestamp supaya frontend bisa menghitung sisa waktu setelah reload
+    session(['verification_sent_at' => now()->toISOString()]);
         return back()->with('status', 'verification-link-sent');
     }
 }

@@ -30,7 +30,47 @@ export interface ReportsSeller {
 }
 
 
+export type Order = {
+  id?: number;
 
+  // relations
+  user_id: number;
+  items?: OrderItem[];
+
+  // Buyer / shipping info
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address?: string | null;
+  country: string;
+  province: string;
+  zipCode: string;
+  shipping_method: string;
+
+
+  subtotal?: number;
+  discount?: number | null;
+  shipping?: number | null;
+  tax?: number | null;
+  total_price: number;
+
+  // notes, status, paid_at
+  notes?: string | null;
+  status?: OrderStatus;
+  paid_at?: Date;
+
+  created_at?: string;
+  updated_at?: string;
+  orderItems : OrderItemType[]
+  vendorUser : Vendor
+}
+
+
+
+export type Order = {
+  
+}
 export interface cartCart {
   id: number
    product : ProductsSchema
@@ -40,7 +80,7 @@ export interface cartCart {
   product_id: number
   quantity: number
   unit_price: number
-  sub_total: number
+  price: number
   vendor: Vendor
 }
 
@@ -110,6 +150,11 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    success: {
+      massage: string
+      time: number
+    },
+    error: string,
     cart_total?: number;
     whishlist?: whishlist[];
     cart_count_quantity?: number;

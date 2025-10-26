@@ -72,6 +72,7 @@ export const productsSchema = z.object({
     .min(1000, "Harga minimal Rp1.000")
     .max(1000000000, "Harga terlalu tinggi"), // opsional: batas atas
    status: z.enum(ProductStatusValues),
+formatted_price: z.string().optional(),
 
  showcase_images: z
   .array(FileWithPreview)

@@ -16,12 +16,12 @@ class CartItems extends Model
         'user_id',
         'quantity',
         'product_id',
-        'sub_total',
+        'price',
      
     ];
 
     protected $casts = [
-        'sub_total' => 'integer',
+        'price' => 'integer',
         'quantity' => 'integer',
    
     ];

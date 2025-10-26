@@ -123,12 +123,12 @@ const onClick = () => open({ redirectTo: "/" });
           duration: delay ?  0. : 0.2,
           delay: delay ? 3 : 0,
         }}
-    className={cn("w-full  px-5  hidden md:block lg:px-0 py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background backdrop-blur-md fixed top-0 z-50  ", 
+    className={cn("w-full  px-5   hidden md:block py-4    md:backdrop-blur-none border-b-2 border-border/40 bg-background backdrop-blur-md fixed top-0 z-50  ", 
 
    
 
     )}>
-        <main className=" max-w-[75em] m-auto   justify-between md:flex ">
+        <main className="  max-w-[1190px] m-auto  justify-between md:flex ">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-bold flex items-center gap-3 ">
               <Logo className=" [&_svg]:size-9" />

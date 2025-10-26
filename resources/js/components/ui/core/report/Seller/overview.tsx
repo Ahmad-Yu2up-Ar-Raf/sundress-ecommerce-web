@@ -13,11 +13,11 @@ import { DataCard, PagePropsSellerOverview } from "@/types";
 import { ChartPie } from "@/components/ui/fragments/custom-ui/charts/chart-pie-donut";
 import { ChartAreaInteractive } from "@/components/ui/fragments/custom-ui/charts/chart-area-interactive";
 import { ChartBarActive } from "@/components/ui/fragments/custom-ui/charts/chart-bar-active";
-import { formatIDR } from "@/hooks/use-money-format";
+import { formatUSD } from "@/hooks/use-money-format";
 
 function MainSection({ data }: { data: PagePropsSellerOverview }) {
   const reports = data.reports;
-const revenue = formatIDR(reports.totalPendapatan)
+const revenue = formatUSD(reports.totalPendapatan)
 const dataCards: DataCard[] = [
   {
     title: "Total Products",

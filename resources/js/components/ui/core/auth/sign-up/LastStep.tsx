@@ -168,7 +168,7 @@ function LastStep() {
               
         
           </div>
-          <NavStepper curentActive={3}/>
+          <NavStepper curentActive={4}/>
       </SignUpForm>
     </AuthLayoutTemplate>
   )

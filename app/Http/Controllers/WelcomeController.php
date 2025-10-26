@@ -6,6 +6,7 @@ use App\Models\Products;
 use App\Models\Whishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
 class WelcomeController extends Controller
@@ -67,6 +68,7 @@ class WelcomeController extends Controller
 // best rating (clear previous orders implicitly because this is a fresh clone)
 $productsBestRating = (clone $query)->reorder('reviews_count','desc')
     ->paginate($perPage, ['*'], 'page', $page);
+
 $productsBestSeller = (clone $query)->reorder('order_item_count','desc')
     ->paginate($perPage, ['*'], 'page', $page);
 
@@ -74,80 +76,10 @@ $productsBestSeller = (clone $query)->reorder('order_item_count','desc')
 $productsFreeShipping = (clone $query)->where('free_shipping', true)
     ->reorder('created_at','asc')
     ->paginate($perPage, ['*'], 'page', $page);
-        $products->through(function ($item) use ($user) {
-            $isWishlisted = false;
+    
+       
 
-            if ($user) {
-                $isWishlisted = Whishlist::where('user_id', $user->id)
-                    ->where('product_id', $item->id)
-                    ->exists();
-            }
 
-            return [
-                ...$item->toArray(),
-                'cover_image' => $item->cover_image ? url($item->cover_image) : null,
-                    'showcase_images' => collect($item->showcase_images)
-            ->map(fn($path) => url($path))
-            ->toArray(),
-                'is_whislisted' => $isWishlisted ? $isWishlisted : null,
-            ];
-        });
-
-        $productsFreeShipping->through(function ($item) use ($user) {
-            $isWishlisted = false;
-
-            if ($user) {
-                $isWishlisted = Whishlist::where('user_id', $user->id)
-                    ->where('product_id', $item->id)
-                    ->exists();
-            }
-
-            return [
-                ...$item->toArray(),
-                'cover_image' => $item->cover_image ? url($item->cover_image) : null,
-    'showcase_images' => collect($item->showcase_images)
-            ->map(fn($path) => url($path))
-            ->toArray(),
-                'is_whislisted' => $isWishlisted ? $isWishlisted : null,
-            ];
-        });
-
-        $productsBestRating->through(function ($item) use ($user) {
-            $isWishlisted = false;
-
-            if ($user) {
-                $isWishlisted = Whishlist::where('user_id', $user->id)
-                    ->where('product_id', $item->id)
-                    ->exists();
-            }
-
-            return [
-                ...$item->toArray(),
-                'cover_image' => $item->cover_image ? url($item->cover_image) : null,
-    'showcase_images' => collect($item->showcase_images)
-            ->map(fn($path) => url($path))
-            ->toArray(),
-                'is_whislisted' => $isWishlisted ? $isWishlisted : null,
-            ];
-        });
-        $productsBestSeller->through(function ($item) use ($user) {
-            $isWishlisted = false;
-
-            if ($user) {
-                $isWishlisted = Whishlist::where('user_id', $user->id)
-                    ->where('product_id', $item->id)
-                    ->exists();
-            }
-
-            return [
-                ...$item->toArray(),
-                'cover_image' => $item->cover_image ? url($item->cover_image) : null,
-    'showcase_images' => collect($item->showcase_images)
-            ->map(fn($path) => url($path))
-            ->toArray(),
-                'is_whislisted' => $isWishlisted ? $isWishlisted : null,
-            ];
-        });
 
         return Inertia::render('home', [
             'status' => true,

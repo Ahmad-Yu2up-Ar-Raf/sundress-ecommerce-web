@@ -29,7 +29,7 @@ function AppSponsor() {
   
 
   return (
-    <section  className=' max-w-[75em]   md:px-0  sm:px-10 px-5 container  space-y-7'> 
+    <section  className='  container   sm:px-10 px-5   space-y-7'> 
    <Card className=" rounded-xl pt-6 pb-12  space-y-4 px-8 bg-primary/20 sm:py-12 h-full w-full">
 
 

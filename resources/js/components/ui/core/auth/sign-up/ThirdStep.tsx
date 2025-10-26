@@ -53,7 +53,7 @@ function ThirdStep() {
   const form = useForm<FormThirdStepSchema>({
     mode: "onSubmit", 
     defaultValues: {
-      country: country || 'Indonesia',
+      country: country || '',
       province: province || '',
       phone: phone || '',
     },
@@ -131,10 +131,13 @@ function ThirdStep() {
                        
                 <Link
                 
-                                href={'/register/'}
-                                                         className={cn(buttonVariants({ variant: "link"} ,
-                                                          
-                                                         ), 'w-full  transition-colors')}
+                                href={'/register/password'}
+                                                     aria-disabled={loading}
+                                                                      tabIndex={!loading ? -1 : undefined}
+                                                                      className={cn( buttonVariants({ variant: "link"}),
+                                                                        "text-secondary-foreground m-auto  flex justify-center capitalize font-medium underline",
+                                                                        loading ? 'pointer-events-none cursor-none text-foreground/50' : ''
+                                                                      )}
                             >
                                {( loading) ? (
                     <Loader className='animate-spin ml-2'/>

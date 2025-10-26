@@ -135,8 +135,18 @@ if (!isDesktop) {
           </SheetDescription>
        
         </SheetHeader>
-   <main className=" space-y-7 px-6">
-    {props.cart?.map((item , i) => (
+   <main className={cn(" space-y-7 px-6",
+
+    props.cart?.length == 0 && 'flex h-full justify-center content-center items-center'
+   )}>
+
+{props.cart?.length == 0 && (
+  <p className=" text-muted-foreground text-2xl">
+    Empty
+  </p>
+)}
+
+    {   props.cart?.map((item , i) => (
 
     <CartProductsCard ProductCart={item} key={i}/>
     ))}
@@ -151,7 +161,7 @@ if (!isDesktop) {
  <NumberFlow
           value={props?.cartTotal!}
           className=" font-medium text-muted-foreground "
-          format={{ style: 'currency', currency: 'IDR' ,   minimumFractionDigits: 0,  }}
+          format={{ style: 'currency', currency: 'USD' ,   minimumFractionDigits: 0,  }}
         />
 </div>
       <div className="  flex w-full justify-between">
@@ -171,7 +181,7 @@ Free
  <NumberFlow
           value={props?.cartTotal!}
           className=' font-extrabold text-lg'
-          format={{ style: 'currency', currency: 'IDR' ,   minimumFractionDigits: 0,  }}
+          format={{ style: 'currency', currency: 'USD' ,   minimumFractionDigits: 0,  }}
         />
 </div>
          <Link  href="/checkout" className={cn( buttonVariants({ variant: "default"})  ,"  w-full")}>
@@ -246,7 +256,11 @@ return(
  <NumberFlow
           value={props?.cartTotal!}
           className=" font-medium text-muted-foreground "
-          format={{ style: 'currency', currency: 'IDR' ,   minimumFractionDigits: 0,  }}
+        format={{ 
+                            style: 'currency', 
+                            currency: 'USD',   
+                      
+                        }}
         />
 </div>
       <div className="  flex w-full justify-between">
@@ -266,7 +280,11 @@ Free
  <NumberFlow
           value={props?.cartTotal!}
           className=' font-extrabold text-lg'
-          format={{ style: 'currency', currency: 'IDR' ,   minimumFractionDigits: 0,  }}
+        format={{ 
+                            style: 'currency', 
+                            currency: 'USD',   
+                      
+                        }}
         />
 </div>
          <Link    href="/checkout" className="  w-full">

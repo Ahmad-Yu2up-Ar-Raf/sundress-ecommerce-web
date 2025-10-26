@@ -10,15 +10,15 @@ export const UserOccupation: OptionItem[] = [
     value: "student", 
     label: "Student", 
     icon: GraduationCap, 
-    subLabel: "Pelajar / Mahasiswa", 
-    description: "Masih menempuh pendidikan di sekolah atau universitas." 
+    subLabel: "High school or university student", 
+    description: "Currently pursuing education at a school or university." 
   },
   { 
     value: "worker", 
-    label: "Worker", 
+    label: "Worker / Professional", 
     icon: Briefcase, 
-    subLabel: "Pekerja / Profesional", 
-    description: "Sudah bekerja secara aktif di suatu bidang atau perusahaan." 
+    subLabel: "Employed or self-employed", 
+    description: "Actively working in a specific field or company." 
   },
 ];
 

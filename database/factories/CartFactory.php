@@ -22,7 +22,7 @@ class CartItemsFactory extends Factory
             // default quantity; akan di-adjust di afterCreating jika perlu
             'quantity' => $this->faker->numberBetween(1, 5),
           
-            'sub_total' => 0,
+            'price' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -35,7 +35,7 @@ class CartItemsFactory extends Factory
 
             // fallback: jika product tidak ditemukan (shouldn't happen), biarkan subtotal = 0
             if (! $product) {
-                $cart->sub_total = 0;
+                $cart->price = 0;
                 $cart->save();
                 return;
             }
@@ -51,7 +51,7 @@ class CartItemsFactory extends Factory
 
             // Hitung subtotal berdasarkan harga produk * quantity
             $cart->quantity = $quantity;
-            $cart->sub_total = (int) ($product->price * $quantity);
+            $cart->price = (int) ($product->price * $quantity);
 
             $cart->save();
         });

@@ -123,8 +123,49 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
     
-    'currency' => env('APP_CURRENCY',  'IDR'),
+    'currency' => env('APP_CURRENCY',  'USD'),
     'stripe_secret_key' => env('STRIPE_SECRET'),
     'stripe_webhook' => env('STRIPE_WEBHOOK_SECRET'),
+    'platform_fee_pct' => 10, 
 
+   
+    'default_currency' => env('APP_CURRENCY', 'USD'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Stripe Minimum Amounts
+    |--------------------------------------------------------------------------
+    | Minimum charge amounts per currency as per Stripe documentation
+    | https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
+    */
+    'stripe_minimums' => [
+        'IDR' => 10000,  // Rp 10,000
+        'USD' => 0.50,   // $0.50
+        'EUR' => 0.50,   // €0.50
+        'JPY' => 50,     // ¥50
+        'MYR' => 2,      // RM2
+        'SGD' => 0.50,   // S$0.50
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Zero Decimal Currencies
+    |--------------------------------------------------------------------------
+    | Currencies that don't use fractional amounts
+    */
+    'zero_decimal_currencies' => [
+        'bif', 'clp', 'djf', 'gnf', 'jpy', 'kmf', 'krw',
+        'pyg', 'rwf', 'vnd', 'vuv', 'xaf', 'xof', 'xpf', 'idr'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Currency Display Formats
+    |--------------------------------------------------------------------------
+    */
+    'currency_formats' => [
+        'IDR' => ['symbol' => 'Rp', 'decimals' => 0, 'separator' => '.', 'decimal_point' => ','],
+        'USD' => ['symbol' => '$', 'decimals' => 2, 'separator' => ',', 'decimal_point' => '.'],
+        'EUR' => ['symbol' => '€', 'decimals' => 2, 'separator' => ',', 'decimal_point' => '.'],
+    ],
 ];

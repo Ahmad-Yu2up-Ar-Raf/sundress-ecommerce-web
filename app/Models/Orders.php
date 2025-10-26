@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Number;
 
 class Orders extends Model
 {
@@ -20,33 +21,35 @@ class Orders extends Model
         'country',
         'province',
         'phone',
+        'stripe_session_id',
         'zipCode',
         'firstName',
         'lastName',
-        'nameOfCard',
+   
         'email',
-        'cardNumber', // last 4 digits
+      
         'total_price',
         'status',
+        'vendor_subtotal',
+        'vendor_user_id',
         'shipping_method',
         'address',
-        'expiryMonth',
-        'expiryYear',
+    
         'notes',
-
-        'payment_method',
-        'paid_at',
+        'website_commission',
+        'payment_intent',
+        'online_payment_commission',
+    
     ];
 
     protected $casts = [
-        'paid_at' => 'datetime',
+    
         'total_price' => 'integer', 
-        'expiryMonth' => 'integer',
-        'expiryYear' => 'integer',
+        'notes' => 'string',
         'phone' => 'string',
         'zipCode' => 'string',
         'status' => OrderStatus::class,
-        'payment_method' => PaymentMethod::class,
+
     ];
 
     /**
@@ -56,10 +59,22 @@ class Orders extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function vendorUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'vendor_user_id');
+    }
+    public function vendor(): BelongsTo
+    {
 
+        return $this->belongsTo(Vendors::class, 'vendor_user_id', 'user_id');
+    }
+    
  
-    public function items(): HasMany
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItems::class, 'order_id');
     }
+
+
+    
 }

@@ -15,6 +15,7 @@ class ProductsFactory extends Factory
     public function definition(): array
     {
         $faker = \Faker\Factory::create();
+            $price = $faker->randomFloat(2, 10, 1000); // 2 desimal presisi
         return [
             'vendor_id' => User::factory(),
             'name' => $faker->unique()->name(),
@@ -22,8 +23,8 @@ class ProductsFactory extends Factory
             'free_shipping' => $faker->boolean(),
             'status' => $faker->randomElement(['available', 'not_available']),
             'category' => $faker->randomElement(CategoryProductsStatus::cases()),
-            'price' => $faker->numberBetween(10000, 1000000),
-            'currency' => 'IDR',
+              'price' => number_format($price, 4, '.', ''),
+            'currency' => 'USD',
             'province' => $faker->city(),
             'country' => $faker->country(),
             'stock' => $faker->numberBetween(0, 100),

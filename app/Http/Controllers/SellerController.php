@@ -29,7 +29,7 @@ class SellerController extends Controller
         $ordersCounts = OrderItems::select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('count(*) as orders'),
-            DB::raw('sum(sub_total) as revenue')
+            DB::raw('sum(price) as revenue')
         )
             ->whereIn('product_id', $queryProductsIds)
             ->groupBy(DB::raw('DATE(created_at)'))
@@ -75,7 +75,7 @@ class SellerController extends Controller
         $totalOrders = OrderItems::whereIn('product_id', $queryProductsIds)->count();
         $terjualOrders = OrderItems::whereIn('product_id', $queryProductsIds)->where('status', 'approve')->count();
         $totalRevenue = OrderItems::whereIn('product_id', $queryProductsIds)
-            ->sum('sub_total');
+            ->sum('price');
 
         // $topProducts->through(function ($item) {
 

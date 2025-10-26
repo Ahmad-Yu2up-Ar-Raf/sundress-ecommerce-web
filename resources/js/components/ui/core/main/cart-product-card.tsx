@@ -12,8 +12,7 @@ import { ProductsSchema } from "@/lib/validations/index.t"
 import MediaItem from "../../fragments/custom-ui/MediaItem"
 import { InputToggle } from "../../fragments/custom-ui/toggle-cart"
 import React, { useState, useCallback, useEffect } from "react"
-import { formatIDR } from "@/hooks/use-money-format"
-import { Button } from "../../fragments/shadcn-ui/button"
+
 import { Trash2 } from "lucide-react"
 import { cartCart } from "@/types"
 import NumberFlow from "@number-flow/react"
@@ -31,7 +30,7 @@ type componentProps = {
 export default function CartProductsCard({ ProductCart, className }: componentProps) {
   const Product = ProductCart.product
   const productId = Product.id
-
+const Price = Product.formatted_price
   const [value, setValue] = useState(ProductCart.quantity)
   const [subTotal, setSubTotal] = useState<number>(Product.price * ProductCart.quantity)
 
@@ -48,7 +47,7 @@ export default function CartProductsCard({ ProductCart, className }: componentPr
         route('cart.update', productId),
         {
           quantity,
-          sub_total: calculatedSubTotal
+          price: calculatedSubTotal
         },
         {
           preserveState: true,
@@ -161,12 +160,12 @@ const handleDelete = (id: number) => {
                         className='text-sm'
                         format={{ 
                             style: 'currency', 
-                            currency: 'IDR',   
-                            minimumFractionDigits: 0  
+                            currency: 'USD',   
+                      
                         }}
                     />
-                    <span className="block line-through text-muted-foreground text-xs">
-                        $399.99 
+                    <span className="block text-muted-foreground text-xs">
+                       {Price}
                     </span>
                 </h5>  
             </div>

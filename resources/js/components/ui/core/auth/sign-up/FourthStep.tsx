@@ -143,11 +143,13 @@ function FourthStep() {
         </Button>
    
                 <Link
-                      aria-disabled={(isPending || loading)}  tabIndex={!(isPending || loading) ? -1 : undefined} 
                             href={'/register/location'}
-                             className={cn(buttonVariants({ variant: "link"} ,
-                            
-                             ), 'w-full  transition-colors' ,      (isPending || loading) && 'pointer-events-none cursor-none text-foreground/50' ,)}
+                   aria-disabled={loading}
+                                                                                   tabIndex={!loading ? -1 : undefined}
+                                                                                   className={cn( buttonVariants({ variant: "link"}),
+                                                                                     "text-secondary-foreground m-auto  flex justify-center capitalize font-medium underline",
+                                                                                     loading ? 'pointer-events-none cursor-none text-foreground/50' : ''
+                                                                                   )}
                             >
                                {( loading) ? (
                     <Loader className='animate-spin ml-2'/>
