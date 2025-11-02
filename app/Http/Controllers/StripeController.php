@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Enums\OrderStatus;
 use App\Http\Resources\OrderViewResource;
 use App\Mail\CheckoutCompleted;
@@ -13,9 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
-use Stripe\Climate\Order;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\StripeClient;
 use Stripe\Webhook;
@@ -41,9 +37,35 @@ class StripeController extends Controller
             }
        }
 
-       return Inertia::render('Stripe/Succes', [
-        'orders' => OrderViewResource::collection($orders)->collection->toArray(),
-       ]);
+       $ordersResource = OrderViewResource::collection($orders)->collection->toArray();
+
+    $orderItems = $orders->flatMap(function ($order) {
+        return $order->orderItems->map(function ($item) use ($order) {
+            return [
+                'id' => $item->id,
+                'quantity' => $item->quantity,
+                'price' => $item->price,
+                'product' => [
+                    'id' => $item->product->id,
+                    'name' => $item->product->name,
+                    'description' => $item->product->description,
+                      'cover_image' => $item->product->cover_image,
+                    'showcase_images' => $item->product->showcase_images,
+                ],
+                // tambahan useful info
+                'order_id' => $order->id,
+                'order_total_price' => $order->total_price,
+                'created_at' => $order->created_at->format('Y-m-d H:i:s'),
+                'vendor' => $order->vendorUser?->only(['id','name','email','store_name']) ?? null,
+            ];
+        });
+    })->values()->toArray();
+
+    return Inertia::render('Stripe/Succes', [
+        'orders'     => $ordersResource,
+        // 'total' => $ordersResource->sum(''),
+        'orderItems' => $orderItems,
+    ]);
     }
 
     /**

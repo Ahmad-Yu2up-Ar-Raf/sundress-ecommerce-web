@@ -7,7 +7,7 @@ import { Eye, EyeOff, X } from "lucide-react";
 import { Button } from "./button";
 
 const inputVariants = cva(
-  "flex w-full rounded-xl border border-border bg-input/10 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all  shadow-sm/2",
+  "flex w-full  cursor-target rounded-xl border border-border bg-input/10 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all  shadow-sm/2",
   {
     variants: {
       variant: {
@@ -165,6 +165,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {showClearButton && (
               <Button
                 type="button"
+                variant={"ghost"}
                 onClick={handleClear}
                 className="text-muted-foreground hover:text-foreground transition-colors [&_svg]:size-4 [&_svg]:shrink-0"
                 tabIndex={-1}

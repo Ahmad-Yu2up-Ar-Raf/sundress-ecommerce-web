@@ -13,7 +13,7 @@ import ReactLenis from 'lenis/react'
 import { cn } from '@/lib/utils';
 
 
-import { TooltipProvider } from '@/components/ui/fragments/animate-ui/base/tooltip';
+import { TooltipProvider } from '@/components/ui/fragments/custom-ui/animate-ui/base/tooltip';
 ;
 import { ModalProvider } from './ContextProvider';
 import Neslatter from '@/components/ui/fragments/custom-ui/Neslatter';

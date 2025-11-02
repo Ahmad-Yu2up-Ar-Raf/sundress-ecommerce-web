@@ -405,7 +405,6 @@ import { getCategoryIcon } from "@/lib/utils/products/category-utils";
        const IconStatus = getProductStatusIcon(status );
        const IconProduct = getCategoryIcon(category );
 
-          const price = product.price_formatted
           return(
    
             <TableRow key={product.id}>
@@ -438,7 +437,7 @@ import { getCategoryIcon } from "@/lib/utils/products/category-utils";
               <TableCell className="">  
      
   
-          {price}
+          {product.formatted_price}
   
         </TableCell>
               <TableCell className="">  

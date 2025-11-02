@@ -151,6 +151,7 @@ export default function VerifyEmail({
     <AuthLayoutTemplate
       loading={processing}
       title="Verify email"
+      className=' min-h-dvh'
       description="Please verify your email address by clicking on the link we just emailed to you."
     >
       <Head title="Email verification" />

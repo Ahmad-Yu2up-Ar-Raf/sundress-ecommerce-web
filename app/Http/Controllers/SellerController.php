@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderItems;
+use App\Models\Orders;
 use App\Models\Products;
+use App\Models\Vendors;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,14 +17,16 @@ class SellerController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $recordProducts = Products::all()->where('user_id', Auth::id());
-
+    {   
+        $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
+        $recordProducts = Products::all()->where('vendor_id',$vendorId);
+        
         $queryProductsIds = $recordProducts->pluck('id')->toArray();
-        $recordOrders = OrderItems::all()->whereIn('product_id', $queryProductsIds);
+        $recordOrders = Orders::all()->whereIn('vendor_user_id',Auth::id());
 
         // Ambil semua produk milik user
-        $queryProductsIds = Products::where('user_id', Auth::id())->pluck('id');
+        $queryProductsIds = Products::where('vendor_id', $vendorId)->pluck('id');
 
         // Hitung jumlah product yang dibuat per tanggal (sudah ada)
 
@@ -37,7 +41,7 @@ class SellerController extends Controller
             ->keyBy('date');
 
         // Top 5 produk best seller
-        $topProducts = Products::where('user_id', Auth::id())
+        $topProducts = Products::where('vendor_id', $vendorId)
             ->select('name')
             ->withCount('orderItem')
             ->orderByDesc('order_item_count')
@@ -69,11 +73,11 @@ class SellerController extends Controller
             return $group->count();
         });
 
-        $totalProducts = Products::where('user_id', Auth::id())->count();
+        $totalProducts = Products::where('vendor_id', $vendorId)->count();
         //   $totalProductsDipinjam = Products::where('user_id', Auth::id())->where('status', 'dipinjam')->count();
 
         $totalOrders = OrderItems::whereIn('product_id', $queryProductsIds)->count();
-        $terjualOrders = OrderItems::whereIn('product_id', $queryProductsIds)->where('status', 'approve')->count();
+        $terjualOrders = Orders::where('vendor_user_id', Auth::id())->where('status', 'Paid')->count();
         $totalRevenue = OrderItems::whereIn('product_id', $queryProductsIds)
             ->sum('price');
 

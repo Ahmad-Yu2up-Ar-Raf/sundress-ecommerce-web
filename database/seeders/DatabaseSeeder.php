@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 use App\Enums\RoleEnums;
+use App\Helpers\ImageHelper;
 use App\Models\CartItems;
 use App\Models\OrderItems;
 use App\Models\Orders;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Exception;
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
@@ -44,144 +46,52 @@ class DatabaseSeeder extends Seeder
 
 
 
-User::factory()
-    ->count(50)
-    ->has(
-        Vendors::factory()->has(Products::factory(10))
-    )
-    ->create()
-    ->each(function ($seller) {
+// Reduced number of records for development/testing
+$userCount = 10; // Reduced to 10 users for testing
+$productsPerVendor = 5; // Reduced to 5 products per vendor
 
+// Clear tracked URLs before starting
+ImageHelper::clearUsedUrls();
+
+// Create users in smaller batches with proper rate limiting
+$users = collect();
+for ($i = 0; $i < $userCount; $i += 2) {  // Process 2 users at a time
+    $batchSize = min(2, $userCount - $i);  // Handle last batch correctly
+    
+    try {
+        $batchUsers = User::factory()
+            ->count($batchSize)
+            ->has(
+                Vendors::factory()
+                    ->has(
+                        Products::factory($productsPerVendor)
+                            ->state(function () {
+                                // Add longer delay between product creation
+                                sleep(2); // 2 second delay between products
+                                return [];
+                            })
+                    )
+            )
+            ->create();
+    } catch (Exception $e) {
+        Log::error('Failed to create batch of users and products', [
+            'error' => $e->getMessage(),
+            'batch_size' => $batchSize,
+            'products_per_vendor' => $productsPerVendor
+        ]);
+        throw $e;
+    }
+        
+    // Assign roles to the batch
+    $batchUsers->each(function ($seller) {
         $seller->assignRole(RoleEnums::Seller->value);
-        // $vendor = $seller->vendor;
-        // if (! $vendor) return;
-
-        // $products = $vendor->products()->forWebsite()->get();
-        // if ($products->isEmpty()) return;
-
-        // User::factory()
-        //     ->count(10)
-        //     ->create()
-        //     ->each(function ($buyer) use ($products) {
-        //         $buyer->assignRole(RoleEnums::Buyer->value);
-
-        //         // tambahkan beberapa item ke cart buyer ini
-        //         $orderCount = rand(2, 8);
-        //         for ($i = 0; $i < $orderCount; $i++) {
-        //             $product = $products->random();
-
-        //             if ($product->stock <= 0) continue;
-
-        //             $quantity = rand(1, min(5, $product->stock));
-        //             CartItems::create([
-        //                 'user_id'    => $buyer->id,
-        //                 'product_id' => $product->id,
-        //                 'quantity'   => $quantity,
-        //                 'price'  => $product->price * $quantity,
-        //             ]);
-        //         }
-
-        //         // PROSES checkout hanya untuk buyer ini (tidak global)
-        //         $cartItems = CartItems::where('user_id', $buyer->id)
-        //             ->with('product')
-        //             ->get();
-
-        //         if ($cartItems->isEmpty()) return;
-
-        //         // Filter out cart items yang tidak punya produk atau vendor
-        //         $validItems = $cartItems->filter(function ($ci) {
-        //             return $ci->product && ! empty($ci->product->vendor_id);
-        //         });
-
-        //         if ($validItems->isEmpty()) {
-        //             // optional: hapus cart jika produk invalid
-        //             CartItems::where('user_id', $buyer->id)->delete();
-        //             return;
-        //         }
-
-        //         $groupedBySeller = $validItems->groupBy(function ($ci) {
-        //             return (int) $ci->product->vendor_id;
-        //         });
-
-        //         foreach ($groupedBySeller as $vendorId => $items) {
-        //             // cast & sanitize vendorId
-        //             $vendorId = (int) $vendorId;
-        //             if ($vendorId <= 0) {
-        //                 Log::warning('Seeder: skipped group with invalid vendor id', [
-        //                     'buyer_id' => $buyer->id ?? null,
-        //                     'vendorId' => $vendorId,
-        //                     'item_ids' => $items->pluck('id')->toArray(),
-        //                 ]);
-        //                 continue;
-        //             }
-                
-        //             // FILTER lagi, pastikan semua item punya product dan product->vendor_id sesuai
-        //             $items = $items->filter(function ($ci) use ($vendorId) {
-        //                 return $ci->product
-        //                     && ! empty($ci->product->vendor_id)
-        //                     && ((int)$ci->product->vendor_id === $vendorId);
-        //             })->values();
-                
-        //             if ($items->isEmpty()) {
-        //                 Log::warning('Seeder: no valid items left after vendor-id filter', [
-        //                     'buyer_id' => $buyer->id ?? null,
-        //                     'vendorId' => $vendorId,
-        //                 ]);
-        //                 continue;
-        //             }
-                
-        //             DB::transaction(function () use ($buyer, $vendorId, $items) {
-        //                 $total = $items->sum(function ($ci) {
-        //                     return (int) ($ci->price ?: ($ci->product->price * $ci->quantity));
-        //                 });
-                
-        //                 $order = Orders::factory()->create([
-        //                     'user_id'     => $buyer->id,
-        //                     'total_price' => $total,
-        //                 ]);
-                
-        //                 foreach ($items as $ci) {
-        //                     $product = $ci->product;
-        //                     if (! $product) continue;
-                
-        //                     // final safety check
-        //                     if (empty($product->vendor_id) || (int)$product->vendor_id !== $vendorId) {
-        //                         Log::warning('Seeder: product vendor mismatch (skipping)', [
-        //                             'order_id' => $order->id,
-        //                             'product_id' => $product->id,
-        //                             'product_vendor_id' => $product->vendor_id,
-        //                             'expected_vendor_id' => $vendorId,
-        //                         ]);
-        //                         continue;
-        //                     }
-                
-        //                     $subtotal = (int) ($ci->price ?: ($product->price * $ci->quantity));
-                
-        //                     OrderItems::factory()->create([
-        //                         'vendor_id'  => $vendorId,
-        //                         'order_id'   => $order->id,
-        //                         'product_id' => $product->id,
-        //                         'quantity'   => $ci->quantity,
-        //                         'price'  => $subtotal,
-        //                     ]);
-                
-        //                     $product->decrement('stock', $ci->quantity);
-        //                 }
-                
-        //                 CartItems::whereIn('id', $items->pluck('id')->toArray())->delete();
-        //             });
-                
-        //             if (rand(1, 100) <= 85) {
-        //                 $firstProduct = $items->first()->product;
-        //                 if ($firstProduct) {
-        //                     Reviews::factory()->create([
-        //                         'user_id' => $buyer->id,
-        //                         'product_id' => $firstProduct->id,
-        //                     ]);
-        //                 }
-        //             }
-        //         }
-        //     });
     });
+    
+    $users = $users->concat($batchUsers);
+    
+    if ($i + $batchSize < $userCount) {
+        sleep(3); // 3 second delay between batches, but not after the last batch
+    }
+}
     }
 }

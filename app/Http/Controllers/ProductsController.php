@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductsStore;
 use App\Http\Requests\ProductsUpdate;
 use App\Models\Products;
+use App\Models\Vendors;
 use App\Models\Whishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,10 +26,11 @@ public function index(Request $request)
     $page = $request->input('page', 1);
     $status = $request->input('status');
     $category = $request->input('category');
-
+           $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
     $free_shipping = $request->input('free_shipping');
 
-    $query = Products::where('user_id', Auth::id())->withCount("reviews")->withCount("orderItem")->withAvg("reviews", "star_rating");
+    $query = Products::where('vendor_id', $vendorId)->withCount("reviews")->withCount("orderItem")->withAvg("reviews", "star_rating");
 
 
     $user = Auth::user();
@@ -135,10 +137,11 @@ public function index(Request $request)
             $path = $file->storeAs('product/', $filename, 'public');
             $productPath = 'storage/' . $path;
         }
-      
+             $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
             $product = Products::create([
                 ...$request->validated(),
-                'user_id' => Auth::id(),
+                'vendor_id' => $vendorId,
                     'cover_image' => $productPath,
             ]);
 
@@ -229,9 +232,10 @@ public function index(Request $request)
             return redirect()->route('seller.products.index')
                 ->with('error', 'Tidak ada product yang dipilih untuk dihapus.');
         }
-
+             $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
         // Validasi apakah semua ID milik user yang sedang login
-        $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
+        $products = Products::whereIn('id', $ids)->where('vendor_id', $vendorId )->get();
         if ($products->count() !== count($ids)) {
             return redirect()->route('seller.products.index')
                 ->with('error', 'Unauthorized access atau product tidak ditemukan.');
@@ -272,14 +276,15 @@ public function index(Request $request)
         $ids = $request->input('ids');
         $value = $request->input('value');
         $colum = $request->input('colum');
-
+             $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
         if (empty($ids)) {
             return redirect()->route('seller.products.index')
                 ->with('error', 'Tidak ada product yang dipilih untuk dihapus.');
         }
 
         // Validasi apakah semua ID milik user yang sedang login
-        $products = Products::whereIn('id', $ids)->where('user_id', Auth::id())->get();
+        $products = Products::whereIn('id', $ids)->where('vendor_id', $vendorId )->get();
         if ($products->count() !== count($ids)) {
             return redirect()->route('seller.products.index')
                 ->with('error', 'Unauthorized access atau product tidak ditemukan.');

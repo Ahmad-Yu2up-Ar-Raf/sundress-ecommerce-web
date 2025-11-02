@@ -34,7 +34,7 @@ onSubmit
 } : TaskFormProps<T>) {
   return (
  <Form {...form} >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7  w-full mx-auto ">
+      <form onSubmit={form.handleSubmit(onSubmit)} className=" mb-4 space-y-5  w-full mx-auto ">
         
         <FormField
         disabled={isPending}

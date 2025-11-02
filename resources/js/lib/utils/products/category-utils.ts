@@ -50,16 +50,16 @@ import {
    */
   export function getCategoryColor(category: CategoryProductsStatus): string {
     const colors: Record<CategoryProductsStatus, string> = {
-      [CategoryProductsStatus.Electronics]: "text-blue-500",
-      [CategoryProductsStatus.Fashion]: "text-pink-500",
-      [CategoryProductsStatus.Food]: "text-orange-500",
-      [CategoryProductsStatus.Books]: "text-amber-600",
-      [CategoryProductsStatus.Home]: "text-emerald-500",
-      [CategoryProductsStatus.Beauty]: "text-rose-400",
-      [CategoryProductsStatus.Sports]: "text-yellow-500",
-      [CategoryProductsStatus.Toys]: "text-yellow-500",
-      [CategoryProductsStatus.Health]: "text-teal-500",
-      [CategoryProductsStatus.Accessories]: "text-violet-500",
+      [CategoryProductsStatus.Electronics]: "text-blue-500  bg-blue-100  border-blue-500",
+      [CategoryProductsStatus.Fashion]: "text-pink-500 bg-pink-100  border-pink-500",
+      [CategoryProductsStatus.Food]: "text-orange-500   bg-orange-100   border-orange-500",
+      [CategoryProductsStatus.Books]: "text-amber-600 bg-amber-100    border-amber-600",
+      [CategoryProductsStatus.Home]: "text-emerald-500  bg-emerald-100  border-emerald-500",
+      [CategoryProductsStatus.Beauty]: "text-rose-400 bg-rose-100   border-rose-400 ",
+      [CategoryProductsStatus.Sports]: "text-yellow-500  bg-yellow-100  border-yellow-500 ",
+      [CategoryProductsStatus.Toys]: "text-purple-500  bg-purple-100  border-purple-500 ",
+      [CategoryProductsStatus.Health]: "text-teal-500 bg-teal-100  border-teal-500 ",
+      [CategoryProductsStatus.Accessories]: "text-violet-500  bg-violet-100  border-violet-500 ",
     };
   
     return colors[category] || "text-gray-400";

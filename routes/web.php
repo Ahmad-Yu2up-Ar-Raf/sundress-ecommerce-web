@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\BuyyerController;
 use App\Http\Controllers\CartItemsController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\OrderItemsController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ProductsCatalogController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\StripeController;
@@ -63,7 +65,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-Route::get('products', [ProductsController::class, 'index'])->name('products');
+Route::prefix('explore')->name('explore.')->group(function () {
+
+
+            Route::get('/', [ExploreController::class, 'index'])->name('index');
+    Route::get('/{product}', [ExploreController::class, 'show'])->name('show');
+
+});
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

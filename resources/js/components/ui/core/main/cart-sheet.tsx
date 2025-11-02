@@ -187,12 +187,12 @@ Free
          <Link  href="/checkout" className={cn( buttonVariants({ variant: "default"})  ,"  w-full")}>
         <CreditCard/> <span> Checkout</span>   
          </Link>
-         <SheetClose className=" w-full">
+         <SheetClose className={cn( buttonVariants({variant: "outline"})," w-full")}>
 
 
-         <Button variant={"outline"}  size={"lg"} className=" w-full">
+      
        <span> Continue Shopping</span>   
-         </Button>
+
          </SheetClose>
         </div>
       </SheetFooter>

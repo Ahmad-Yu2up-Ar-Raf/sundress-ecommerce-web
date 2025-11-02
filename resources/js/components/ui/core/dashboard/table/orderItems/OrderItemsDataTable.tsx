@@ -350,8 +350,6 @@ import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
             <TableHead className=" ">Product</TableHead>
             <TableHead className=" ">Sub Total</TableHead>
   
-         
-            <TableHead>Status</TableHead>
        
             {/* <TableHead>Order Di Pinjam</TableHead> */}
             <TableHead>Order Quantity</TableHead>
@@ -369,8 +367,7 @@ import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
         <TableBody>
           {Orders.length > 0 ?  Orders.map((order) =>{ 
   const product = order.product
-       const status = order.status as OrderItemStatus
-       const IconStatus = getOrderItemStatusIcon(status );
+
     
 
           const price = formatUSD(order!.price)
@@ -411,12 +408,7 @@ import { OrderItemStatus } from "@/config/enums/OrderItemStatus";
         </TableCell>
              
           
-            <TableCell>
-              
-            <Badge icon={IconStatus}  variant="outline" className="py-1 [&>svg]:size-3.5">
-              {order.status}
-              </Badge>
-    </TableCell>
+       
        
   
     

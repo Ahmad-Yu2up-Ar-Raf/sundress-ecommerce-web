@@ -37,6 +37,21 @@ export const FileWithPreview = z.object({
   base64Data: z.coerce.string().min(1, "File data is required") // Tambahkan base64Data sebagai required
 })
 
+export const reviewSchema = z.object({
+  id: z.number().optional(),
+  user_id: z.number(),
+  product_id: z.number(),
+  comments: z.string().optional(),
+  star_rating: z.number().min(1).max(5, "Rating must be between 1 and 5"),
+  media: z.array(z.string()).optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
+  user: z.object({
+    id: z.number(),
+    name: z.string()
+  }).optional()
+})
+
 export const whistlistSchemat = z.object({
   id: z.number().optional(),
   product_id: z.number().optional(),
@@ -54,7 +69,7 @@ export const productsSchema = z.object({
   name: z.string().min(4, "Name is required"),
   province: z.string().optional(),
   country: z.string().optional(),
-
+  
   currency: z.string().optional(),
   free_shipping : z.boolean().optional(),
   cover_image: imageSchema,
@@ -68,13 +83,10 @@ export const productsSchema = z.object({
     order_item_count:  z.number().optional(),
     reviews_avg_star_rating:  z.number().optional(),
      price: z.coerce
-    .number()
-    .min(1000, "Harga minimal Rp1.000")
-    .max(1000000000, "Harga terlalu tinggi"), // opsional: batas atas
+    .number(),
    status: z.enum(ProductStatusValues),
 formatted_price: z.string().optional(),
-
- showcase_images: z
+reviews: z.array(reviewSchema).optional(), showcase_images: z
   .array(FileWithPreview)
   .optional(),
 });
@@ -95,5 +107,6 @@ export const whistlistSchema = z.object({
 
 
 
+export type ReviewSchema = z.infer<typeof reviewSchema>;
 export type ProductsSchema = z.infer<typeof productsSchema>;
 export type WhistlistSchema = z.infer<typeof whistlistSchema>;

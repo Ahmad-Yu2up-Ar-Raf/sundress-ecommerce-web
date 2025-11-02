@@ -124,8 +124,21 @@ return [
     ],
     
     'currency' => env('APP_CURRENCY',  'USD'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Unsplash API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for Unsplash API integration
+    |
+    */
+    'unsplash_acces_key' => env('UNSPLASH_ACCES_KEY'),
+    'unsplash_secret_key' => env('UNSPLASH_SECRET_KEY'),
     'stripe_secret_key' => env('STRIPE_SECRET'),
     'stripe_webhook' => env('STRIPE_WEBHOOK_SECRET'),
+    'unsplash_acces_key' => env('UNSPLASH_ACCES_KEY'),
+    'unsplash_secret_key' => env('UNSPLASH_SECRET_KEY'),
     'platform_fee_pct' => 10, 
 
    

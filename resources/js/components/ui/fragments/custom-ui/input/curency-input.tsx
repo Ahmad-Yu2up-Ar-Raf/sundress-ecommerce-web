@@ -1,72 +1,100 @@
 "use client";
-import { useReducer } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../shadcn-ui/form"; // Shadcn UI import
+} from "../../shadcn-ui/form";
 import { Input } from "../../shadcn-ui/input";
 import { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 
-interface TextInputProps<T extends FieldValues, >
+interface MoneyInputProps<T extends FieldValues>
   extends Omit<React.ComponentPropsWithRef<"form">, "onSubmit"> {
   form: UseFormReturn<T>;
   name: string;
-  label: string;
-  placeholder: string;
-  disable: boolean
-};
+  label?: string;
+  placeholder?: string;
+  disable?: boolean;
+}
 
-// Indonesian currency config
-const moneyFormatter = Intl.NumberFormat("id-ID", {
-  currency: "",
-  currencyDisplay: "symbol",
-  currencySign: "standard",
-  style: "currency",
-  minimumFractionDigits: 0, // Rupiah biasanya tidak menggunakan desimal
-  maximumFractionDigits: 0,
-});
+export default function MoneyInput<T extends FieldValues>(
+  props: MoneyInputProps<T>
+) {
+  const { form, name, label = "", placeholder = "", disable = false } = props;
 
-export default function MoneyInput<T extends FieldValues, >(props: TextInputProps<T>) {
-  const initialValue = props.form.getValues()[props.name]
-    ? moneyFormatter.format(props.form.getValues()[props.name])
-    : "";
+  // Formatter untuk USD (2 decimal)
+  const moneyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
-  const [value, setValue] = useReducer((_: any, next: string) => {
-    const digits = next.replace(/\D/g, "");
-    return moneyFormatter.format(Number(digits)); // Tidak perlu dibagi 100 karena tidak ada desimal
-  }, initialValue);
+  // Ambil initial raw value dari form (diharapkan number, mis. 1234.56)
+  const rawValue = form.getValues()[name] as unknown;
+  const initialValue =
+    rawValue !== undefined && rawValue !== null && rawValue !== ""
+      ? moneyFormatter.format(Number(rawValue))
+      : "";
 
-  function handleChange(realChangeFn: Function, formattedValue: string) {
-    const digits = formattedValue.replace(/\D/g, "");
-    const realValue = Number(digits); // Tidak perlu dibagi 100
+  const [displayValue, setDisplayValue] = useState<string>(initialValue);
+
+  // Sync jika nilai dari form berubah dari luar (mis setValue dipanggil di luar)
+  useEffect(() => {
+    const current = form.getValues()[name];
+    if (current === undefined || current === null || current === "") {
+      setDisplayValue("");
+    } else {
+      const formatted = moneyFormatter.format(Number(current));
+      setDisplayValue(formatted);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.watch ? form.watch(name) : null]); // watch jika tersedia, agar terupdate otomatis
+
+  // Mengubah tampilan -> update form dengan nilai numerik (dolar)
+  function handleChange(realChangeFn: (v: any) => void, formattedValue: string) {
+    // ambil hanya digit (termasuk desimal jika ada) -> kita pakai regex yang ambil digit saja
+    const digits = formattedValue.replace(/[^0-9]/g, ""); // "123456" untuk "1,234.56"
+    const realValue = digits ? Number(digits) / 100 : 0; // karena kita menyandikan cents
     realChangeFn(realValue);
   }
 
   return (
     <FormField
-      control={props.form.control}
-        name={props.name as FieldPath<T>}
+      control={form.control}
+      name={name as FieldPath<T>}
       render={({ field }) => {
-        
-        const _change = field.onChange;
+        // hindari override langsung seluruh field props (field.value number), kita ganti onChange & value untuk input
+        const { onChange, value: fieldValue, ref, ...restField } = field as any;
 
         return (
           <FormItem>
-            <FormLabel>{props.label}</FormLabel>
+            {label && <FormLabel>{label}</FormLabel>}
             <FormControl>
               <Input
-              disabled={props.disable}
-                placeholder={props.placeholder}
+                disabled={disable}
+                placeholder={placeholder}
                 type="text"
-                {...field}
+                {...restField}
+                // ketika user ketik, kita update display dan form value numeric
                 onChange={(ev) => {
-                  setValue(ev.target.value);
-                  handleChange(_change, ev.target.value);
+                  const input = ev.target.value;
+                  // Update tampilan (formatted)
+                  // extract digits and format as currency
+                  const onlyDigits = input.replace(/[^0-9]/g, "");
+                  const numberForFormat = onlyDigits ? Number(onlyDigits) / 100 : 0;
+                  const nextDisplay = onlyDigits
+                    ? moneyFormatter.format(numberForFormat)
+                    : "";
+                  setDisplayValue(nextDisplay);
+                  // update form value (numeric)
+                  handleChange(onChange, input);
                 }}
-                value={value}
+                value={displayValue}
+                aria-label={name}
               />
             </FormControl>
             <FormMessage />

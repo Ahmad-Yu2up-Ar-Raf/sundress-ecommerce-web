@@ -2,6 +2,7 @@ import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react"
 import { useFileUpload } from "@/hooks/use-file-upload"
 import { Button } from "../../shadcn-ui/button"
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
+import MediaItem from "../MediaItem"
 
 interface PictureImageInputProps {
   value?: File | string | null
@@ -131,14 +132,11 @@ const PictureImageInput = forwardRef<HTMLInputElement, PictureImageInputProps>(
             />
             {previewUrl ? (
               <div className="absolute inset-0 flex items-center justify-center p-4">
-                <img
-                  src={`${previewUrl}`}
-                  alt={fileName || "Uploaded image"}
+                <MediaItem
+                  webViewLink={`${previewUrl}`}
+                 
                   className="mx-auto max-h-full rounded object-contain"
-                  onError={(e) => {
-                    console.error('Image failed to load:', previewUrl)
-                    // Optionally set a fallback image or hide the image
-                  }}
+                
                 />
               </div>
             ) : (

@@ -35,7 +35,7 @@ export type Order = {
 
   // relations
   user_id: number;
-  items?: OrderItem[];
+  orderItems?: OrderItemType[];
 
   // Buyer / shipping info
   firstName: string;
@@ -68,9 +68,9 @@ export type Order = {
 
 
 
-export type Order = {
-  
-}
+
+
+
 export interface cartCart {
   id: number
    product : ProductsSchema
@@ -265,7 +265,7 @@ export interface Meta {
 
 export interface ApiResponse {
   status: boolean;
- 
+  ProductscategoryCount: Record<string, number>;
   message: string;
   meta?: Meta;
   data?: ProductsSchema[];

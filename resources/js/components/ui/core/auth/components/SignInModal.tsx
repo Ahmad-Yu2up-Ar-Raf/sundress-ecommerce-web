@@ -88,8 +88,8 @@ function SignInModal({ className }: { className?: string}) {
         <Dialog    onOpenChange={close}  open={isOpen}  >
        
       <DialogContent 
-
-        className={cn("max-h-[80dvh] overflow-hidden  w-full p-0  h-full  lg:max-h-[39rem] justify-between border-0 lg:max-w-[76em] ", className)}
+  
+        className={cn("max-h-[95lvh] overflow-hidden  w-full p-0  h-full lg:max-w-xl  lg:max-h-[40rem] justify-between border-0 ", className)}
       >
          <DialogHeader className=' sr-only'>
             <DialogTitle>Edit profile</DialogTitle>
@@ -98,7 +98,7 @@ function SignInModal({ className }: { className?: string}) {
               done.
             </DialogDescription>
           </DialogHeader>
-            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in" className=' h-full lg:max-w-[76em]'>
+            <AuthLayoutTemplate formType="login" loading={loading} title="Log in to your account" description="Enter your email and password below to log in" className=' h-full lg:max-w-[76em] min-h-0  [&_nav]:sr-only'>
          
   <LoginForms  form={form} onSubmit={onSubmit} isPending={loading}/>
 

@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Str;
 
 #[ObservedBy(ProductsObserver::class)]
 class Products extends Model
@@ -203,14 +202,22 @@ public function getFormattedPriceAttribute(): ?string
             return null;
         }
 
-        // cookie may be associative [id => true] or list [id, id2]
-        // check both keys and values
-        if (isset($wishlistItems[(string)$this->id]) || isset($wishlistItems[(int)$this->id])) {
-            return true;
-        }
+        // Handle cookies that store product data as array
+        foreach ($wishlistItems as $item) {
+            if (is_array($item) && isset($item['product_id'])) {
+                if ((int)$item['product_id'] === (int)$this->id) {
+                    return true;
+                }
+                continue;
+            }
 
-        foreach ($wishlistItems as $k => $v) {
-            if ((string)$v === (string)$this->id || (string)$k === (string)$this->id) {
+            // Handle simple ID storage format
+            if (is_numeric($item) && (int)$item === (int)$this->id) {
+                return true;
+            }
+
+            // Handle associative array format [id => data]
+            if (is_numeric(key($wishlistItems)) && (int)key($wishlistItems) === (int)$this->id) {
                 return true;
             }
         }
@@ -259,7 +266,7 @@ public function getFormattedPriceAttribute(): ?string
 
     public function scopeForWebsite(Builder $query): Builder
     {
-        return $query->published();
+        return $query->published()->withCount('reviews')->withCount('orderItem')->withSum('reviews', 'star_rating')->withAvg('reviews', 'star_rating');
     }
 
     public function updateRatingStats()

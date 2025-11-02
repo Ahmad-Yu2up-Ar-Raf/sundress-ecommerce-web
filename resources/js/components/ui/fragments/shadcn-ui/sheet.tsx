@@ -20,7 +20,7 @@ import {
   type SheetFooterProps as SheetFooterPrimitiveProps,
   type SheetTitleProps as SheetTitlePrimitiveProps,
   type SheetDescriptionProps as SheetDescriptionPrimitiveProps,
-} from '@/components/ui/fragments/animate-ui/base/sheet';
+} from '@/components/ui/fragments/custom-ui/animate-ui/base/sheet';
 import { cn } from '@/lib/utils';
 import { XIcon } from 'lucide-react';
 

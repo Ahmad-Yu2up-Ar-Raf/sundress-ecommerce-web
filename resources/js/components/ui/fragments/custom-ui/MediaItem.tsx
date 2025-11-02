@@ -9,12 +9,14 @@ import { Spinner } from '../shadcn-ui/spinner';
 
 
 
-const MediaItem = ({ webViewLink, className, mediaType = "image", onClick, style  }: { 
+const MediaItem = ({ webViewLink, className, mediaclassName, mediaType = "image", onClick, style , controls = false  }: { 
     webViewLink: string, 
     mediaType?: "image" | "video"
     className?: string, 
+    mediaclassName?: string, 
     onClick?: () => void,
     style?: React.CSSProperties 
+    controls?: boolean
 }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isInView, setIsInView] = useState(false);
@@ -105,13 +107,16 @@ const MediaItem = ({ webViewLink, className, mediaType = "image", onClick, style
                     ref={videoRef}
                     className={cn(
                       "h-full   relative   object-cover  object-top inset-0  w-full ",
-                      // Disable hover effects on iOS
+               mediaclassName
                     
                     )}
                     onClick={onClick}
                     playsInline
                     muted
                     loop
+                     autoPlay
+                        controls={controls}
+         
                     preload="auto"
                     style={{
                         opacity: isBuffering ? 0.8 : 1,
@@ -138,7 +143,7 @@ const MediaItem = ({ webViewLink, className, mediaType = "image", onClick, style
                 alt={webViewLink}
                 width={1000}
                 height={10000}
-                className="h-full m-auto   object-cover  object-center absolute   w-full"
+                className={cn("h-full m-auto   object-cover  object-center absolute   w-full" , mediaclassName)}
                 onClick={onClick}
                 loading="lazy"
                 onLoad={handleImageLoad}

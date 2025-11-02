@@ -24,9 +24,8 @@ class WelcomeController extends Controller
 
         $free_shipping = $request->input('free_shipping');
 
-        $query = Products::forWebsite()->withCount('reviews')->withCount('orderItem')->withSum('reviews', 'star_rating')->withAvg('reviews', 'star_rating');
+        $query = Products::forWebsite();
 
-        $user = Auth::user();
 
         if ($search) {
             $query->where(function ($q) use ($search) {

@@ -21,7 +21,7 @@ import {
   type DialogTriggerProps as DialogTriggerPrimitiveProps,
   type DialogOverlayProps as DialogOverlayPrimitiveProps,
   type DialogCloseProps as DialogClosePrimitiveProps,
-} from '@/components/ui/fragments/animate-ui/base/dialog';
+} from '@/components/ui/fragments/custom-ui/animate-ui/base/dialog';
 import { cn } from '@/lib/utils';
 
 type DialogProps = DialogPrimitiveProps;

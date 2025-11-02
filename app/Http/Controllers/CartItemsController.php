@@ -35,7 +35,9 @@ class CartItemsController extends Controller
     ];
 
     public function index(CartService $cartService)
-    {
+    {   
+
+        
         return Inertia::render('checkout/index', [
             'status' => true,
             'message' => 'CartItems retrieved successfully',

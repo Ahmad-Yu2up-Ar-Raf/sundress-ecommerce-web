@@ -1,19 +1,13 @@
-// import { Promo } from "@/feature/layout/Promo";
-// import AppSponsor from "@/components/ui/core/section/main/AppSponsor";
-// import CategoryCarousel from "@/components/ui/core/section/main/Category";
-import Providers from "@/components/ui/core/layout/provider";
-import AppSponsor from "@/components/ui/core/section/main/AppSponsor";
-import CategoryCarousel from "@/components/ui/core/section/main/Category";
-import Hero from "@/components/ui/core/section/main/Hero";
 
-import ProductsCarousel from "@/components/ui/fragments/custom-ui/SectionCarosul";
+import Providers from "@/components/ui/core/layout/provider";
+import AppSponsor from "@/components/ui/core/block/sections/main/AppSponsor";
+import CategoryCarousel from "@/components/ui/core/block/sections/main/Category";
+import Hero from "@/components/ui/core/block/sections/main/Hero";
+
+import ProductsCarousel from "@/components/ui/core/block/sections/SectionCarosul";
 import { ProductsSchema } from "@/lib/validations/index.t";
 import { ApiResponse } from "@/types";
-// import ProductsBestRating from "@/components/ui/core/section/main/ProductsBestFeedback";
-// import ProductsBestSeller from "@/components/ui/core/section/main/ProductsBestSeller";
-// import ProductsFreeShipping from "@/components/ui/core/section/main/ProductsFreeShipping";
 
-// import { Suspense } from "react";
 
 
 
@@ -42,8 +36,7 @@ console.log(props)
 <CategoryCarousel/>
 <ProductsCarousel label='Good quality!'title='Top Rating'   loading={false} data={props.dataBestRating!} />
 <ProductsCarousel label='Most Sold!'title='Best Sellers'   loading={false} data={props.productsBestSeller!} />
-{/* <ProductsBestSeller/>
-<ProductsBestRating/> */}
+
    </Providers>
   );
 }

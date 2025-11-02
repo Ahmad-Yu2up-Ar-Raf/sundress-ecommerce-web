@@ -31,43 +31,11 @@ import { CartProductsSheet } from "../../main/cart-sheet";
 const TopMenu = [
 
 
-  { name: "Trends", href: "/trend" },
-  { name: "Explore", href: "/products" },
-  { name: "Blog", href: "/blog" },
+  { name: "Trends", href: "#" },
+  { name: "Explore", href: "/explore" },
+  { name: "Blog", href: "#" },
 ];
 
-
-type Tp = {
-  Name : string,
-  Link : string,
-  icon: LucideIcon
-}
-
-const navItems: Tp[] = [
-  {
-    Name: "Home",
-    Link: "/",
-    icon: House
-  },
-
-
-  {
-    Name: "Explore",
-    Link: "/products",
-   icon: Compass
-  },
-  {
-    Name: "Bag",
-    Link: "/bag",
-   icon: ShoppingCart
-  },
-    {
-    Name: "Profile",
-    Link: "/profile/settings",
-    icon: User
-  },
-    
-];
 
 
 
@@ -131,7 +99,9 @@ const onClick = () => open({ redirectTo: "/" });
         <main className="  max-w-[1190px] m-auto  justify-between md:flex ">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-bold flex items-center gap-3 ">
-              <Logo className=" [&_svg]:size-9" />
+             <div className="size-10 sm:w-5 md:size-8 transition-transform duration-300 group-hover:scale-105 group-hover:brightness-110">
+                            <Logo />
+                          </div>
               <span className="">Sundress</span>
             </h1>
           </div>
@@ -186,8 +156,8 @@ const onClick = () => open({ redirectTo: "/" });
              
    
              <Avatar onClick={onClick} className="  cursor-pointer">
-  <AvatarImage src="/assets/images/defaultProfile.webp" />
-  <AvatarFallback>US</AvatarFallback>
+  <AvatarImage src="assets/images/defaultProfile.webp" />
+  <AvatarFallback className=" text-xs">US</AvatarFallback>
 </Avatar>
 
                
@@ -249,4 +219,8 @@ const ListItem = React.forwardRef<
   );
 });
 ListItem.displayName = "ListItem";
+
+
+
+
 

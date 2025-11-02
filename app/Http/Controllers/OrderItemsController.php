@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderItems;
+use App\Models\Products;
+use App\Models\Vendors;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,8 +21,18 @@ class OrderItemsController extends Controller
     $page = $request->input('page', 1);
     $status = $request->input('status');
 
+     $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
 
-    $query = OrderItems::where('vendor_id', Auth::id())->with("product");
+      $vendor = Vendors::where('user_id' , Auth::id())->first();
+        $vendorId = $vendor->id;
+        $recordProducts = Products::all()->where('vendor_id',$vendorId);
+        
+        $queryProductsIds = $recordProducts->pluck('id')->toArray();
+
+
+
+    $query = OrderItems::whereIn('product_id', $queryProductsIds)->with("product");
 
 
     if ($search) {
