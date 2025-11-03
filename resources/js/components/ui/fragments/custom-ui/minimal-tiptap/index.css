@@ -1,10 +1,10 @@
-@import "./partials/code.css";
-@import "./partials/placeholder.css";
-@import "./partials/lists.css";
-@import "./partials/typography.css";
-@import "./partials/zoom.css";
+@import "./styles/partials/code.css";
+@import "./styles/partials/placeholder.css";
+@import "./styles/partials/lists.css";
+@import "./styles/partials/typography.css";
+@import "./styles/partials/zoom.css";
 
-@reference "C:\Users\Ahmad Yusuf Ar rafi\OneDrive\Attachments\sundress\resources\css\app.css";
+@reference "../../../../../../css/app.css";
 
 :root {
   --mt-overlay: rgba(251, 251, 251, 0.75);

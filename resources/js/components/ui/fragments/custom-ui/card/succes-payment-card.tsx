@@ -296,7 +296,10 @@ console.log(orderItems)
 
       {/* Action button and final status text */}
       <motion.div variants={itemVariants} className="text-center space-y-3">
-        <Link href="/explore"  className={cn(buttonVariants({ variant: "default"}) ,"w-full")}>
+        <Link href="/buyer/orders"  className={cn(buttonVariants({ variant: "default"}) ,"w-full")}>
+            My Orders
+        </Link>
+        <Link href="/explore"  className={cn(buttonVariants({ variant: "secondary"}) ,"w-full")}>
             Continue Shopping
         </Link>
         <p className="text-xs text-green-600 dark:text-green-500 font-medium">{trackingStatus}</p>

@@ -70,7 +70,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, }
            const [loading, setLoading] = React.useState(false);  
            const initial = useInitials()
   return (
-    <section className="mx-auto   px-5 pt-5  lg:space-y-8  h-fit sm:px-10 container max-w-[75em] space-y-5 ">
+    <section className="mx-auto   px-5 pt-5  lg:space-y-8  h-fit sm:px-10 container max-w-[80em] space-y-5 ">
       {/* Breadcrumbs Navigation */}
         <nav className='z-50 top-0 bg-background/95 backdrop-blur flex items-center justify-between'>
         <Link 

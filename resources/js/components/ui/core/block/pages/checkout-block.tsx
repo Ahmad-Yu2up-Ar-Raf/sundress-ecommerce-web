@@ -444,7 +444,7 @@ const steps = [
 
 
 return (
-  <div className="w-full container mx-auto  py-5 px-5 flex flex-col gap-3">
+  <div className="w-full container min-h-dvh mx-auto bg-background  py-5 px-5 space-y-4 ">
     <div className="flex items-center justify-between">
       <div className="flex items-start gap-3 flex-col">
         {" "}
@@ -470,7 +470,7 @@ return (
       </Badge>
     </div>{" "}
     {/* Progress Steps */}
-    <div className="flex w-full px-0   m-auto  items-center justify-between  gap-1.5 sm:gap-6 py-4">
+    <div className="flex w-full px-0 mb-3   m-auto  items-center justify-between  gap-1.5 sm:gap-6 py-4">
       {steps.map(({ step, label, icon: Icon }, index) => (
         <div key={step} className={cn("flex   items-center  gap-3",
 
@@ -519,7 +519,7 @@ return (
         </div>
       ))}
     </div>
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1  lg:grid-cols-3 gap-6">
       {/* Main Content */}
       <div className="lg:col-span-2 flex flex-col gap-6">
         {/* Step 1: Shipping Information */}

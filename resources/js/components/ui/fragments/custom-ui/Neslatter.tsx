@@ -1,7 +1,7 @@
-import React from 'react'
+
 import { Input } from '../shadcn-ui/input'
 import { Button } from '../shadcn-ui/button'
-import MediaItem from './MediaItem'
+
 import { Link } from '@inertiajs/react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../shadcn-ui/card'
 

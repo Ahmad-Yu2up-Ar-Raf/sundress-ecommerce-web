@@ -1,4 +1,4 @@
-import "./styles/index.css"
+import "./index.css"
 
 import type { Content, Editor } from "@tiptap/react"
 import type { UseMinimalTiptapEditorProps } from "@/components/ui/fragments/custom-ui/minimal-tiptap/hooks/use-minimal-tiptap"
